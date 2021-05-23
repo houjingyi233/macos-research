@@ -7,7 +7,7 @@ Orignal Blog Post: https://blog.svenpeter.dev/posts/m1_sprr_gxf/
 
 BUILD 
 ---------
- 	clang -fprofile-instr-generate -fcoverage-mapping -mllvm -runtime-counter-relocation -g -fsanitize=undefined -O0 -o a.out cpde.c
+ 	clang -fprofile-instr-generate -fcoverage-mapping -mllvm -runtime-counter-relocation -g -fsanitize=undefined -O0 -o a.out code.c
  
 PROFILE 
 --------
