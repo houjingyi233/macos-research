@@ -26,6 +26,7 @@ RUN
 
 UNDEFINED BEHAVIOR SANITIZER OUTPUT - UBSAN
 ================================================
+```
 REPRO - SIP OFF, ALL M1 SECURITY OFF
 LLVM_PROFILE_FILE=default.profraw ./a.out
 ...
@@ -69,3 +70,4 @@ Binary Images:
        0x102db8000 -        0x102dbbfff +smoke32-user (0) /Users/USER/*/smoke32-user
        0x102ea4000 -        0x102f23fff  dyld (851.27)  /usr/lib/dyld
        0x102fac000 -        0x102fd7fff +libclang_rt.ubsan_osx_dynamic.dylib (1205.0.22.9) ../clang/12.0.5/lib/darwin/libclang_rt.ubsan_osx_dynamic.dylib
+```
