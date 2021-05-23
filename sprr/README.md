@@ -21,7 +21,7 @@ REPORT
 --------
 ```
 xcrun llvm-cov show ./a.out -instr-profile=a.profdata --show-regions=0 -show-line-counts-or-regions -show-instantiation-summary
-xcrun llvm-cov report ./a.out -instr-profile=.profdata
+xcrun llvm-cov report ./a.out -instr-profile=a.profdata
 sudo gcovr --gcov-executable "xcrun llvm-cov gcov" -r . --html --html-details -o out.html
 
 RUN
