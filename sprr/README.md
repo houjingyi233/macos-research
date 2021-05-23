@@ -15,7 +15,7 @@ PROFILE
 ```
 LLVM_PROFILE_FILE=default.profraw ./a.out
 xcrun llvm-profdata merge -sparse default.profraw -o a.profdata
-xcrun llvm-cov show ./a.out -instr-profile=.profdata
+xcrun llvm-cov show ./a.out -instr-profile=a.profdata
 ```
 REPORT
 --------
