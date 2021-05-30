@@ -258,8 +258,14 @@ enum : Instruction {
 
 /* 
 
-Fuzzing Results of __ss.__pc for (int i = 0; i < 18; ++i):
+Baseline Results of S3_6_c15_c1_5 Register Bits:
+cx->uc_mcontext->__ss.__pc +=   + 4
+2010000030000000: ---
+2010000030100000: r-x
+2010000030200000: r--
+2010000030300000: rw-
 
+Fuzzing Results of __ss.__pc for (int i = 0; i < 18; ++i):
 cx->uc_mcontext->__ss.__pc +=   + 1
 2010000030000000: ---
 2010000030100000: r-x
