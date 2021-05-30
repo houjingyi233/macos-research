@@ -131,7 +131,6 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
 
 static void write_sprr_perm(uint64_t v)
 {
-/* Write the magic pattern  */
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
                          "isb sy\n" ::"r"(v)
                          :);
@@ -140,7 +139,6 @@ static void write_sprr_perm(uint64_t v)
 static uint64_t read_sprr_perm(void)
 {
     uint64_t v;
-/* Read the magic pattern */
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
@@ -150,7 +148,6 @@ static uint64_t read_sprr_perm(void)
 static bool can_read(void *ptr)
 {
     uint64_t v = 0;
-/* Check the Read on magic pattern and Return */
     __asm__ __volatile__("ldr x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
