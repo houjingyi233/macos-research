@@ -242,11 +242,11 @@ enum : Instruction {
  There are multiple valid encodings of return (which is really a special
   form of branch). This is the one clang seems to use:
   
-  kRet = 0xd65f03c0,
-  kBrk0 = 0xd4200000,
-  kBrk1 = 0xd4200020,
-  kBrkF000 = 0xd43e0000, Doesn't work on Big Sur btw..
-  kHlt0 = 0xd4400000, 
+  kRet = 0xd65f03c0, Works fine on Big Sur .. 
+  kBrk0 = 0xd4200000, Doesn't work on Big Sur .. Trace/BPT trap: 5
+  kBrk1 = 0xd4200020, Doesn't work on Big Sur .. Trace/BPT trap: 5
+  kBrkF000 = 0xd43e0000, Doesn't work on Big Sur .. Trace/BPT trap: 5
+  kHlt0 = 0xd4400000, Doesn't work on Big Sur .. Illegal instruction: 4
   
   */
     
