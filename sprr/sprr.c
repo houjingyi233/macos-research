@@ -256,6 +256,13 @@ enum : Instruction {
   kBrk1 = 0xd4200020, Doesn't work on Big Sur .. Trace/BPT trap: 5
   kBrkF000 = 0xd43e0000, Doesn't work on Big Sur .. Trace/BPT trap: 5
   kHlt0 = 0xd4400000, Doesn't work on Big Sur .. Illegal instruction: 4
+  0xD65F0FFF = Did get a valid program execution 
+  eg:
+ ./0xD65F0FFF
+2010000030000000: ---
+2010000030100000: r--
+2010000030200000: r--
+2010000030300000: rw-
   
   */
     
@@ -266,6 +273,8 @@ enum : Instruction {
 }
 
 /* 
+
+RETURN VALUE = 0xd65f03c0
 
 Baseline Results of S3_6_c15_c1_5 Register Bits:
 cx->uc_mcontext->__ss.__pc +=   + 4
