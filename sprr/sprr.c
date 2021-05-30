@@ -124,7 +124,7 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
  The Program Counter (PC) is accessed as PC (or R15). It is incremented by the size of the instruction executed 
  (which is always four bytes (2 instructions ahead) in ARM state). Branch instructions load the destination address into PC. 
  You can also load the PC directly using data processing instructions.  
- TODO: Fuzz pc .. note the +32 rive Bit 20 rwx in 
+ TODO: Fuzz pc .. note the +32 gives S3_6_c15_c1 Bit 20 rwx 
 */
     cx->uc_mcontext->__ss.__pc += 4;
 }
