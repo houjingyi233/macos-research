@@ -118,17 +118,20 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
     (void)signo;
     (void)info;
     ucontext_t *cx = cx_;
+
 /* magic pattern like 0x41414141 or 0xdeadbeef */
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
-/* Increase the Program Counter (pc) +4 on ARM - This is a jmp  
+	
+/*  
  The Program Counter (PC) is accessed as PC (or R15). It is incremented by the size of the instruction executed 
- (which is always four bytes (2 instructions ahead) in ARM state). Branch instructions load the destination address into PC. 
- You can also load the PC directly using data processing instructions.  
- TODO: Fuzz pc .. note the +32 gives S3_6_c15_c1 Bit 20 rwx 
+ (which is always four bytes (2 instructions ahead) in ARM state). Branch instructions load the destination address into PC.   
+ TODO: Fuzz pc .. note the +32 gives S3_6_c15_c1 Bit 20 rwx
+ set pc +4, jmp to link register (__ss.__lr) to Return
 */
     cx->uc_mcontext->__ss.__pc += 4;
 }
 
+/* move status register operation for S3_6_c15_c1_5 */
 static void write_sprr_perm(uint64_t v)
 {
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
@@ -136,6 +139,10 @@ static void write_sprr_perm(uint64_t v)
                          :);
 }
 
+/* 
+   Move System Register into a general-purpose register... 
+   Check the Permissions 
+*/
 static uint64_t read_sprr_perm(void)
 {
     uint64_t v;
@@ -145,6 +152,7 @@ static uint64_t read_sprr_perm(void)
     return v;
 }
 
+/* Load the Offset, Can we Read */
 static bool can_read(void *ptr)
 {
     uint64_t v = 0;
@@ -159,10 +167,10 @@ static bool can_read(void *ptr)
     return true;
 }
 
+/* Store the Offset, Can we Write */
 static bool can_write(void *ptr)
 {
     uint64_t v = 0;
-/* Can we Write the magic pattern */
     __asm__ __volatile__("str x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
@@ -186,6 +194,7 @@ static bool can_exec(void *ptr)
     return true;
 }
 
+/* What were the results */
 static void sprr_test(void *ptr, uint64_t v)
 {
     uint64_t a, b;
@@ -197,11 +206,14 @@ static void sprr_test(void *ptr, uint64_t v)
            can_exec(ptr) ? 'x' : '-');
 }
 
+/* Make it rwx */
 static uint64_t make_sprr_val(uint8_t nibble)
 {
     uint64_t res = 0;
     for (int i = 0; i < 16; ++i)
-/* Nibble 4 * i bytes at a time.. this is where undefined behavior creeps in ...  needs to be 16-byte aligned at all the time to not be undefined by C spec */
+
+/* Nibble 4 * i bytes at a time.. this is where undefined behavior creeps in ...  
+needs to be 16-byte aligned at all the time to not be undefined by C spec */
         res |= ((uint64_t)nibble) << (4 * i);
     return res;
 }
