@@ -164,7 +164,10 @@ static bool can_write(void *ptr)
     __asm__ __volatile__("str x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
-                         : "r"(ptr + 8)
+/* The Program Counter (PC) is accessed as PC (or R15). It is incremented by the size of the instruction executed (which is always four bytes in ARM state). Branch instructions load the destination address into PC. You can also load the PC directly using data processing instructions.  */
+			 : "r"(ptr + 8)
+/* Comment: Change ptr + 32 to get bit 20 of S3_6_c15_c1_5 to get rwx like so: 0x2010000030100000: rwx     /*
+/*  			 : "r"(ptr + 32) */
                          : "memory", "x0");
 
     if (v == 0xdeadbeef)
