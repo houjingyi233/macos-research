@@ -118,9 +118,14 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
     (void)signo;
     (void)info;
     ucontext_t *cx = cx_;
-/* magic pattern like 0x41414141 or 0xdeadbeef*/
+/* magic pattern like 0x41414141 or 0xdeadbeef */
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
-/* Increase the Program Counter (pc) +4 on ARM - This is a jmp     
+/* Increase the Program Counter (pc) +4 on ARM - This is a jmp  
+ The Program Counter (PC) is accessed as PC (or R15). It is incremented by the size of the instruction executed 
+ (which is always four bytes (2 instructions ahead) in ARM state). Branch instructions load the destination address into PC. 
+ You can also load the PC directly using data processing instructions.  
+ TODO: Fuzz pc .. note the +32 rive Bit 20 rwx in 
+*/
     cx->uc_mcontext->__ss.__pc += 4;
 }
 
@@ -164,9 +169,8 @@ static bool can_write(void *ptr)
     __asm__ __volatile__("str x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
-/* The Program Counter (PC) is accessed as PC (or R15). It is incremented by the size of the instruction executed (which is always four bytes (2 instructions ahead) in ARM state). Branch instructions load the destination address into PC. You can also load the PC directly using data processing instructions.  */
 			 : "r"(ptr + 8)
-/* Comment: Change ptr + 32 to get bit 20 of S3_6_c15_c1_5 to get rwx like so: 0x2010000030100000: rwx     /*
+/* TODO Twiddle the ptr + x for Fuzzing
 /*  			 : "r"(ptr + 32) */
                          : "memory", "x0");
 
