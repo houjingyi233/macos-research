@@ -226,15 +226,16 @@ int main(int argc, char *argv[])
     write_sprr_perm(0x3333333333333333);
     
     /* 
-    Set memory to contain the RET instruction to attempt to execute. 
-    There are multiple valid encodings of return (which is really a special form of branch). 
-    These is the one clang seems to use: 
-      kRet = 0xd65f03c0,
-  		kBrk0 = 0xd4200000,
-  		kBrk1 = 0xd4200020,
-  		kBrkF000 = 0xd43e0000,
-  		kHlt0 = 0xd4400000,
-    */
+A64 opcode reference: https://developer.arm.com/docs/ddi0487/latest
+Use an enum here rather than separate constexpr vars because otherwise some
+of the vars will end up unused on each platform, upsetting
+-Wunused-const-variable.
+
+enum : Instruction {
+ There are multiple valid encodings of return (which is really a special
+  form of branch). This is the one clang seems to use:
+  
+  */
     
     ptr[0] = 0xd65f03c0; // ret
 
