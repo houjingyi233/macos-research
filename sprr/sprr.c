@@ -76,6 +76,20 @@ Binary Images:
        0x102ea4000 -        0x102f23fff  dyld (851.27)  /usr/lib/dyld
        0x102fac000 -        0x102fd7fff +libclang_rt.ubsan_osx_dynamic.dylib (1205.0.22.9) ../clang/12.0.5/lib/darwin/libclang_rt.ubsan_osx_dynamic.dylib
 
+Register Info:
+bit 1 in S3_6_C15_C1_0 / SPRR_CONFIG_EL1 enables SPRR and access to new system registers.
+
+S3_6_C15_1_5 is the permissions register for EL0 and S3_6_C15_1_6 is for EL1/GL1.
+
+#define SYS_SPRR_CONFIG_EL1       sys_reg(3, 6, 15, 1, 0)
+#define SPRR_CONFIG_EN            BIT(0)
+#define SPRR_CONFIG_LOCK_CONFIG   BIT(1)
+#define SPRR_CONFIG_LOCK_PERM_EL0 BIT(4)
+#define SPRR_CONFIG_LOCK_PERM_EL1 BIT(5)
+
+#define SYS_SPRR_PERM_EL0 sys_reg(3, 6, 15, 1, 5)
+#define SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
+
 */
 
 #define _XOPEN_SOURCE
