@@ -235,6 +235,12 @@ enum : Instruction {
  There are multiple valid encodings of return (which is really a special
   form of branch). This is the one clang seems to use:
   
+  kRet = 0xd65f03c0,
+  kBrk0 = 0xd4200000,
+  kBrk1 = 0xd4200020,
+  kBrkF000 = 0xd43e0000,
+  kHlt0 = 0xd4400000,
+  
   */
     
     ptr[0] = 0xd65f03c0; // ret
