@@ -245,8 +245,8 @@ enum : Instruction {
   kRet = 0xd65f03c0,
   kBrk0 = 0xd4200000,
   kBrk1 = 0xd4200020,
-  kBrkF000 = 0xd43e0000,
-  kHlt0 = 0xd4400000,
+  kBrkF000 = 0xd43e0000, Doesn't work on Big Sur btw..
+  kHlt0 = 0xd4400000, 
   
   */
     
