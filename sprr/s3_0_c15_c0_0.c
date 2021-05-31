@@ -28,7 +28,7 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
 
 static void write_sprr_perm(uint64_t v)
 {
-    __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
+    __asm__ __volatile__("msr s3_0_c15_c0_0, %0\n"
                          "isb sy\n" ::"r"(v)
                          :);
 }
@@ -37,7 +37,7 @@ static uint64_t read_sprr_perm(void)
 {
     uint64_t v;
     __asm__ __volatile__("isb sy\n"
-                         "mrs %0, S3_6_c15_c1_5\n"
+                         "mrs %0, s3_0_c15_c0_0\n"
                          : "=r"(v)::"memory");
     return v;
 }
