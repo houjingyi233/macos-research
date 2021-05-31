@@ -8,11 +8,13 @@ Example: cx->uc_mcontext->```__ss.__pc += (i) ... for (int i = 0; i < 256; ++i)`
 
 Expected Results (Source: Sven Peter)
 --------------------------------------
+```
 register value	page permissions
 00	---
 01	r-x
 10	r--
 11	rw-
+```
 
 Actual Results: 
 Expected and Undefined behavior which is the Subject of this Post, see all Results below.
