@@ -3,7 +3,8 @@
 On May 6, 2021 a Post by Sven Peter about Apple Silicon Hardware Secrets: SPRR and Guarded Exception Levels (GXF) at URL https://blog.svenpeter.dev/posts/m1_sprr_gxf/ appeared in my Timeline.
 
 An interesting Read but no additional information was provided with respect to Fuzzing those 64 Register Bits, just performing a Bit Flip with the provided example SPRR JIT test code. My first thoughts were: What happens when the Program Counter is lightly Fuzzed? 
-Example: pc += (i) ... for (int i = 0; i < 32; ++i)
+
+Example: cx->uc_mcontext->```__ss.__pc += (i) ... for (int i = 0; i < 256; ++i)``` 
 
 Expected Results (Source: Sven Peter)
 --------------------------------------
@@ -14,8 +15,6 @@ register value	page permissions
 11	rw-
 
 Actual Results: 
-cx->uc_mcontext->```__ss.__pc += (i) ... for (int i = 0; i < 256; ++i)``` 
-
 Expected and Undefined behavior which is the Subject of this Post, see all Results below.
 
 ### M1 SPRR Profiling, Reporting and Build Info
