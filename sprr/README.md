@@ -266,7 +266,7 @@ Binary Images:
        0x102fac000 -        0x102fd7fff +libclang_rt.ubsan_osx_dynamic.dylib (1205.0.22.9) ../clang/12.0.5/lib/darwin/libclang_rt.ubsan_osx_dynamic.dylib
 ```
 
-Registers
+Registers - Taken from https://github.com/AsahiLinux/m1n1/blob/main/tools/apple_regs.json
 ==========
 ```
 Hardware Implementation-Dependent Register 0	HID0_EL1	s3_0_c15_c0_0	64
