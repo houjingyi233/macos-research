@@ -48,7 +48,7 @@ sudo gcovr --gcov-executable "xcrun llvm-cov gcov" -r . --html --html-details -o
 RUN
 	LLVM_PROFILE_FILE=default.profraw ./a.out
 ```
-LIGHT FUZZING - __ss.__pc =+ (i) .... for (int i = 0; i < 32; ++i)
+Fuzzing S3_6_c15_c1_5 amd __ss.__pc =+ (i) .... for (int i = 0; i < 32; ++i)
 ====================
 ```
 cx->uc_mcontext->__ss.__pc +=   + 1
@@ -200,8 +200,8 @@ cx->uc_mcontext->__ss.__pc +=   + 256
 ---HANG---
 ```
 
-Example PoC
-=============
+Example PoC for S3_6_c15_c1_5
+==============================
 ```diff sprr.c ss-cpsr.c
 17c17
 <     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
