@@ -1,4 +1,4 @@
-### Undefined Behavior Fuzzing M1 Apple Silicon Register S3_6_c15_c1_5 + Other M1 Register Fuzzing Code
+### Undefined Behavior Fuzzing M1 Apple Silicon SPRR Permission Configuration Register (EL0) SPRR_PERM_EL0 s3_6_c15_c1_5 + Other M1 Register Fuzzing Code
 
 On May 6, 2021 a Post by Sven Peter about Apple Silicon Hardware Secrets: SPRR and Guarded Exception Levels (GXF) at URL https://blog.svenpeter.dev/posts/m1_sprr_gxf/ appeared in my Timeline. I had just been reviewing https://github.com/AsahiLinux/m1n1/blob/main/tools/apple_regs.json.
 
@@ -19,7 +19,7 @@ register value	page permissions
 Actual Results: 
 Expected and Undefined behavior which is the Subject of this Post, see all Results below.
 
-Example PoC for S3_6_c15_c1_5
+Example PoC for SPRR Permission Configuration Register (EL0) SPRR_PERM_EL0 s3_6_c15_c1_5
 ==============================
 ```diff sprr.c ss-cpsr.c
 17c17
