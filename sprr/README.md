@@ -48,8 +48,8 @@ sudo gcovr --gcov-executable "xcrun llvm-cov gcov" -r . --html --html-details -o
 RUN
 	LLVM_PROFILE_FILE=default.profraw ./a.out
 ```
-Fuzzing S3_6_c15_c1_5 amd __ss.__pc =+ (i) .... for (int i = 0; i < 32; ++i)
-====================
+Fuzzing S3_6_c15_c1_5 and __ss.__pc =+ (i) .... for (int i = 0; i < 32; ++i)
+==============================================================================
 ```
 cx->uc_mcontext->__ss.__pc +=   + 1
 2010000030000000: ---
