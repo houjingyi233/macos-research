@@ -59,7 +59,7 @@ Run 50-100x, watch Crash Reports accumulate, works better with shell script.
  
 The instructions below are for those who many want to Instrument the Register Fuzzing and confirm Code Coverage when implementing multi Register Fuzzing and ++i loops to increment PC & LR. 
 
-BUILD 
+PROFILE BUILD 
 ---------
 ```
 clang -fprofile-instr-generate -fcoverage-mapping -mllvm -runtime-counter-relocation -g -fsanitize=undefined -O0 -o a.out code.c
