@@ -1,4 +1,4 @@
-### Undefined Behavior Fuzzing M1 Apple Silicon Register S3_6_c15_c1_5
+### Undefined Behavior Fuzzing M1 Apple Silicon Register S3_6_c15_c1_5 + Other M1 Register Fuzzing Code
 
 On May 6, 2021 a Post by Sven Peter about Apple Silicon Hardware Secrets: SPRR and Guarded Exception Levels (GXF) at URL https://blog.svenpeter.dev/posts/m1_sprr_gxf/ appeared in my Timeline.
 
