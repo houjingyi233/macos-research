@@ -102,7 +102,10 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #include <sys/utsname.h>
 #include <ucontext.h>
 
-/* Recover from Protected Page Access, setup Signal Handler, set x0 to a 0xdeadbeef (0x41414141) set pc +4, jmp to link register (__ss.__lr) to Return. TODO, Fuzz the pc */
+/* Recover from Protected Page Access, setup Signal Handler, set x0 to a 0xdeadbeef (0x41414141) set pc +4, jmp to link register (__ss.__lr) to Return. TODO, Fuzz the pc 
+       See URL https://github.com/apple/darwin-xnu/blob/main/bsd/sys/_types/_ucontext.h for struct def
+*/
+       
 static void sev_handler(int signo, siginfo_t *info, void *cx_)
 {
     (void)signo;
@@ -112,7 +115,9 @@ static void sev_handler(int signo, siginfo_t *info, void *cx_)
     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
 }
 
-/* Recovering from Non-Executable Page Access, set x0 to 0xdeadbeef (0x41414141), set pc +4, jmp to link register (__ss.__lr) to Return */
+/* Recovering from Non-Executable Page Access, set x0 to 0xdeadbeef (0x41414141), set pc +4, jmp to link register (__ss.__lr) to Return 
+      See URL https://github.com/apple/darwin-xnu/blob/main/bsd/sys/_types/_ucontext.h for struct def
+*/
 static void bus_handler(int signo, siginfo_t *info, void *cx_)
 {
     (void)signo;
