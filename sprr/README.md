@@ -46,10 +46,13 @@ Example PoC for S3_6_c15_c1_5
 Compile
 -------
  clang -g -O0 -fsanitize=undefined -fno-omit-frame-pointer  -o S3_6_c15_c1_5 S3_6_c15_c1_5.c
+ 
 Run
 ------
 ./S3_6_c15_c1_5
+
 or
+
 time ./S3_6_c15_c1_5
 
 Run 50-100x, watch Crash Reports accumulate, works better with shell script.
