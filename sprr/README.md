@@ -6,7 +6,7 @@ An interesting Read but no additional information was provided with respect to F
 
 Example: cx->uc_mcontext->```__ss.__pc += (i) ... for (int i = 0; i < 256; ++i)``` 
 
-Expected Results (Source: Sven Peter)
+Expected Results (Source: https://blog.svenpeter.dev/posts/m1_sprr_gxf/)
 --------------------------------------
 ```
 register value	page permissions
@@ -39,11 +39,12 @@ Example PoC for S3_6_c15_c1_5
 
 
 ### M1 SPRR Profiling, Reporting and Build Info
-
-Orignal Blog Post: https://blog.svenpeter.dev/posts/m1_sprr_gxf/
  
  Comments, Build, Profiling Instructions added by dhoyt | @h02332 on May 23, 2021
- UBSAN Report with Xcode Profiling Instructions
+ UBSAN Report with Xcode Profiling Instructions. Use the original code and modify as seen in PoC.
+ clang 
+ 
+The instructions below are for those who many want to Instrument the Register Fuzzing and confirm Code Coverage when implementing multi Register Fuzzing and ++i loops to confirm Code Coverage.
 
 BUILD 
 ---------
