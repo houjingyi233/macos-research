@@ -41,7 +41,7 @@ PoC Commit https://github.com/xsscx/mac-binaries/commit/60e7ad990b21dbb7dff79747
 ```
 
 
-### M1 SPRR Profiling, Reporting and Build Info
+### Code Profiling, Reporting and Build Info
  
  Comments, Build, Profiling Instructions added by dhoyt | @h02332 on May 23, 2021
  UBSAN Report with Xcode Profiling Instructions. Use the original code and modify as seen in PoC.
