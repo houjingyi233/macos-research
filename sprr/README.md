@@ -286,7 +286,7 @@ Binary Images:
 
 Register Definitions
 ==========
-Source Taken from https://github.com/AsahiLinux/m1n1/blob/main/tools/apple_regs.json
+Source URL https://github.com/AsahiLinux/m1n1/blob/main/tools/apple_regs.json
 ```
 Hardware Implementation-Dependent Register 0	HID0_EL1	s3_0_c15_c0_0	64
 Hardware Implementation-Dependent Register 0 (E-core)	EHID0_EL1	s3_0_c15_c0_1	64	
