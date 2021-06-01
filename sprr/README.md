@@ -43,9 +43,11 @@ Example PoC for S3_6_c15_c1_5
  Comments, Build, Profiling Instructions added by dhoyt | @h02332 on May 23, 2021
  UBSAN Report with Xcode Profiling Instructions. Use the original code and modify as seen in PoC.
 
-Compile 
+Compile
+-------
  clang -g -O0 -fsanitize=undefined -fno-omit-frame-pointer  -o S3_6_c15_c1_5 S3_6_c15_c1_5.c
 Run
+------
 ./S3_6_c15_c1_5
 or
 time ./S3_6_c15_c1_5
