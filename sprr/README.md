@@ -19,6 +19,25 @@ register value	page permissions
 Actual Results: 
 Expected and Undefined behavior which is the Subject of this Post, see all Results below.
 
+Example PoC for S3_6_c15_c1_5
+==============================
+```diff sprr.c ss-cpsr.c
+17c17
+<     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
+---
+>     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr += 4;
+26c26
+<     cx->uc_mcontext->__ss.__pc += 4;
+---
+>     cx->uc_mcontext->__ss.__pc += 8;
+
+2010000030000000: rwx
+2010000030100000: rwx
+2010000030200000: rwx
+2010000030300000: rwx
+```
+
+
 ### M1 SPRR Profiling, Reporting and Build Info
 
 Orignal Blog Post: https://blog.svenpeter.dev/posts/m1_sprr_gxf/
@@ -198,24 +217,6 @@ cx->uc_mcontext->__ss.__pc +=   + 32
 
 cx->uc_mcontext->__ss.__pc +=   + 256
 ---HANG---
-```
-
-Example PoC for S3_6_c15_c1_5
-==============================
-```diff sprr.c ss-cpsr.c
-17c17
-<     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
----
->     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr += 4;
-26c26
-<     cx->uc_mcontext->__ss.__pc += 4;
----
->     cx->uc_mcontext->__ss.__pc += 8;
-
-2010000030000000: rwx
-2010000030100000: rwx
-2010000030200000: rwx
-2010000030300000: rwx
 ```
 
 UNDEFINED BEHAVIOR SANITIZER OUTPUT - UBSAN
