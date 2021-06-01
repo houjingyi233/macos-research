@@ -2,7 +2,7 @@
 
 On May 6, 2021 a Post by Sven Peter about Apple Silicon Hardware Secrets: SPRR and Guarded Exception Levels (GXF) at URL https://blog.svenpeter.dev/posts/m1_sprr_gxf/ appeared in my Timeline. I had just been reviewing https://github.com/AsahiLinux/m1n1/blob/main/tools/apple_regs.json.
 
-An interesting Read but no additional information was provided with respect to Fuzzing those 64 Register Bits, just performing a Bit Flip with the provided example SPRR JIT test code. My first thoughts were: What happens when the Program Counter (PC) and/or Link Register (LR) are lightly Fuzzed? Like Pitchfork or Clusterbomb when using Burp Intruder. 
+An interesting Read but no additional information was provided with respect to Fuzzing those 64 Register Bits, just performing a Bit Flip with the provided example SPRR JIT test code. My first thoughts were: What happens when the Program Counter (PC) and/or Link Register (LR) are lightly Fuzzed? Pitchfork / Clusterbomb. 
 
 Example: cx->uc_mcontext->```__ss.__pc += (i) ... for (int i = 0; i < 256; ++i)``` 
 
@@ -42,9 +42,17 @@ Example PoC for S3_6_c15_c1_5
  
  Comments, Build, Profiling Instructions added by dhoyt | @h02332 on May 23, 2021
  UBSAN Report with Xcode Profiling Instructions. Use the original code and modify as seen in PoC.
- clang 
+
+Compile 
+ clang -g -O0 -fsanitize=undefined -fno-omit-frame-pointer  -o S3_6_c15_c1_5 S3_6_c15_c1_5.c
+Run
+./S3_6_c15_c1_5
+or
+time ./S3_6_c15_c1_5
+
+Run 50-100x, watch Crash Reports accumulate, works better with shell script.
  
-The instructions below are for those who many want to Instrument the Register Fuzzing and confirm Code Coverage when implementing multi Register Fuzzing and ++i loops to confirm Code Coverage.
+The instructions below are for those who many want to Instrument the Register Fuzzing and confirm Code Coverage when implementing multi Register Fuzzing and ++i loops to increment PC & LR. 
 
 BUILD 
 ---------
