@@ -200,6 +200,24 @@ cx->uc_mcontext->__ss.__pc +=   + 256
 ---HANG---
 ```
 
+Example PoC
+=============
+```diff sprr.c ss-cpsr.c
+17c17
+<     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
+---
+>     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr += 4;
+26c26
+<     cx->uc_mcontext->__ss.__pc += 4;
+---
+>     cx->uc_mcontext->__ss.__pc += 8;
+
+2010000030000000: rwx
+2010000030100000: rwx
+2010000030200000: rwx
+2010000030300000: rwx
+```
+
 UNDEFINED BEHAVIOR SANITIZER OUTPUT - UBSAN
 ================================================
 ```
