@@ -4,6 +4,8 @@
  Comments, Build, Profiling Instructions added by dhoyt | @h02332 on May 23, 2021
  UBSAN Report with Xcode Profiling Instructions
 
+QUICK COMPILE:  clang -O0 -fsanitize=undefined -g -o a.out this_code.c
+
 BUILD 
  	clang -fprofile-instr-generate -fcoverage-mapping -mllvm -runtime-counter-relocation -g -fsanitize=undefined -O0 -o a.out cpde.c
  
