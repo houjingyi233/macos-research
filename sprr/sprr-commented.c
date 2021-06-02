@@ -189,11 +189,11 @@ static void sprr_test(void *ptr, uint64_t v)
     printf("Now in sprr_test\n");
     uint64_t a, b;
     a = read_sprr_perm();
-    printf("after read_sprr_perm v:%llx\n", a);
+    printf("after a = read_sprr_perm a:%llx\n", a);
     write_sprr_perm(v);
-    printf("after write_sprr_perm v:%llx\n", v);
+    printf("after write_sprr_perm(v) v:%llx\n", v);
     b = read_sprr_perm();
-    printf("after write_sprr_perm v:%llx\n", b);
+    printf("after b = write_sprr_perm b:%llx\n", b);
     
     printf("Final Value:%llx: %c%c%c\n", b, can_read(ptr) ? 'r' : '-', can_write(ptr) ? 'w' : '-',
            can_exec(ptr) ? 'x' : '-');
