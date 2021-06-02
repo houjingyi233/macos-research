@@ -195,18 +195,6 @@ static void sprr_test(void *ptr, uint64_t v)
     
     printf("Final Value:%llx: %c%c%c\n", b, can_read(ptr) ? 'r' : '-', can_write(ptr) ? 'w' : '-',
            can_exec(ptr) ? 'x' : '-');
-/*        printf("----begin added printfs-----\n\r"); 
-        printf("ptr: %u\n", ptr);
-        printf("a:%llx\n", a);
-        printf("v:%llx\n", v);
-        printf("memory:%llu\n", "memory");
-        printf("bv %02d: %016llx\n", b, v);
-        printf("va:%c%c%c\n %u\n", v, a);
-        printf("b:%c\n", b);
-        printf("a:%llx\n", a);
-        printf("----end added printfs-----\n\r");
-*/
-/*    printf("bit %02d: %016llx\n", i, read_sprr()); */
 }
 
 static uint64_t make_sprr_val(uint8_t nibble)
