@@ -240,6 +240,16 @@ int main(int argc, char *argv[])
                          MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
     write_sprr_perm(0x3333333333333333);
     printf("Now in main at RET ptr[0] 0xd65f03c0\n");
+/*
+ There are multiple valid encodings of return (which is really a special
+  form of branch). This is the one clang seems to use:
+   kRet = 0xd65f03c0, Works fine on Big Sur .. 
+  kBrk0 = 0xd4200000, Doesn't work on Big Sur .. Trace/BPT trap: 5
+  kBrk1 = 0xd4200020, Doesn't work on Big Sur .. Trace/BPT trap: 5
+  kBrkF000 = 0xd43e0000, Doesn't work on Big Sur .. Trace/BPT trap: 5
+  kHlt0 = 0xd4400000, Doesn't work on Big Sur .. Illegal instruction: 4  
+  0xD65F0FFF = Did get a valid program execution 
+*/
     ptr[0] = 0xd65f03c0; // ret
     printf("Hitting for (int i = 0; i < 4; ++i)\n");
     for (int i = 0; i < 4; ++i)
