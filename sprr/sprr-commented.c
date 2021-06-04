@@ -128,7 +128,7 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
 
 static void write_sprr_perm(uint64_t v)
 {
-    printf("Jumped to write_sprr_perm\n");
+    printf("Jumped to write_sprr_perm... Step 4...\n");
     clock_t start = clock();
     printf("Start __volatile__ write_sprr_perm\n");
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
@@ -143,7 +143,7 @@ static void write_sprr_perm(uint64_t v)
 
 static uint64_t read_sprr_perm(void)
 {
-    printf("Jumped to read_sprr_perm\n");
+    printf("Jumped to read_sprr_perm... Step 3...\n");
     clock_t start = clock();
     printf("Hitting read_sprr_perm at uint64_t v;\n");
     uint64_t v;
@@ -161,7 +161,7 @@ static uint64_t read_sprr_perm(void)
 
 static bool can_read(void *ptr)
 {
-    printf("Jumped to can_read\n");
+    printf("Jumped to can_read... Step 5...\n");
     clock_t start = clock();
     printf("Hitting can_read at uint64_t v = 0\n");
     uint64_t v = 0;
@@ -183,7 +183,7 @@ static bool can_read(void *ptr)
 
 static bool can_write(void *ptr)
 {
-    printf("Jumped to can_write\n");
+    printf("Jumped to can_write... Step 6...\n");
     clock_t start = clock();
     printf("Hitting can_write at uint64_t v = 0\n");
     uint64_t v = 0;
@@ -205,7 +205,7 @@ static bool can_write(void *ptr)
 
 static bool can_exec(void *ptr)
 {
-    printf("Jumped to can_exec\n");
+    printf("Jumped to can_exec... Step 7...\n");
     clock_t start = clock();
     printf("Hitting can_exec at uint64_t (*fun_ptr)(uint64_t) = ptr\n");
     uint64_t (*fun_ptr)(uint64_t) = ptr;
@@ -223,7 +223,7 @@ static bool can_exec(void *ptr)
 
 static void sprr_test(void *ptr, uint64_t v)
 {
-    printf("Jumped to sprr_test\n");
+    printf("Jumped to sprr_test.. Step 2...\n");
     clock_t start = clock();
     printf("Now at sprr_test before uint64_t a, b\n");
     uint64_t a, b;
@@ -258,7 +258,7 @@ static void sprr_test(void *ptr, uint64_t v)
 
 static uint64_t make_sprr_val(uint8_t nibble)
 {
-    printf("Jumped to make_sprr_val\n");
+    printf("Jumped to make_sprr_val.. Step 1...\n");
     clock_t start = clock();
     printf("Hitting make_sprr_val at uint64_t res = 0\n");
     uint64_t res = 0;
