@@ -93,6 +93,7 @@ SYS_SPRR_PERM_EL0 sys_reg(3, 6, 15, 1, 5)
 SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 
 */
+
 #define _XOPEN_SOURCE
 #include <signal.h>
 #include <stdbool.h>
@@ -194,11 +195,10 @@ static bool can_write(void *ptr)
                          : "r"(ptr + 8)
                          : "memory", "x0");
     printf("End __volatile__ can_write\n");
-    printf("Hitting deadbeef, Ending can_write\n");
+    printf("Hitting 0xdeadbeef in can_write\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
         printf("Time elapsed for can_write in ms: %f\n\n", elapsed);
-    printf("Hitting 0xdeadbeef in can_write\n");
     printf("Finished in can_write\n");
     if (v == 0xdeadbeef)
         return false;
@@ -233,7 +233,7 @@ static void sprr_test(void *ptr, uint64_t v)
     printf("Completed at sprr_test after uint64_t a, b\n");
     printf("Now at sprr_test before a = read_sprr_perm()\n\n");
     a = read_sprr_perm();
-    printf("Completed at sprr_test following a = read_sprr_perm()");
+    printf("Completed at sprr_test following a = read_sprr_perm()\n");
     write_sprr_perm(v);
     printf("Completed at sprr_test following write_sprr_perm(v)\n\n");
     printf("Now at sprr_test before b = read_sprr_perm()\n\n");
