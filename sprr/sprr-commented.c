@@ -23,7 +23,7 @@ RUN
 	LLVM_PROFILE_FILE=default.profraw ./a.out
 
 COMMENT
-	Errors Seen - Likely a Race Condition from pc +4 .. cx->uc_mcontext->__ss.__pc += 4; 
+	Errors Seen - .. undefined behavior Illegal Instruction:4
 	Note that no crash is seen with libgmalloc, so the allocator needs more investigation
 	
 UNDEFINED BEHAVIOR SANITIZER OUTPUT - UBSAN
