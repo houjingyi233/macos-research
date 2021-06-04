@@ -128,7 +128,6 @@ SYS_SPRR_PERM_EL0 sys_reg(3, 6, 15, 1, 5)
 SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 
 */
-
 #define _XOPEN_SOURCE
 #define MAG(string)  "\e[0;35m" string "\x1b[0m"
 #define BLUE(string) "\x1b[34m" string "\x1b[0m"
@@ -312,17 +311,18 @@ static uint64_t make_sprr_val(uint8_t nibble)
 
 uint64_t read_sprr(void)
 {
-    printf("Jumped to read_sprr\n");
-    clock_t start = clock();
+//    printf("Jumped to read_sprr meme\n");
+//    clock_t start = clock();
+
     uint64_t v;
-    printf("Start __volatile__ read_sprr\n");
+//    printf("Start __volatile__ read_sprr\n");
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
-    printf("Finished in __volatile__ read_sprr\n");
-    clock_t stop = clock();
-        double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Finished... Time elapsed in read_sprr for ms: %f\n\n", elapsed);
+//    printf("Finished in __volatile__ read_sprr\n");
+//    clock_t stop = clock();
+//        double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//        printf("Finished... Time elapsed in read_sprr for ms: %f\n\n", elapsed);
     return v;
 }
 
@@ -415,7 +415,6 @@ int main(int argc, char *argv[])
 /*        return 0;
  */
 }
-
 
 
 /* 
