@@ -95,6 +95,9 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 */
 
 #define _XOPEN_SOURCE
+#define MAG(string)  "\e[0;35m" string "\x1b[0m"
+#define BLUE(string) "\x1b[34m" string "\x1b[0m"
+#define RED(string) "\x1b[31m" string "\x1b[0m"
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -293,6 +296,13 @@ int main(int argc, char *argv[])
     printf("---------------------------------------\n");
     printf("Start inside Main\n");
     printf("---------------------------------------\n");
+
+    printf("Process: " RED("Fuzzing M1 S3_6_c15_c1_5") "\n");
+/*
+    printf("\033[31mred text\n");
+    printf("\033[33;44myellow on blue\n");
+    printf("\033[0mdefault colors\n");
+*/
     
     // variables to store the date and time components
     int hours, minutes, seconds, day, month, year;
@@ -305,7 +315,8 @@ int main(int argc, char *argv[])
     time(&now);
  
     // Convert to local time format and print to stdout
-    printf("Today is %s\n", ctime(&now));
+    // printf("Today is %s\n", ctime(&now));
+    printf("Today is " MAG("%s") "\n",ctime(&now));
  
     // localtime converts a `time_t` value to calendar time and
     // returns a pointer to a `tm` structure with its members
