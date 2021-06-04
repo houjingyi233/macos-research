@@ -347,7 +347,7 @@ int main(int argc, char *argv[])
     openlog ("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
     syslog (LOG_NOTICE, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check");
     closelog ();
-
+    
     // variables to store the date and time components
     int hours, minutes, seconds, day, month, year;
  
@@ -388,7 +388,12 @@ int main(int argc, char *argv[])
     }
 */
     printf(GRN("---------------------------") "\n");
-    
+    printf("Writing to logfile ptime.log with start of (EL0) S3_6_c15_c1_5 check\n");
+    FILE *f;
+    f = fopen("ptime.log", "a+"); // a+ (create + append) option will allow appending which is useful in a log file
+    if (f == NULL) { /* Something is wrong   */}
+    fprintf(f, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check\n");
+    printf(GRN("---------------------------") "\n");
     clock_t start = clock();
     
     (void)argc;
@@ -425,7 +430,6 @@ int main(int argc, char *argv[])
     printf(CYN("M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check ended at " "%s") "",ctime(&now));
     
 }
-
 
 /* 
 
