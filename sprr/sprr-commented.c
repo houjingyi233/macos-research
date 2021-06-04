@@ -136,6 +136,7 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #define GRN(string)"\e[0;32m" string "\x1b[0m"
 #define YEL(string)"\e[0;33m" string "\x1b[0m"
 #define CYN(string)"\e[0;36m" string "\x1b[0m"
+#define HWHT(string)"\e[0;97m" string "\x1b[0m"
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -335,14 +336,11 @@ int main(int argc, char *argv[])
     printf(GRN("---------------------------") "\n");
     printf(CYN("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check in main()") "\n");
     printf(GRN("---------------------------") "\n");
-    //    printf("---------------------------------------\n");
-//    printf(RED "Process: " WHT("Fuzzing M1 S3_6_c15_c1_5") "\n");
-/*
-    printf("\033[31mred text\n");
-    printf("\033[33;44myellow on blue\n");
-    printf("\033[0mdefault colors\n");
-*/
-    
+    printf(HWHT("System Hardware & Software:") "\n");
+    system("sysctl machdep.cpu.brand_string\n");
+    system("uname -a\n");
+    printf(GRN("---------------------------") "\n");
+
     // variables to store the date and time components
     int hours, minutes, seconds, day, month, year;
  
@@ -415,12 +413,11 @@ int main(int argc, char *argv[])
         sprr_test(ptr, make_sprr_val(i));
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-    printf(CYN("main () finished... Total Elapsed Time in ms: %f\n\n"), elapsed);
+    printf(GRN("main () finished... Total Elapsed Time in ms: %f\n\n"), elapsed);
     //printf("Done at %s", ctime(&now));
-    printf(GRN("Today is " "%s") "",ctime(&now));
+    printf(CYN("M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check ended at " "%s") "",ctime(&now));
     
 }
-
 /* 
 
 RETURN VALUE = 0xd65f03c0
