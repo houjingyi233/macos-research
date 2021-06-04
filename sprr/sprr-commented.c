@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
     system("sysctl machdep.cpu.brand_string\n");
     system("uname -a\n");
     printf(GRN("---------------------------") "\n");
-    printf("Writing to Syslogd with notice of (EL0) S3_6_c15_c1_5 check\n");
+    printf("Writing to Syslogd at LOG_NOTICE of (EL0) S3_6_c15_c1_5 check\n");
     printf(GRN("---------------------------") "\n");
     setlogmask (LOG_UPTO (LOG_NOTICE));
     openlog ("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
