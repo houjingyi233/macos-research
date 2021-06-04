@@ -185,7 +185,7 @@ static bool can_write(void *ptr)
                          : "=r"(v)
                          : "r"(ptr + 8)
                          : "memory", "x0");
-    printf("Hitting deadbeef, Ending can_read\n");
+    printf("Hitting deadbeef, Ending can_write\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
         printf("Time elapsed for can_write in ms: %f\n\n", elapsed);
@@ -244,6 +244,7 @@ static uint64_t make_sprr_val(uint8_t nibble)
     printf("Now in make_sprr_value\n");
     clock_t start = clock();
     uint64_t res = 0;
+    printf("Now at make_sprr_value at int i = 0; i < 16; ++i \n");
     for (int i = 0; i < 16; ++i)
         res |= ((uint64_t)nibble) << (4 * i);
     clock_t stop = clock();
@@ -302,10 +303,10 @@ int main(int argc, char *argv[])
     printf("Run Date = %02d/%02d/%d\n\n", day, month, year);
     // print local time
     if (hours < 12) {    // before midday
-        printf("MS Timer Start Time is %02d:%02d:%02d am\n", hours, minutes, seconds);
+        printf("MS Timer Start at %02d:%02d:%02d am\n", hours, minutes, seconds);
     }
     else {    // after midday
-        printf("MS Timer Start Time is %02d:%02d:%02d pm\n", hours - 12, minutes, seconds);
+        printf("MS Timer Start at %02d:%02d:%02d pm\n", hours - 12, minutes, seconds);
     }
  
 
@@ -346,6 +347,7 @@ int main(int argc, char *argv[])
 /*        return 0;
  */
 }
+
 
 
 /* 
