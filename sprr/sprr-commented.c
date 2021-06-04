@@ -128,6 +128,7 @@ SYS_SPRR_PERM_EL0 sys_reg(3, 6, 15, 1, 5)
 SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 
 */
+
 #define _XOPEN_SOURCE
 #define MAG(string)  "\e[0;35m" string "\x1b[0m"
 #define BLUE(string) "\x1b[34m" string "\x1b[0m"
@@ -147,6 +148,7 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #include <ucontext.h>
 #include <stdlib.h>
 #include <time.h>
+#include <syslog.h>
 
 static void sev_handler(int signo, siginfo_t *info, void *cx_)
 {
@@ -340,6 +342,13 @@ int main(int argc, char *argv[])
     system("sysctl machdep.cpu.brand_string\n");
     system("uname -a\n");
     printf(GRN("---------------------------") "\n");
+    setlogmask (LOG_UPTO (LOG_NOTICE));
+
+    openlog ("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+
+    syslog (LOG_NOTICE, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check");
+
+    closelog ();
 
     // variables to store the date and time components
     int hours, minutes, seconds, day, month, year;
@@ -418,6 +427,9 @@ int main(int argc, char *argv[])
     printf(CYN("M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check ended at " "%s") "",ctime(&now));
     
 }
+
+
+
 /* 
 
 RETURN VALUE = 0xd65f03c0
