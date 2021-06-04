@@ -132,6 +132,10 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #define MAG(string)  "\e[0;35m" string "\x1b[0m"
 #define BLUE(string) "\x1b[34m" string "\x1b[0m"
 #define RED(string) "\x1b[31m" string "\x1b[0m"
+#define WHT(string)"\e[0;37m" string "\x1b[0m"
+#define GRN(string)"\e[0;32m" string "\x1b[0m"
+#define YEL(string)"\e[0;33m" string "\x1b[0m"
+#define CYN(string)"\e[0;36m" string "\x1b[0m"
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -311,7 +315,7 @@ static uint64_t make_sprr_val(uint8_t nibble)
 
 uint64_t read_sprr(void)
 {
-//    printf("Jumped to read_sprr meme\n");
+//    printf("Jumped to read_sprr\n");
 //    clock_t start = clock();
 
     uint64_t v;
@@ -328,11 +332,11 @@ uint64_t read_sprr(void)
 
 int main(int argc, char *argv[])
 {
-    printf("---------------------------------------\n");
-    printf("Start inside Main\n");
-    printf("---------------------------------------\n");
-
-    printf("Process: " RED("Fuzzing M1 S3_6_c15_c1_5") "\n");
+    printf(GRN("---------------------------") "\n");
+    printf(CYN("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check in main()") "\n");
+    printf(GRN("---------------------------") "\n");
+    //    printf("---------------------------------------\n");
+//    printf(RED "Process: " WHT("Fuzzing M1 S3_6_c15_c1_5") "\n");
 /*
     printf("\033[31mred text\n");
     printf("\033[33;44myellow on blue\n");
@@ -351,7 +355,7 @@ int main(int argc, char *argv[])
  
     // Convert to local time format and print to stdout
     // printf("Today is %s\n", ctime(&now));
-    printf("Today is " MAG("%s") "\n",ctime(&now));
+    printf(GRN("Today is " "%s") "",ctime(&now));
  
     // localtime converts a `time_t` value to calendar time and
     // returns a pointer to a `tm` structure with its members
@@ -367,16 +371,18 @@ int main(int argc, char *argv[])
     year = local->tm_year + 1900;   // get year since 1900
  
     // print the current date
-    printf("Run Date (D/M/Y) = %02d/%02d/%d\n", day, month, year);
+    // printf("Run Date (D/M/Y) = %02d/%02d/%d\n", day, month, year);
+    
     // print local time
+/*
     if (hours < 12) {    // before midday
         printf("MS Timer Start at %02d:%02d:%02d am\n", hours, minutes, seconds);
     }
     else {    // after midday
         printf("MS Timer Start at %02d:%02d:%02d pm\n", hours - 12, minutes, seconds);
     }
- 
-    printf("--------------------------\n");
+*/
+    printf(GRN("---------------------------") "\n");
     
     clock_t start = clock();
     
@@ -409,13 +415,11 @@ int main(int argc, char *argv[])
         sprr_test(ptr, make_sprr_val(i));
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Finished... Total Elapsed Time in ms: %f\n\n", elapsed);
-    printf("End Time %s", ctime(&now));
-    printf("Done.......\n\n\n");
-/*        return 0;
- */
+    printf(CYN("main () finished... Total Elapsed Time in ms: %f\n\n"), elapsed);
+    //printf("Done at %s", ctime(&now));
+    printf(GRN("Today is " "%s") "",ctime(&now));
+    
 }
-
 
 /* 
 
