@@ -174,10 +174,8 @@ static bool can_read(void *ptr)
     printf("End __volatile__ can_read\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Hitting 0xdeadbeef, Ending can_read\n");
-    printf("Time elapsed for can_read in ms: %f\n\n", elapsed);
-    printf("Hitting 0xdeadbeef in can_write\n");
-    printf("Finished in can_read\n");
+    printf("Hitting 0xdeadbeef in can_read\n");
+    printf("Finished... Time elapsed for can_read in ms: %f\n\n", elapsed);
     if (v == 0xdeadbeef)
         return false;
     return true;
@@ -216,9 +214,8 @@ static bool can_exec(void *ptr)
     printf("Executed uint64_t res = fun_ptr(0)\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Finished... Time elapsed for can_exec in ms: %f\n\n", elapsed);
     printf("Hitting 0xdeadbeef in can_exec\n");
-    printf("Finished in can_exec\n");
+    printf("Finished... Time elapsed in can_exec in ms: %f\n\n", elapsed);
     if (res == 0xdeadbeef)
         return false;
     return true;
