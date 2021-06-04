@@ -33,27 +33,62 @@ REPRO - SIP OFF, ALL M1 SECURITY OFF
 
 LLVM_PROFILE_FILE=default.profraw ./a.out
 ...
-code.c:25:9: runtime error: member access within misaligned address 0x00016d0471b8 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
-0x00016d0471b8: note: pointer points here
- 00 00 00 00  00 00 00 00 00 00 00 00  50 71 04 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
-              ^ 
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior code.c:25:9 in 
-code.c:25:9: runtime error: load of misaligned address 0x00016d0471e8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
-0x00016d0471e8: note: pointer points here
- 00 00 00 00  f0 71 04 6d 01 00 00 00  00 00 ea 02 01 00 00 00  0f 00 00 92 00 00 00 00  00 00 ea 02
-              ^ 
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior code.c:25:9 in 
-code.c:26:9: runtime error: member access within misaligned address 0x00016d0471b8 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
-0x00016d0471b8: note: pointer points here
- 00 00 00 00  00 00 00 00 00 00 00 00  50 71 04 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
-              ^ 
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior code.c:26:9 in 
-code.c:26:9: runtime error: load of misaligned address 0x00016d0471e8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
-0x00016d0471e8: note: pointer points here
- 00 00 00 00  f0 71 04 6d 01 00 00 00  00 00 ea 02 01 00 00 00  0f 00 00 92 00 00 00 00  41 41 41 41
-              ^ 
-SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior code.c:26:9 in 
-
+Start __volatile__ can_read
+ptime.c:32:9: runtime error: member access within misaligned address 0x00016d8eae88 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
+0x00016d8eae88: note: pointer points here
+ 00 00 00 00  00 00 00 00 00 00 00 00  20 ae 8e 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:32:9 in
+ptime.c:32:9: runtime error: load of misaligned address 0x00016d8eaeb8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
+0x00016d8eaeb8: note: pointer points here
+ 00 00 00 00  c0 ae 8e 6d 01 00 00 00  00 80 58 02 01 00 00 00  0f 00 00 92 00 00 00 00  1c 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:32:9 in
+ptime.c:33:9: runtime error: member access within misaligned address 0x00016d8eae88 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
+0x00016d8eae88: note: pointer points here
+ 00 00 00 00  00 00 00 00 00 00 00 00  20 ae 8e 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:33:9 in
+ptime.c:33:9: runtime error: load of misaligned address 0x00016d8eaeb8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
+0x00016d8eaeb8: note: pointer points here
+ 00 00 00 00  c0 ae 8e 6d 01 00 00 00  00 80 58 02 01 00 00 00  0f 00 00 92 00 00 00 00  ef be ad de
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:33:9 in
+End __volatile__ can_read
+...
+Hitting uint64_t res = fun_ptr(0)
+ptime.c:22:9: runtime error: member access within misaligned address 0x00016d8eae88 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
+0x00016d8eae88: note: pointer points here
+ 00 00 00 00  00 00 00 00 00 00 00 00  20 ae 8e 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:22:9 in
+ptime.c:22:9: runtime error: load of misaligned address 0x00016d8eaeb8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
+0x00016d8eaeb8: note: pointer points here
+ 00 00 00 00  c0 ae 8e 6d 01 00 00 00  00 c0 58 02 01 00 00 00  07 00 00 82 00 00 00 00  ef be ad de
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:22:9 in
+ptime.c:23:38: runtime error: member access within misaligned address 0x00016d8eae88 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
+0x00016d8eae88: note: pointer points here
+ 00 00 00 00  00 00 00 00 00 00 00 00  20 ae 8e 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:23:38 in
+ptime.c:23:38: runtime error: load of misaligned address 0x00016d8eaeb8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
+0x00016d8eaeb8: note: pointer points here
+ 00 00 00 00  c0 ae 8e 6d 01 00 00 00  00 c0 58 02 01 00 00 00  07 00 00 82 00 00 00 00  ef be ad de
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:23:38 in
+ptime.c:23:9: runtime error: member access within misaligned address 0x00016d8eae88 for type 'ucontext_t' (aka 'struct __darwin_ucontext'), which requires 16 byte alignment
+0x00016d8eae88: note: pointer points here
+ 00 00 00 00  00 00 00 00 00 00 00 00  20 ae 8e 6d 01 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:23:9 in
+ptime.c:23:9: runtime error: load of misaligned address 0x00016d8eaeb8 for type 'struct __darwin_mcontext64 *', which requires 16 byte alignment
+0x00016d8eaeb8: note: pointer points here
+ 00 00 00 00  c0 ae 8e 6d 01 00 00 00  00 c0 58 02 01 00 00 00  07 00 00 82 00 00 00 00  ef be ad de
+              ^
+SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior ptime.c:23:9 in
+Executed uint64_t res = fun_ptr(0)
+...
 Thread 0 Crashed:: Dispatch queue: com.apple.main-thread
 0   dyld                          	0x0000000102ea4000 0x102ea4000 + 0
 1   code				                  	0x0000000102dbbcc4 sprr_test + 80 (code.c:92)
