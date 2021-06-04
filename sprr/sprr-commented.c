@@ -145,15 +145,16 @@ static uint64_t read_sprr_perm(void)
 {
     printf("Jumped to read_sprr_perm\n");
     clock_t start = clock();
+    printf("Hitting read_sprr_perm at uint64_t v;\n");
     uint64_t v;
     printf("Start __volatile__ read_sprr_perm\n");
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
     printf("End __volatile__ read_sprr_perm\n");
+    printf("End read_sprr_perm\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-    printf("End read_sprr_perm\n");
     printf("Finished read_sprr_perm ... Time elapsed for read_sprr_perm in ms: %f\n\n", elapsed);
     return v;
 }
@@ -173,7 +174,7 @@ static bool can_read(void *ptr)
     printf("End __volatile__ can_read\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Hitting deadbeef, Ending can_read\n");
+        printf("Hitting 0xdeadbeef, Ending can_read\n");
     printf("Time elapsed for can_read in ms: %f\n\n", elapsed);
     printf("Hitting 0xdeadbeef in can_write\n");
     printf("Finished in can_read\n");
@@ -198,8 +199,7 @@ static bool can_write(void *ptr)
     printf("Hitting 0xdeadbeef in can_write\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for can_write in ms: %f\n\n", elapsed);
-    printf("Finished in can_write\n");
+        printf("Finished... Time elapsed for can_write in ms: %f\n\n", elapsed);
     if (v == 0xdeadbeef)
         return false;
     return true;
@@ -233,7 +233,7 @@ static void sprr_test(void *ptr, uint64_t v)
     printf("Completed at sprr_test after uint64_t a, b\n");
     printf("Now at sprr_test before a = read_sprr_perm()\n\n");
     a = read_sprr_perm();
-    printf("Completed at sprr_test following a = read_sprr_perm()\n");
+    printf("Completed at sprr_test following a = read_sprr_perm()\n\n");
     write_sprr_perm(v);
     printf("Completed at sprr_test following write_sprr_perm(v)\n\n");
     printf("Now at sprr_test before b = read_sprr_perm()\n\n");
@@ -244,7 +244,7 @@ static void sprr_test(void *ptr, uint64_t v)
            can_exec(ptr) ? 'x' : '-');
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Finished.... Time elapsed for sprr_test in ms: %f\n", elapsed);
+        printf("Finished.... Time elapsed for sprr_test in ms: %f\n\n", elapsed);
 /*        printf("----begin added printfs-----\n\r"); 
         printf("ptr: %u\n", ptr);
         printf("a:%llx\n", a);
@@ -372,6 +372,7 @@ int main(int argc, char *argv[])
 /*        return 0;
  */
 }
+
 
 
 /* 
