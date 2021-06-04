@@ -1,4 +1,4 @@
-### Fuzzing M1 Apple Silicon SPRR Permission Configuration Register (EL0) SPRR_PERM_EL0 s3_6_c15_c1_5 + Other M1 Register Fuzzing Code
+### M1 Apple Silicon SPRR Permission Configuration Register (EL0) SPRR_PERM_EL0 s3_6_c15_c1_5 Check & Other M1 Register Fuzzing Code
 
 On May 6, 2021 a Post by Sven Peter about Apple Silicon Hardware Secrets: SPRR and Guarded Exception Levels (GXF) at URL https://blog.svenpeter.dev/posts/m1_sprr_gxf/ appeared in my Timeline. I had just been reviewing https://github.com/AsahiLinux/m1n1/blob/main/tools/apple_regs.json.
 
