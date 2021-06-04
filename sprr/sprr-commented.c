@@ -93,7 +93,6 @@ SYS_SPRR_PERM_EL0 sys_reg(3, 6, 15, 1, 5)
 SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 
 */
-
 #define _XOPEN_SOURCE
 #include <signal.h>
 #include <stdbool.h>
@@ -128,36 +127,41 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
 
 static void write_sprr_perm(uint64_t v)
 {
-    printf("Start write_sprr_perm\n");
+    printf("Jumped to write_sprr_perm\n");
     clock_t start = clock();
+    printf("Start __volatile__ write_sprr_perm\n");
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
                          "isb sy\n" ::"r"(v)
                          :);
-    printf("End write_sprr_perm\n");
+    printf("End __volatile__ write_sprr_perm\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for write_sprr_perm in ms: %f\n\n", elapsed);
+        printf("End write_sprr_perm\n");
+        printf("Finished write_sprr_perm ... Time elapsed for write_sprr_perm in ms: %f\n\n", elapsed);
 }
 
 static uint64_t read_sprr_perm(void)
 {
-    printf("Start read_sprr_perm\n");
+    printf("Jumped to read_sprr_perm\n");
     clock_t start = clock();
     uint64_t v;
+    printf("Start __volatile__ read_sprr_perm\n");
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
-    printf("End read_sprr_perm\n");
+    printf("End __volatile__ read_sprr_perm\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for read_sprr_perm in ms: %f\n\n", elapsed);
+    printf("End read_sprr_perm\n");
+    printf("Finished read_sprr_perm ... Time elapsed for read_sprr_perm in ms: %f\n\n", elapsed);
     return v;
 }
 
 static bool can_read(void *ptr)
 {
-    printf("Start can_read\n");
+    printf("Jumped to can_read\n");
     clock_t start = clock();
+    printf("Hitting can_read at uint64_t v = 0\n");
     uint64_t v = 0;
     printf("Start __volatile__ can_read\n");
     __asm__ __volatile__("ldr x0, [%0]\n"
@@ -165,10 +169,13 @@ static bool can_read(void *ptr)
                          : "=r"(v)
                          : "r"(ptr)
                          : "memory", "x0");
-    printf("Hitting deadbeef, Ending can_read\n");
+    printf("End __volatile__ can_read\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for can_read in ms: %f\n\n", elapsed);
+        printf("Hitting deadbeef, Ending can_read\n");
+    printf("Time elapsed for can_read in ms: %f\n\n", elapsed);
+    printf("Hitting 0xdeadbeef in can_write\n");
+    printf("Finished in can_read\n");
     if (v == 0xdeadbeef)
         return false;
     return true;
@@ -176,8 +183,9 @@ static bool can_read(void *ptr)
 
 static bool can_write(void *ptr)
 {
-    printf("Starting can_write\n");
+    printf("Jumped to can_write\n");
     clock_t start = clock();
+    printf("Hitting can_write at uint64_t v = 0\n");
     uint64_t v = 0;
     printf("Start __volatile__ can_write\n");
     __asm__ __volatile__("str x0, [%0]\n"
@@ -185,10 +193,13 @@ static bool can_write(void *ptr)
                          : "=r"(v)
                          : "r"(ptr + 8)
                          : "memory", "x0");
+    printf("End __volatile__ can_write\n");
     printf("Hitting deadbeef, Ending can_write\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
         printf("Time elapsed for can_write in ms: %f\n\n", elapsed);
+    printf("Hitting 0xdeadbeef in can_write\n");
+    printf("Finished in can_write\n");
     if (v == 0xdeadbeef)
         return false;
     return true;
@@ -196,13 +207,18 @@ static bool can_write(void *ptr)
 
 static bool can_exec(void *ptr)
 {
-    printf("Now in can_exec\n");
+    printf("Jumped to can_exec\n");
     clock_t start = clock();
+    printf("Hitting can_exec at uint64_t (*fun_ptr)(uint64_t) = ptr\n");
     uint64_t (*fun_ptr)(uint64_t) = ptr;
+    printf("Hitting uint64_t res = fun_ptr(0)\n");
     uint64_t res = fun_ptr(0);
+    printf("Executed uint64_t res = fun_ptr(0)\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for can_exec in ms: %f\n\n", elapsed);
+        printf("Finished... Time elapsed for can_exec in ms: %f\n\n", elapsed);
+    printf("Hitting 0xdeadbeef in can_exec\n");
+    printf("Finished in can_exec\n");
     if (res == 0xdeadbeef)
         return false;
     return true;
@@ -210,21 +226,25 @@ static bool can_exec(void *ptr)
 
 static void sprr_test(void *ptr, uint64_t v)
 {
-    printf("Now in sprr_test\n");
+    printf("Jumped to sprr_test\n");
     clock_t start = clock();
+    printf("Now at sprr_test before uint64_t a, b\n");
     uint64_t a, b;
+    printf("Completed at sprr_test after uint64_t a, b\n");
+    printf("Now at sprr_test before a = read_sprr_perm()\n\n");
     a = read_sprr_perm();
-    printf("after a = read_sprr_perm a:%llx\n", a);
+    printf("Completed at sprr_test following a = read_sprr_perm()");
     write_sprr_perm(v);
-    printf("after write_sprr_perm v:%llx\n", v);
+    printf("Completed at sprr_test following write_sprr_perm(v)\n\n");
+    printf("Now at sprr_test before b = read_sprr_perm()\n\n");
     b = read_sprr_perm();
-    printf("after b = write_sprr_perm b:%llx\n\n", b);
+    printf("Finished at sprr_test after b = read_sprr_perm()\n\n");
     
     printf("Register Value:%llx: %c%c%c\n", b, can_read(ptr) ? 'r' : '-', can_write(ptr) ? 'w' : '-',
            can_exec(ptr) ? 'x' : '-');
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for sprr_test in ms: %f\n\n", elapsed);
+        printf("Finished.... Time elapsed for sprr_test in ms: %f\n", elapsed);
 /*        printf("----begin added printfs-----\n\r"); 
         printf("ptr: %u\n", ptr);
         printf("a:%llx\n", a);
@@ -241,37 +261,41 @@ static void sprr_test(void *ptr, uint64_t v)
 
 static uint64_t make_sprr_val(uint8_t nibble)
 {
-    printf("Now in make_sprr_value\n");
+    printf("Jumped to make_sprr_val\n");
     clock_t start = clock();
+    printf("Hitting make_sprr_val at uint64_t res = 0\n");
     uint64_t res = 0;
-    printf("Now at make_sprr_value at int i = 0; i < 16; ++i \n");
+    printf("Hitting make_sprr_val at int i = 0; i < 16; ++i \n");
     for (int i = 0; i < 16; ++i)
         res |= ((uint64_t)nibble) << (4 * i);
+    printf("End of make_sprr_val\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed for make_sprr_value in ms: %f\n\n", elapsed);
+        printf("Finished... Time elapsed for make_sprr_val in ms: %f\n\n", elapsed);
     return res;
 }
 
 uint64_t read_sprr(void)
 {
-    printf("Now in read_sprr\n");
+    printf("Jumped to read_sprr\n");
     clock_t start = clock();
     uint64_t v;
+    printf("Start __volatile__ read_sprr\n");
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
+    printf("Finished in __volatile__ read_sprr\n");
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Time elapsed in read_sprr for ms: %f\n\n", elapsed);
+        printf("Finished... Time elapsed in read_sprr for ms: %f\n\n", elapsed);
     return v;
 }
 
 int main(int argc, char *argv[])
 {
+    printf("---------------------------------------\n");
     printf("Start inside Main\n");
-    
-    
+    printf("---------------------------------------\n");
     
     // variables to store the date and time components
     int hours, minutes, seconds, day, month, year;
@@ -300,7 +324,7 @@ int main(int argc, char *argv[])
     year = local->tm_year + 1900;   // get year since 1900
  
     // print the current date
-    printf("Run Date = %02d/%02d/%d\n\n", day, month, year);
+    printf("Run Date (D/M/Y) = %02d/%02d/%d\n", day, month, year);
     // print local time
     if (hours < 12) {    // before midday
         printf("MS Timer Start at %02d:%02d:%02d am\n", hours, minutes, seconds);
@@ -309,45 +333,45 @@ int main(int argc, char *argv[])
         printf("MS Timer Start at %02d:%02d:%02d pm\n", hours - 12, minutes, seconds);
     }
  
-
     printf("--------------------------\n");
     
     clock_t start = clock();
     
     (void)argc;
     (void)argv;
-    printf("Now hitting struct sigaction\n");
+    printf("Now hitting main() struct sigaction\n");
     struct sigaction sa;
-    printf("Now hitting sigfillset(&sa.sa_mask)\n");
+    printf("Now hitting main() sigfillset(&sa.sa_mask)\n");
     sigfillset(&sa.sa_mask);
-    printf("Now hitting sa.sa_sigaction = bus_handler\n");
+    printf("Now hitting main() sa.sa_sigaction = bus_handler\n");
     sa.sa_sigaction = bus_handler;
-    printf("Now hitting sa.sa_flags = SA_RESTART | SA_SIGINFO\n");
+    printf("Now hitting main() sa.sa_flags = SA_RESTART | SA_SIGINFO\n");
     sa.sa_flags = SA_RESTART | SA_SIGINFO;
-    printf("Now hitting sigaction(SIGBUS, &sa, 0)\n");
+    printf("Now hitting main() sigaction SIGBUS, &sa, 0\n");
     sigaction(SIGBUS, &sa, 0);
-    printf("Now hitting sa.sa_sigaction = sev_handler\n");
+    printf("Now hitting main() sa.sa_sigaction = sev_handler\n");
     sa.sa_sigaction = sev_handler;
-    printf("Now hitting sigaction(SIGSEGV, &sa\n");
+    printf("Now hitting main() sigaction SIGSEGV, &sa\n");
     sigaction(SIGSEGV, &sa, 0);
-    printf("Now hitting uint32_t *ptr = mmap(NULL, 0x4000, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0)\n");
+    printf("Now hitting main() uint32_t *ptr = mmap(NULL, 0x4000, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0)\n\n");
     uint32_t *ptr = mmap(NULL, 0x4000, PROT_READ | PROT_WRITE | PROT_EXEC,
                          MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
+    printf("Now hitting main() write_sprr_perm(0x3333333333333333)\n\n");
     write_sprr_perm(0x3333333333333333);
-    printf("Now in main at RET ptr[0] 0xd65f03c0\n");
+    printf("Just executed main() write_sprr_perm(0x3333333333333333)\n\n");
+    printf("Now in main() hitting ptr[0] 0xd65f03c0 RET\n\n");
     ptr[0] = 0xd65f03c0; // ret
-    printf("Hitting for (int i = 0; i < 4; ++i)\n");
+    printf("Now in main() hitting for (int i = 0; i < 4; ++i)\n\n");
     for (int i = 0; i < 4; ++i)
         sprr_test(ptr, make_sprr_val(i));
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
-        printf("Total Elapsed Time in ms: %f\n\n", elapsed);
-    printf("Done.......\n");
+        printf("Finished... Total Elapsed Time in ms: %f\n\n", elapsed);
     printf("End Time %s", ctime(&now));
+    printf("Done.......\n\n\n");
 /*        return 0;
  */
 }
-
 
 
 /* 
