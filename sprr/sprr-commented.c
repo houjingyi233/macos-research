@@ -130,7 +130,7 @@ static void write_sprr_perm(uint64_t v)
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
                          "isb sy\n" ::"r"(v)
                          :);
-    printf("End write_sprr_perm\n");
+    printf("End write_sprr_perm\n\n");
 }
 
 static uint64_t read_sprr_perm(void)
@@ -140,53 +140,50 @@ static uint64_t read_sprr_perm(void)
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
+    printf("End read_sprr_perm\n\n");
     return v;
-    printf("End read_sprr_perm\n");
 }
 
 static bool can_read(void *ptr)
 {
     printf("Start can_read\n");
     uint64_t v = 0;
-
+    printf("Start __volatile__ can_read\n");
     __asm__ __volatile__("ldr x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
                          : "r"(ptr)
                          : "memory", "x0");
-
+    printf("Hitting deadbeef, Ending can_read\n\n");
     if (v == 0xdeadbeef)
         return false;
     return true;
-    printf("End can_read\n");
 }
 
 static bool can_write(void *ptr)
 {
-    printf("Start can_write\n");
+    printf("Starting can_write\n");
     uint64_t v = 0;
-
+    printf("Start __volatile__ can_write\n");
     __asm__ __volatile__("str x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
-                         : "r"(ptr + 4)
+                         : "r"(ptr + 8)
                          : "memory", "x0");
-
+    printf("Hitting deadbeef, Ending can_read\n\n");
     if (v == 0xdeadbeef)
         return false;
     return true;
-    printf("End can_write\n");
 }
 
 static bool can_exec(void *ptr)
 {
-    printf("Start can_exec\n");
+    printf("Now in can exec\n");
     uint64_t (*fun_ptr)(uint64_t) = ptr;
     uint64_t res = fun_ptr(0);
     if (res == 0xdeadbeef)
         return false;
     return true;
-    printf("End can_exec\n");
 }
 
 static void sprr_test(void *ptr, uint64_t v)
@@ -196,47 +193,29 @@ static void sprr_test(void *ptr, uint64_t v)
     a = read_sprr_perm();
     printf("after a = read_sprr_perm a:%llx\n", a);
     write_sprr_perm(v);
-    printf("after write_sprr_perm v:%llx\n", v);
+    printf("after write_sprr_perm(v) v:%llx\n", v);
     b = read_sprr_perm();
     printf("after b = write_sprr_perm b:%llx\n", b);
     
     printf("Final Value:%llx: %c%c%c\n", b, can_read(ptr) ? 'r' : '-', can_write(ptr) ? 'w' : '-',
            can_exec(ptr) ? 'x' : '-');
-    printf("End of  sprr_test..........\n");
-
-/*        printf("----begin added printfs-----\n\r"); 
-        printf("ptr: %u\n", ptr);
-        printf("a:%llx\n", a);
-        printf("v:%llx\n", v);
-        printf("memory:%llu\n", "memory");
-        printf("bv %02d: %016llx\n", b, v);
-        printf("va:%c%c%c\n %u\n", v, a);
-        printf("b:%c\n", b);
-        printf("a:%llx\n", a);
-        printf("----end added printfs-----\n\r");
-*/
-/*    printf("bit %02d: %016llx\n", i, read_sprr()); */
 }
 
 static uint64_t make_sprr_val(uint8_t nibble)
 {
-    printf("Start make_sprr_test\n");
     uint64_t res = 0;
     for (int i = 0; i < 16; ++i)
         res |= ((uint64_t)nibble) << (4 * i);
     return res;
-    printf("End make_sprr_test\n");
 }
 
 uint64_t read_sprr(void)
 {
-    printf("Start read_sprr\n");
     uint64_t v;
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
                          : "=r"(v)::"memory");
     return v;
-    printf("End read_sprr\n");
 }
 
 int main(int argc, char *argv[])
@@ -264,7 +243,6 @@ int main(int argc, char *argv[])
     write_sprr_perm(0x3333333333333333);
     printf("Now in main at RET ptr[0] 0xd65f03c0\n");
     ptr[0] = 0xd65f03c0; // ret
-    printf("ptr %p\n", ptr);
     printf("Hitting for (int i = 0; i < 4; ++i)\n");
     for (int i = 0; i < 4; ++i)
         sprr_test(ptr, make_sprr_val(i));
