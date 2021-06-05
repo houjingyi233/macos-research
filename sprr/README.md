@@ -496,3 +496,5 @@ Uncore Performance Monitor Counter 14	UPMC14_EL1	s3_7_c15_c6_5	64
 Uncore Performance Monitor Counter 15	UPMC15_EL1	s3_7_c15_c7_5	64	
 +	Hypervisor Auxiliary Control Register	HACR_EL2	s3_4_c1_c1_7	64	
 ```
+
+Register S3_5_c15_c10_1 is from the M1RACLES Bug
