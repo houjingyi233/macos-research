@@ -334,18 +334,21 @@ uint64_t read_sprr(void)
 
 int main(int argc, char *argv[])
 {
-    printf(GRN("---------------------------") "\n");
-    printf(CYN("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check in main()") "\n");
-    printf(GRN("---------------------------") "\n");
-    printf(HWHT("System Hardware & Software") "\n");
+    //    printf("Program name is: %s\n", argv[0]);
+    printf(RED("---------------------------") "\n");
+    printf(CYN("Original Code by: Sven Peter @svenpeter42 | Modified by David Hoyt @h02332\n"));
+    printf(RED("---------------------------") "\n");
+    printf("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s\n", argv[0]);
+    printf(RED("---------------------------") "\n");
+    printf("Writing to logfile %s.log\n", argv[0]);
+    printf(RED("---------------------------") "\n");
+    printf(GRN("System Hardware & Software") "\n");
     system("sysctl machdep.cpu.brand_string\n");
     system("uname -a\n");
-    printf(GRN("---------------------------") "\n");
-    printf("Writing to Syslogd at LOG_NOTICE of (EL0) S3_6_c15_c1_5 check\n");
-    printf(GRN("---------------------------") "\n");
+    printf(RED("---------------------------") "\n");
     setlogmask (LOG_UPTO (LOG_NOTICE));
     openlog ("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-    syslog (LOG_NOTICE, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check");
+    syslog (LOG_NOTICE, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s", argv[0]);
     closelog ();
     
     // variables to store the date and time components
@@ -388,7 +391,7 @@ int main(int argc, char *argv[])
     }
 */
     printf(GRN("---------------------------") "\n");
-    printf("Writing to logfile ptime.log with start of (EL0) S3_6_c15_c1_5 check\n");
+    printf("Writing to Syslogd at LOG_NOTICE of (EL0) S3_6_c15_c1_5 check\n");
     FILE *f;
     f = fopen("ptime.log", "a+"); // a+ (create + append) option will allow appending which is useful in a log file
     if (f == NULL) { /* Something is wrong   */}
@@ -430,7 +433,6 @@ int main(int argc, char *argv[])
     printf(CYN("M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check ended at " "%s") "",ctime(&now));
     
 }
-
 /* 
 
 RETURN VALUE = 0xd65f03c0
