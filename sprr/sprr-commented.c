@@ -137,6 +137,7 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #define YEL(string)"\e[0;33m" string "\x1b[0m"
 #define CYN(string)"\e[0;36m" string "\x1b[0m"
 #define HWHT(string)"\e[0;97m" string "\x1b[0m"
+#define NORMAL_COLOR(string)"\x1B[0m" string "\x1b[0m"
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -148,36 +149,40 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #include <stdlib.h>
 #include <time.h>
 #include <syslog.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <limits.h>
 
 static void sev_handler(int signo, siginfo_t *info, void *cx_)
 {
-    printf("Now in sev_handler\n");
+//    printf("Now in sev_handler\n");
     (void)signo;
     (void)info;
-    printf("Now in sev_handler at ucontext_t *cx = cx_;\n");
+//    printf("Now in sev_handler at ucontext_t *cx = cx_;\n");
     ucontext_t *cx = cx_;
-    printf("Now in sev_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
+//    printf("Now in sev_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
-    printf("Now in sev_handler at cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;\n");
+//    printf("Now in sev_handler at cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;\n");
     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
 }
 
 static void bus_handler(int signo, siginfo_t *info, void *cx_)
 {
-    printf("Now in bus_handler\n");
+//    printf("Now in bus_handler\n");
     (void)signo;
     (void)info;
-    printf("Now in bus_handler at ucontext_t *cx = cx_;\n");
+//    printf("Now in bus_handler at ucontext_t *cx = cx_;\n");
     ucontext_t *cx = cx_;
-    printf("Now in bus_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
+//    printf("Now in bus_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
-    printf("Now in bus_handler at cx->uc_mcontext->__ss.__pc += 4;\n");
+//    printf("Now in bus_handler at cx->uc_mcontext->__ss.__pc += 4;\n");
     cx->uc_mcontext->__ss.__pc += 4;
 }
 
 static void write_sprr_perm(uint64_t v)
 {
-    printf("Jumped to write_sprr_perm... Step 4...\n");
+    printf("Jumped to write_sprr_perm... Step 1...\n");
     clock_t start = clock();
     printf("Start __volatile__ write_sprr_perm\n");
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
@@ -192,7 +197,7 @@ static void write_sprr_perm(uint64_t v)
 
 static uint64_t read_sprr_perm(void)
 {
-    printf("Jumped to read_sprr_perm... Step 3...\n");
+    printf("Jumped to read_sprr_perm... Step 4...\n");
     clock_t start = clock();
     printf("Hitting read_sprr_perm at uint64_t v;\n");
     uint64_t v;
@@ -272,7 +277,7 @@ static bool can_exec(void *ptr)
 
 static void sprr_test(void *ptr, uint64_t v)
 {
-    printf("Jumped to sprr_test.. Step 2...\n");
+    printf("Jumped to sprr_test.. Step 3...\n");
     clock_t start = clock();
     printf("Now at sprr_test before uint64_t a, b\n");
     uint64_t a, b;
@@ -291,23 +296,11 @@ static void sprr_test(void *ptr, uint64_t v)
     clock_t stop = clock();
         double elapsed = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
         printf("Finished.... Time elapsed for sprr_test in ms: %f\n\n", elapsed);
-/*        printf("----begin added printfs-----\n\r"); 
-        printf("ptr: %u\n", ptr);
-        printf("a:%llx\n", a);
-        printf("v:%llx\n", v);
-        printf("memory:%llu\n", "memory");
-        printf("bv %02d: %016llx\n", b, v);
-        printf("va:%c%c%c\n %u\n", v, a);
-        printf("b:%c\n", b);
-        printf("a:%llx\n", a);
-        printf("----end added printfs-----\n\r");
-*/
-/*    printf("bit %02d: %016llx\n", i, read_sprr()); */
 }
 
 static uint64_t make_sprr_val(uint8_t nibble)
 {
-    printf("Jumped to make_sprr_val.. Step 1...\n");
+    printf("Jumped to make_sprr_val.. Step 2...\n");
     clock_t start = clock();
     printf("Hitting make_sprr_val at uint64_t res = 0\n");
     uint64_t res = 0;
@@ -323,10 +316,12 @@ static uint64_t make_sprr_val(uint8_t nibble)
 
 uint64_t read_sprr(void)
 {
+//    This is now a void() and returns nothing to see here.. thank you .. drive thru..
 //    printf("Jumped to read_sprr\n");
 //    clock_t start = clock();
 
     uint64_t v;
+    
 //    printf("Start __volatile__ read_sprr\n");
     __asm__ __volatile__("isb sy\n"
                          "mrs %0, S3_6_c15_c1_5\n"
@@ -341,22 +336,28 @@ uint64_t read_sprr(void)
 int main(int argc, char *argv[])
 {
     //    printf("Program name is: %s\n", argv[0]);
-    printf(RED("---------------------------") "\n");
+    printf(RED("------------------------------------------------------------------------------") "\n");
     printf(CYN("Original Code by: Sven Peter @svenpeter42 | Modified by David Hoyt @h02332\n"));
-    printf(RED("---------------------------") "\n");
-    printf("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s\n", argv[0]);
-    printf(RED("---------------------------") "\n");
-    printf("Writing to logfile %s.log\n", argv[0]);
-    printf(RED("---------------------------") "\n");
-    printf(GRN("System Hardware & Software") "\n");
-    system("sysctl machdep.cpu.brand_string\n");
+    printf(RED("------------------------------------------------------------------------------") "\n");
+        char cwd[PATH_MAX];
+        getcwd(cwd, sizeof(cwd));
+    printf("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s in Current working dir: %s\n", argv[0], cwd);
+    printf("Writing to Logfile %s.log for M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s in Current working dir: %s\n", argv[0], argv[0], cwd);
+    printf("Writing to Syslogd at LOG_NOTICE for M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s in Current working dir: %s\n", argv[0], cwd);
+    FILE *f;
+    f = fopen("ptime.log", "a+"); // a+ (create + append) option will allow appending which is useful in a log file
+    if (f == NULL) { /* Something is wrong   */}
+    fprintf(f, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check\n");
+//    printf(RED("------------------------------------------------------------------------------") "\n");
+    printf(HWHT("\nSystem Software & Hardware:\n"));
     system("uname -a\n");
-    printf(RED("---------------------------") "\n");
+    system("sysctl machdep.cpu.brand_string\n");
+//    printf(RED("---------------------------") "\n");
     setlogmask (LOG_UPTO (LOG_NOTICE));
     openlog ("Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
     syslog (LOG_NOTICE, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check as: %s", argv[0]);
     closelog ();
-    
+//    printf(RED("---------------------------") "\n");
     // variables to store the date and time components
     int hours, minutes, seconds, day, month, year;
  
@@ -366,11 +367,7 @@ int main(int argc, char *argv[])
     // Obtain current time
     // `time()` returns the current time of the system as a `time_t` value
     time(&now);
- 
-    // Convert to local time format and print to stdout
-    // printf("Today is %s\n", ctime(&now));
-    printf(GRN("Today is " "%s") "",ctime(&now));
- 
+
     // localtime converts a `time_t` value to calendar time and
     // returns a pointer to a `tm` structure with its members
     // filled with the corresponding values
@@ -396,13 +393,14 @@ int main(int argc, char *argv[])
         printf("MS Timer Start at %02d:%02d:%02d pm\n", hours - 12, minutes, seconds);
     }
 */
-    printf(GRN("---------------------------") "\n");
-    printf("Writing to Syslogd at LOG_NOTICE of (EL0) S3_6_c15_c1_5 check\n");
-    FILE *f;
-    f = fopen("ptime.log", "a+"); // a+ (create + append) option will allow appending which is useful in a log file
-    if (f == NULL) { /* Something is wrong   */}
-    fprintf(f, "Starting M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check\n");
-    printf(GRN("---------------------------") "\n");
+//    printf(RED("---------------------------") "\n");
+//    printf(RED("---------------------------") "\n");
+    
+       // Convert to local time format and print to stdout
+       // printf("Today is %s\n", ctime(&now));
+//    printf(RED("------------------------------------------------------------------------------") "\n");
+    printf(GRN("\nTimestamp: " "%s\n") "",ctime(&now));
+//    printf(RED("------------------------------------------------------------------------------") "\n");
     clock_t start = clock();
     
     (void)argc;
@@ -437,8 +435,29 @@ int main(int argc, char *argv[])
     printf(GRN("main () finished... Total Elapsed Time in ms: %f\n\n"), elapsed);
     //printf("Done at %s", ctime(&now));
     printf(CYN("M1 SPRR Permission Configuration Register (EL0) S3_6_c15_c1_5 check ended at " "%s") "",ctime(&now));
-    
-}
+/*
+ char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+        return 1;
+    }
+ return(0);
+ */
+/*
+    DIR *dr;
+    struct dirent *en;
+    dr = opendir("."); //open all or present directory
+    if (dr) {
+       while ((en = readdir(dr)) != NULL) {
+          printf("%s\n", en->d_name); //print all directory name
+       }
+       closedir(dr); //close all directory
+    }
+    return(0);
+*/
+ }
 /* 
 
 RETURN VALUE = 0xd65f03c0
