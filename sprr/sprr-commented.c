@@ -151,21 +151,27 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 
 static void sev_handler(int signo, siginfo_t *info, void *cx_)
 {
-/*    printf("Now in sev_handler)\n"); */
+    printf("Now in sev_handler\n");
     (void)signo;
     (void)info;
+    printf("Now in sev_handler at ucontext_t *cx = cx_;\n");
     ucontext_t *cx = cx_;
+    printf("Now in sev_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
+    printf("Now in sev_handler at cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;\n");
     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
 }
 
 static void bus_handler(int signo, siginfo_t *info, void *cx_)
 {
-/*    printf("Now in bus_handler\n"); */
+    printf("Now in bus_handler\n");
     (void)signo;
     (void)info;
+    printf("Now in bus_handler at ucontext_t *cx = cx_;\n");
     ucontext_t *cx = cx_;
+    printf("Now in bus_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
+    printf("Now in bus_handler at cx->uc_mcontext->__ss.__pc += 4;\n");
     cx->uc_mcontext->__ss.__pc += 4;
 }
 
