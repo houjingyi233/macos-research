@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     uint32_t *ptr = mmap(NULL, 0x4000, PROT_READ | PROT_WRITE | PROT_EXEC,
                          MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
     write_sprr_perm(0x3333333333333333);
-    ptr[0] = 0xd65f03c0; // ret
+    ptr[0] = 0xffc003ff; // ret
 
     for (int i = 0; i < 4; ++i)
         sprr_test(ptr, make_sprr_val(i));

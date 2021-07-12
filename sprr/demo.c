@@ -23,7 +23,8 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
     (void)info;
     ucontext_t *cx = cx_;
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
-    cx->uc_mcontext->__ss.__pc += 4;
+/* Note this pc += 8; for the Demo!
+    cx->uc_mcontext->__ss.__pc += 8;
 }
 
 static void write_sprr_perm(uint64_t v)
