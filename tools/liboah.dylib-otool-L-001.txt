@@ -1,0 +1,294 @@
+/Users/xss/Library/Developer/Xcode/macOS DeviceSupport/10.16/usr/lib/liboah.dylib:
+Load command 0
+      cmd LC_SEGMENT_64
+  cmdsize 632
+  segname __TEXT
+   vmaddr 0x00007fff2a624000
+   vmsize 0x0000000000008000
+  fileoff 0
+ filesize 32768
+  maxprot 0x00000005
+ initprot 0x00000005
+   nsects 7
+    flags 0x0
+Section
+  sectname __text
+   segname __TEXT
+      addr 0x00007fff2a624f00
+      size 0x0000000000005d9a
+    offset 3840
+     align 2^4 (16)
+    reloff 0
+    nreloc 0
+     flags 0x80000400
+ reserved1 0
+ reserved2 0
+Section
+  sectname __stubs
+   segname __TEXT
+      addr 0x00007fff2a62ac9a
+      size 0x000000000000015c
+    offset 27802
+     align 2^1 (2)
+    reloff 0
+    nreloc 0
+     flags 0x80000408
+ reserved1 0 (index into indirect symbol table)
+ reserved2 6 (size of stubs)
+Section
+  sectname __stub_helper
+   segname __TEXT
+      addr 0x00007fff2a62adf8
+      size 0x0000000000000240
+    offset 28152
+     align 2^2 (4)
+    reloff 0
+    nreloc 0
+     flags 0x80000400
+ reserved1 0
+ reserved2 0
+Section
+  sectname __const
+   segname __TEXT
+      addr 0x00007fff2a62b040
+      size 0x00000000000000a0
+    offset 28736
+     align 2^4 (16)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __cstring
+   segname __TEXT
+      addr 0x00007fff2a62b0e0
+      size 0x0000000000000d9f
+    offset 28896
+     align 2^0 (1)
+    reloff 0
+    nreloc 0
+     flags 0x00000002
+ reserved1 0
+ reserved2 0
+Section
+  sectname __unwind_info
+   segname __TEXT
+      addr 0x00007fff2a62be80
+      size 0x0000000000000120
+    offset 32384
+     align 2^2 (4)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __eh_frame
+   segname __TEXT
+      addr 0x00007fff2a62bfa0
+      size 0x0000000000000058
+    offset 32672
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Load command 1
+      cmd LC_SEGMENT_64
+  cmdsize 312
+  segname __DATA_CONST
+   vmaddr 0x00007fff878481b0
+   vmsize 0x00000000000002b0
+  fileoff 32768
+ filesize 688
+  maxprot 0x00000003
+ initprot 0x00000003
+   nsects 3
+    flags 0x0
+Section
+  sectname __got
+   segname __DATA_CONST
+      addr 0x00007fff878481b0
+      size 0x0000000000000030
+    offset 32768
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000006
+ reserved1 58 (index into indirect symbol table)
+ reserved2 0
+Section
+  sectname __la_symbol_ptr
+   segname __DATA_CONST
+      addr 0x00007fff878481e0
+      size 0x00000000000001c0
+    offset 32816
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000007
+ reserved1 64 (index into indirect symbol table)
+ reserved2 0
+Section
+  sectname __const
+   segname __DATA_CONST
+      addr 0x00007fff878483a0
+      size 0x00000000000000c0
+    offset 33264
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Load command 2
+      cmd LC_SEGMENT_64
+  cmdsize 312
+  segname __DATA
+   vmaddr 0x00007fff81167138
+   vmsize 0x0000000000000020
+  fileoff 33456
+ filesize 32
+  maxprot 0x00000003
+ initprot 0x00000003
+   nsects 3
+    flags 0x0
+Section
+  sectname __la_weak_ptr
+   segname __DATA
+      addr 0x00007fff81167138
+      size 0x0000000000000010
+    offset 33456
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000007
+ reserved1 120 (index into indirect symbol table)
+ reserved2 0
+Section
+  sectname __data
+   segname __DATA
+      addr 0x00007fff81167148
+      size 0x0000000000000008
+    offset 33472
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __common
+   segname __DATA
+      addr 0x00007fff81167150
+      size 0x0000000000000008
+    offset 0
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000001
+ reserved1 0
+ reserved2 0
+Load command 3
+      cmd LC_SEGMENT_64
+  cmdsize 72
+  segname __LINKEDIT
+   vmaddr 0x00007fffc05c8000
+   vmsize 0x0000000000002000
+  fileoff 33488
+ filesize 4992
+  maxprot 0x00000001
+ initprot 0x00000001
+   nsects 0
+    flags 0x0
+Load command 4
+          cmd LC_ID_DYLIB
+      cmdsize 48
+         name /usr/lib/liboah.dylib (offset 24)
+   time stamp 2 Wed Dec 31 19:00:02 1969
+      current version 1.0.0
+compatibility version 1.0.0
+Load command 5
+            cmd LC_DYLD_INFO_ONLY
+        cmdsize 48
+     rebase_off 0
+    rebase_size 0
+       bind_off 0
+      bind_size 0
+  weak_bind_off 0
+ weak_bind_size 0
+  lazy_bind_off 0
+ lazy_bind_size 0
+     export_off 0
+    export_size 0
+Load command 6
+     cmd LC_SYMTAB
+ cmdsize 24
+  symoff 33624
+   nsyms 104
+  stroff 35776
+ strsize 2704
+Load command 7
+            cmd LC_DYSYMTAB
+        cmdsize 80
+      ilocalsym 0
+      nlocalsym 0
+     iextdefsym 0
+     nextdefsym 40
+      iundefsym 40
+      nundefsym 64
+         tocoff 0
+           ntoc 0
+      modtaboff 0
+        nmodtab 0
+   extrefsymoff 0
+    nextrefsyms 0
+ indirectsymoff 35288
+  nindirectsyms 122
+      extreloff 0
+        nextrel 0
+      locreloff 0
+        nlocrel 0
+Load command 8
+     cmd LC_UUID
+ cmdsize 24
+    uuid 0A17EAFC-15E9-37FE-8EE2-DE0F7F220AD8
+Load command 9
+      cmd LC_BUILD_VERSION
+  cmdsize 32
+ platform 1
+    minos 11.4
+      sdk 11.4
+   ntools 1
+     tool 3
+  version 650.6
+Load command 10
+      cmd LC_SOURCE_VERSION
+  cmdsize 16
+  version 203.46
+Load command 11
+          cmd LC_LOAD_DYLIB
+      cmdsize 48
+         name /usr/lib/libc++.1.dylib (offset 24)
+   time stamp 2 Wed Dec 31 19:00:02 1969
+      current version 905.6.0
+compatibility version 1.0.0
+Load command 12
+          cmd LC_LOAD_DYLIB
+      cmdsize 56
+         name /usr/lib/libSystem.B.dylib (offset 24)
+   time stamp 2 Wed Dec 31 19:00:02 1969
+      current version 1292.120.1
+compatibility version 1.0.0
+Load command 13
+      cmd LC_FUNCTION_STARTS
+  cmdsize 16
+  dataoff 33488
+ datasize 120
+Load command 14
+      cmd LC_DATA_IN_CODE
+  cmdsize 16
+  dataoff 33608
+ datasize 16
