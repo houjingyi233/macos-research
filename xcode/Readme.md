@@ -1,10 +1,8 @@
 # Xcode JSON PoC Crasher for DVTFilePathEventWatcher FB9604572
 
-- Did not meet the bar for servicing as a Security Issue, not a surprise.
+- Did not meet the bar for servicing as a Security Issue, not a surprise == Its just a Null Byte Crash
 - Gatekeep would apparently Neuter the PoC .. hmm, ok.
 - This PoC doesn't touch Gatekeeper fwiw. :-)
-
-Its just a Null Byte Crash
 
 Enjoy!
 
