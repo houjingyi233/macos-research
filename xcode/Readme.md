@@ -2,10 +2,11 @@
 
 - Did not meet the bar for servicing as a Security Issue, not a surprise.
 
-Population in Progress 0 Monday - Spet 27, 2021
+Population in Progress 0 Monday - Sept 27, 2021
 
 Enjoy!
 
+```
 Process:               Xcode [23122]
 Path:                  /Applications/Xcode.app/Contents/MacOS/Xcode
 Identifier:            com.apple.dt.Xcode
@@ -42,3 +43,4 @@ VM Regions Near 0x700006d21fd0:
     Stack                    700006c9f000-700006d21000 [  520K] rw-/rwx SM=SHM  thread 16
 --> STACK GUARD              700006d21000-700006d22000 [    4K] ---/rwx SM=NUL  stack guard for thread 17
     Stack                    700006d22000-700006da4000 [  520K] rw-/rwx SM=SHM  thread 17
+```
