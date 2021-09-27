@@ -6,6 +6,8 @@
 
 Enjoy!
 
+Reproduction, Download and unzip. Its just JSON Junk, nothing malicious, no external HTTP Connections... 1-Click File Open to Xcode Crash. 
+
 ```
 Process:               Xcode [23122]
 Path:                  /Applications/Xcode.app/Contents/MacOS/Xcode
