@@ -7,7 +7,7 @@
 - This PoC doesn't touch Gatekeeper fwiw. :-)
 - Apple probably made a mistake in the larger context of the actual reported issue and shouldn't have NAK'd this explicit issue. 
 - If you download the PoC and the lightbulb goes ON, Tweet me @h02332 and show me your WTF :-)
-- I'm truly surprised that Apple did not make a Request to HOLD on Publishing this PoC, because if you figure it out, its Javscript::WTF.
+- I'm truly surprised that Apple did not make a Request to HOLD on Publishing this PoC, because if you figure it out, its Javascript::WTF.
 
 Enjoy!
 
