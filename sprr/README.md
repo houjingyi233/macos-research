@@ -23,7 +23,7 @@ Expected and Undefined behavior which is the Subject of this Post, see all Resul
 
 Example PoC for SPRR Permission Configuration Register (EL0) SPRR_PERM_EL0 s3_6_c15_c1_5 rwx
 ==============================
-PoC Commit https://github.com/xsscx/mac-binaries/commit/60e7ad990b21dbb7dff79747b7cbcf4a2ad345fb
+PoC Commit https://github.com/xsscx/macos-research/commit/2aa7cef304994254e45004b248d815b04498b6f7
 ```diff sprr.c ss-cpsr.c
 17c17
 <     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
