@@ -1,1 +1,0 @@
-/Users/xss/Library/Developer/Xcode/macOS DeviceSupport/10.16/usr/lib/liboah.dylib: Mach-O 64-bit dynamically linked shared library x86_64
