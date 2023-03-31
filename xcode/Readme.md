@@ -3,12 +3,8 @@
 1-Click File Open to Xcode Crash. 
 --------
 - Did not meet the bar for servicing as a Security Issue, not a surprise == Its just a Null Byte Crash
-- Gatekeeper would apparently Neuter the PoC .. hmm, ok.
-- This PoC doesn't touch Gatekeeper fwiw. :-)
-- Apple made a mistake in the larger context of the actual reported issue and shouldn't have NAK'd this explicit issue.
-- If you download the PoC and the lightbulb goes ON, Tweet me @h02332 and show me your WTF :-)
-- I'm truly surprised that Apple did not make a Request to HOLD on Publishing this PoC, because if you figure it out, its Javascript::WTF.
-- Apple needs people with experience to perform Analysis with their Reporters who are slowing the Bug Flows....
+
+This PoC is re-gaining traction.... lol.  31 MAR 2023
 
 Enjoy!
 
