@@ -29,8 +29,8 @@ _main:                                  ## @main
 	callq	_fprintf
 	leaq	L_.str.1(%rip), %rdi
 	callq	_remove
-	leaq	L_.str.2(%rip), %rdi
-	leaq	L_.str.3(%rip), %rsi
+	leaq	L_.str.1(%rip), %rdi
+	leaq	L_.str.2(%rip), %rsi
 	callq	_cmsOpenProfileFromFile
 	movq	%rax, -56(%rbp)
 	callq	_CreateLinear
@@ -88,7 +88,7 @@ _main:                                  ## @main
 	callq	_cmsPipelineFree
 	movq	___stderrp@GOTPCREL(%rip), %rax
 	movq	(%rax), %rdi
-	leaq	L_.str.4(%rip), %rsi
+	leaq	L_.str.3(%rip), %rsi
 	movb	$0, %al
 	callq	_fprintf
 	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
@@ -238,9 +238,9 @@ LBB3_2:
 	jmp	LBB3_12
 LBB3_3:
 	movq	-16(%rbp), %rdi
-	leaq	L_.str.5(%rip), %rsi
-	leaq	L_.str.6(%rip), %rdx
-	leaq	L_.str.7(%rip), %rcx
+	leaq	L_.str.4(%rip), %rsi
+	leaq	L_.str.5(%rip), %rdx
+	leaq	L_.str.6(%rip), %rcx
 	callq	_cmsMLUsetASCII
 	cmpl	$0, %eax
 	jne	LBB3_5
@@ -248,9 +248,9 @@ LBB3_3:
 	jmp	LBB3_12
 LBB3_5:
 	movq	-24(%rbp), %rdi
-	leaq	L_.str.5(%rip), %rsi
-	leaq	L_.str.6(%rip), %rdx
-	leaq	L_.str.8(%rip), %rcx
+	leaq	L_.str.4(%rip), %rsi
+	leaq	L_.str.5(%rip), %rdx
+	leaq	L_.str.7(%rip), %rcx
 	callq	_cmsMLUsetASCII
 	cmpl	$0, %eax
 	jne	LBB3_7
@@ -336,15 +336,12 @@ L_.str:                                 ## @.str
 	.asciz	"Creating new-cve-2023-nnnnn-poc.icm..."
 
 L_.str.1:                               ## @.str.1
-	.asciz	"Creating new-cve-2023-nnnnn-poc.icm"
-
-L_.str.2:                               ## @.str.2
 	.asciz	"new-cve-2023-nnnnn-poc.icm"
 
-L_.str.3:                               ## @.str.3
+L_.str.2:                               ## @.str.2
 	.asciz	"w"
 
-L_.str.4:                               ## @.str.4
+L_.str.3:                               ## @.str.3
 	.asciz	"Done.\n"
 
 	.section	__TEXT,__literal4,4byte_literals
@@ -354,16 +351,16 @@ L___const.CreateLinear.Linear:
 	.short	65535                           ## 0xffff
 
 	.section	__TEXT,__cstring,cstring_literals
-L_.str.5:                               ## @.str.5
+L_.str.4:                               ## @.str.4
 	.asciz	"en"
 
-L_.str.6:                               ## @.str.6
+L_.str.5:                               ## @.str.5
 	.asciz	"US"
 
-L_.str.7:                               ## @.str.7
+L_.str.6:                               ## @.str.6
 	.asciz	"David H Hoyt LLC 2023"
 
-L_.str.8:                               ## @.str.8
+L_.str.7:                               ## @.str.7
 	.asciz	"Copyright (c) David H Hoyt LLC, 2023. All rights reserved."
 
 .subsections_via_symbols
