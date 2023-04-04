@@ -2,6 +2,11 @@
 PoC clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208 with xnu-7195.141.2
 ------------
 ```
+lldb -- ./net_fuzzer ~/Downloads/clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208
+```
+lldb
+-----
+```
 (lldb) settings set -- target.run-args  "/Users/xss/Downloads/clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208"
 (lldb) r
 Process 44876 launched: '/Users/xss/test/SockFuzzer/build/net_fuzzer' (x86_64)
