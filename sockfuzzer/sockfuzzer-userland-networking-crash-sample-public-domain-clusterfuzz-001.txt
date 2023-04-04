@@ -85,99 +85,37 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
 ==44876==ABORTING
 (lldb) bt
-error: Command requires a process which is currently stopped.
-(lldb) AddressSanitizer report breakpoint hit. Use 'thread info -s' to get extended information about the report.
-Process 44876 stopped
 * thread #1, queue = 'com.apple.main-thread', stop reason = Heap buffer overflow
-    frame #0: 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
-libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie:
-->  0x10290bb40 <+0>: pushq  %rbp
-    0x10290bb41 <+1>: movq   %rsp, %rbp
-    0x10290bb44 <+4>: pushq  %rbx
-    0x10290bb45 <+5>: pushq  %rax
-Target 0: (net_fuzzer) stopped.
-(lldb) dis -f
-libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie:
-->  0x10290bb40 <+0>:   pushq  %rbp
-    0x10290bb41 <+1>:   movq   %rsp, %rbp
-    0x10290bb44 <+4>:   pushq  %rbx
-    0x10290bb45 <+5>:   pushq  %rax
-    0x10290bb46 <+6>:   movl   $0x1, %eax
-    0x10290bb4b <+11>:  lock
-    0x10290bb4c <+12>:  xaddl  %eax, 0x5d119(%rip)       ; __asan::AsanDie()::num_calls
-    0x10290bb53 <+19>:  testl  %eax, %eax
-    0x10290bb55 <+21>:  je     0x10290bb67               ; <+39>
-    0x10290bb57 <+23>:  nopw   (%rax,%rax)
-    0x10290bb60 <+32>:  callq  0x10291b960               ; __sanitizer::internal_sched_yield()
-    0x10290bb65 <+37>:  jmp    0x10290bb60               ; <+32>
-    0x10290bb67 <+39>:  leaq   0xa2f75a(%rip), %rax      ; __sanitizer::common_flags_dont_use
-    0x10290bb6e <+46>:  cmpl   $0x0, 0x50(%rax)
-    0x10290bb72 <+50>:  jle    0x10290bb79               ; <+57>
-    0x10290bb74 <+52>:  callq  0x10291dd80               ; __sanitizer::DumpProcessMap()
-    0x10290bb79 <+57>:  leaq   0xa2e3b0(%rip), %rbx      ; __asan::asan_flags_dont_use_directly
-    0x10290bb80 <+64>:  movl   0x40(%rbx), %esi
-    0x10290bb83 <+67>:  testl  %esi, %esi
-    0x10290bb85 <+69>:  je     0x10290bb9d               ; <+93>
-    0x10290bb87 <+71>:  leaq   0x3c151(%rip), %rdi       ; "Sleeping for %d second(s)\n"
-    0x10290bb8e <+78>:  xorl   %eax, %eax
-    0x10290bb90 <+80>:  callq  0x10291fde0               ; __sanitizer::Report(char const*, ...)
-    0x10290bb95 <+85>:  movl   0x40(%rbx), %edi
-    0x10290bb98 <+88>:  callq  0x102913590               ; __sanitizer::SleepForSeconds(unsigned int)
-    0x10290bb9d <+93>:  cmpb   $0x0, 0x49(%rbx)
-    0x10290bba1 <+97>:  je     0x10290bbf4               ; <+180>
-    0x10290bba3 <+99>:  movabsq $0x100000000000, %rbx     ; imm = 0x100000000000
-    0x10290bbad <+109>: movq   0xa2f6d4(%rip), %rsi      ; __asan::kMidMemBeg
-    0x10290bbb4 <+116>: testq  %rsi, %rsi
-    0x10290bbb7 <+119>: je     0x10290bbfb               ; <+187>
-    0x10290bbb9 <+121>: movabsq $-0x100000000000, %rax    ; imm = 0xFFFFF00000000000
-    0x10290bbc3 <+131>: addq   %rax, %rsi
-    0x10290bbc6 <+134>: movq   %rbx, %rdi
-    0x10290bbc9 <+137>: callq  0x10291e6f0               ; __sanitizer::UnmapOrDie(void*, unsigned long)
-    0x10290bbce <+142>: movq   0xa2f6bb(%rip), %rdi      ; __asan::kMidMemEnd
-    0x10290bbd5 <+149>: movq   0xa2f6a4(%rip), %rax      ; __asan::kHighMemEnd
-    0x10290bbdc <+156>: shrq   $0x3, %rax
-    0x10290bbe0 <+160>: subq   %rdi, %rbx
-    0x10290bbe3 <+163>: addq   %rax, %rbx
-    0x10290bbe6 <+166>: movq   %rbx, %rsi
-    0x10290bbe9 <+169>: addq   $0x8, %rsp
-    0x10290bbed <+173>: popq   %rbx
-    0x10290bbee <+174>: popq   %rbp
-    0x10290bbef <+175>: jmp    0x10291e6f0               ; __sanitizer::UnmapOrDie(void*, unsigned long)
-    0x10290bbf4 <+180>: addq   $0x8, %rsp
-    0x10290bbf8 <+184>: popq   %rbx
-    0x10290bbf9 <+185>: popq   %rbp
-    0x10290bbfa <+186>: retq
-    0x10290bbfb <+187>: movq   0xa2f67e(%rip), %rsi      ; __asan::kHighMemEnd
-    0x10290bc02 <+194>: shrq   $0x3, %rsi
-    0x10290bc06 <+198>: movq   %rbx, %rdi
-    0x10290bc09 <+201>: addq   $0x8, %rsp
-    0x10290bc0d <+205>: popq   %rbx
-    0x10290bc0e <+206>: popq   %rbp
-    0x10290bc0f <+207>: jmp    0x10291e6f0               ; __sanitizer::UnmapOrDie(void*, unsigned long)
-    0x10290bc14 <+212>: nopw   %cs:(%rax,%rax)
-(lldb) re re
-General Purpose Registers:
-       rax = 0x000000010290bb40  libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
-       rbx = 0x00007ff7bfefc920
-       rcx = 0x0000000000000000
-       rdx = 0x0000000000000000
-       rdi = 0x0000618000000480
-       rsi = 0x00000001001e6d65  "crash-"
-       rbp = 0x00007ff7bfefbc90
-       rsp = 0x00007ff7bfefbc88
-        r8 = 0x0000000000000000
-        r9 = 0xbfffff00000fffff
-       r10 = 0x4000000000000000
-       r11 = 0xefffffffffffffff
-       r12 = 0x1000000000000000
-       r13 = 0x2000000000000000
-       r14 = 0x6000000000000000
-       r15 = 0x0fffff0000000000
-       rip = 0x000000010290bb40  libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
-    rflags = 0x0000000000000202
-        cs = 0x000000000000002b
-        fs = 0x0000000000000000
-        gs = 0x0000000000000000
+  * frame #0: 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
+    frame #1: 0x000000010292607f libclang_rt.asan_osx_dynamic.dylib`__sanitizer::Die() + 175
+    frame #2: 0x0000000102909da7 libclang_rt.asan_osx_dynamic.dylib`__asan::ScopedInErrorReport::~ScopedInErrorReport() + 1191
+    frame #3: 0x000000010290904c libclang_rt.asan_osx_dynamic.dylib`__asan::ReportGenericError(unsigned long, unsigned long, unsigned long, unsigned long, bool, unsigned long, unsigned int, bool) + 1772
+    frame #4: 0x000000010290a2c8 libclang_rt.asan_osx_dynamic.dylib`__asan_report_load4 + 40
+    frame #5: 0x0000000101e43095 libxnu.dylib`tcp_ctlinput(cmd=8, sa=0x00007ff7bfefca20, vip=0x00006150000049cc, ifp=0x000061f000002a88) at tcp_subr.c:2340:17 [opt]
+    frame #6: 0x0000000101d29b56 libxnu.dylib`icmp_input(m=0x0000615000004900, hlen=<unavailable>) at ip_icmp.c:605:4 [opt]
+    frame #7: 0x0000000101d2fe47 libxnu.dylib`ip_proto_dispatch_in(m=0x0000615000004900, hlen=<unavailable>, proto=<unavailable>, inject_ipfref=<unavailable>) at ip_input.c:731:3 [opt]
+    frame #8: 0x0000000101d33916 libxnu.dylib`ip_input(m=<unavailable>) at ip_input.c:0 [opt]
+    frame #9: 0x0000000102058fef libxnu.dylib`ip_input_wrapper(m=<unavailable>) at backend.c:158:3 [opt]
+    frame #10: 0x00000001000102d1 net_fuzzer`::DoIp4Packet(packet=0x00006040000162d0) at net_fuzzer.cc:603:3
+    frame #11: 0x0000000100010a1f net_fuzzer`::DoIpInput(packet=0x000060300001bb50) at net_fuzzer.cc:630:7
+    frame #12: 0x00000001000138e1 net_fuzzer`TestOneProtoInput(session=0x00007ff7bfefe820) at net_fuzzer.cc:754:9
+    frame #13: 0x000000010001166e net_fuzzer`::LLVMFuzzerTestOneInput(data="\n\x84\U00000001\n\x81\U00000001\U0000001a\U0000007f\n\U00000017\b\b\U00000010\U00000004\U00000018", size=214) at net_fuzzer.cc:665:1
+    frame #14: 0x000000010017018b net_fuzzer`fuzzer::Fuzzer::ExecuteCallback(this=0x0000618000000480, Data="\n\x84\U00000001\n\x81\U00000001\U0000001a\U0000007f\n\U00000017\b\b\U00000010\U00000004\U00000018", Size=214) at FuzzerLoop.cpp:599:15
+    frame #15: 0x00000001001479c5 net_fuzzer`fuzzer::RunOneTest(F=0x0000618000000480, InputFilePath="/Users/xss/Downloads/clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208", MaxLen=0) at FuzzerDriver.cpp:323:6
+    frame #16: 0x000000010014caff net_fuzzer`fuzzer::FuzzerDriver(argc=0x00007ff7bfeff358, argv=0x00007ff7bfeff350, Callback=(net_fuzzer`::LLVMFuzzerTestOneInput(const uint8_t *, size_t) at net_fuzzer.cc:665))(unsigned char const*, unsigned long)) at FuzzerDriver.cpp:856:9
+    frame #17: 0x000000010018a96a net_fuzzer`main(argc=2, argv=0x00007ff7bfeff618) at FuzzerMain.cpp:20:10
+    frame #18: 0x00007ff8095c741f dyld`start + 1903
+(lldb) fr se 5
+warning: libxnu.dylib was compiled with optimization - stepping may behave oddly; variables may not be available.
+frame #5: 0x0000000101e43095 libxnu.dylib`tcp_ctlinput(cmd=8, sa=0x00007ff7bfefca20, vip=0x00006150000049cc, ifp=0x000061f000002a88) at tcp_subr.c:2340:17 [opt]
+   2337		icp = (struct icmp *)(void *)
+   2338		    ((caddr_t)ip - offsetof(struct icmp, icmp_ip));
+   2339		th = (struct tcphdr *)(void *)((caddr_t)ip + (IP_VHL_HL(ip->ip_vhl) << 2));
+-> 2340		icmp_tcp_seq = ntohl(th->th_seq);
+   2341
+   2342		inp = in_pcblookup_hash(&tcbinfo, faddr, th->th_dport,
+   2343		    ip->ip_src, th->th_sport, 0, NULL);
+(lldb)
 
 (lldb) thread info -s
 thread #1: tid = 0xb9523, 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie(), queue = 'com.apple.main-thread', stop reason = Heap buffer overflow
