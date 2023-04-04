@@ -1,0 +1,195 @@
+# LLDB reproduction for a heap-buffer-overflow  using SockFuzzer with PoC clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208
+```
+(lldb) settings set -- target.run-args  "/Users/xss/Downloads/clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208"
+(lldb) r
+Process 44876 launched: '/Users/xss/test/SockFuzzer/build/net_fuzzer' (x86_64)
+net_fuzzer(44876,0x7ff84cff4340) malloc: nano zone abandoned due to inability to reserve vm space.
+INFO: found LLVMFuzzerCustomMutator (0x100010da0). Disabling -len_control by default.
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1098174639
+INFO: Loaded 2 modules   (127776 inline 8-bit counters): 113111 [0x102185b00, 0x1021a14d7), 14665 [0x100208000, 0x10020b949),
+INFO: Loaded 2 PC tables (127776 PCs): 113111 [0x1021a14d8,0x10235b248), 14665 [0x10020b950,0x100244de0),
+/Users/xss/test/SockFuzzer/build/net_fuzzer: Running 1 inputs 1 time(s) each.
+Running: /Users/xss/Downloads/clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208
+mbinit: done [1 MB total pool size, (0/0) split]
+dlil_init: All the created dlil kernel threads have been scheduled at least once. Proceeding.
+ifnet_attach: All kernel threads created for interface lo0 have been scheduled at least once. Proceeding.
+lo0: attached
+lo0: attached v2 protocol 2 (count = 1)
+ifnet_attach: All kernel threads created for interface stf0 have been scheduled at least once. Proceeding.
+stf0: attached
+=================================================================
+==44876==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x615000004a04 at pc 0x000101e43095 bp 0x7ff7bfefc980 sp 0x7ff7bfefc978
+READ of size 4 at 0x615000004a04 thread T0
+    #0 0x101e43094 in tcp_ctlinput tcp_subr.c:2340
+    #1 0x101d29b55 in icmp_input ip_icmp.c:605
+    #2 0x101d2fe46 in ip_proto_dispatch_in ip_input.c:731
+    #3 0x101d33915 in ip_input ip_input.c
+    #4 0x102058fee in ip_input_wrapper backend.c:158
+    #5 0x1000102d0 in DoIp4Packet net_fuzzer.cc:603
+    #6 0x100010a1e in DoIpInput net_fuzzer.cc:630
+    #7 0x1000138e0 in TestOneProtoInput(Session const&) net_fuzzer.cc:754
+    #8 0x10001166d in LLVMFuzzerTestOneInput net_fuzzer.cc:665
+    #9 0x10017018a in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) FuzzerLoop.cpp:599
+    #10 0x1001479c4 in fuzzer::RunOneTest(fuzzer::Fuzzer*, char const*, unsigned long) FuzzerDriver.cpp:323
+    #11 0x10014cafe in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) FuzzerDriver.cpp:856
+    #12 0x10018a969 in main FuzzerMain.cpp:20
+    #13 0x7ff8095c741e in start+0x76e (dyld:x86_64+0xfffffffffff6e41e) (BuildId: afa3518c143e3060bbe8624d4ca4106332000000200000000100000000030d00)
+
+0x615000004a04 is located 4 bytes to the right of 256-byte region [0x615000004900,0x615000004a00)
+allocated by thread T0 here:
+    #0 0x1029014b3 in wrap_posix_memalign+0xb3 (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x494b3) (BuildId: 756bb7515781379f84412f22c4274ffd2400000010000000000a0a0000030d00)
+    #1 0x1020603c5 in mbuf_create mbuf.c:71
+    #2 0x102058f00 in get_mbuf_data backend.c:130
+    #3 0x100010237 in DoIp4Packet net_fuzzer.cc:598
+    #4 0x100010a1e in DoIpInput net_fuzzer.cc:630
+    #5 0x1000138e0 in TestOneProtoInput(Session const&) net_fuzzer.cc:754
+    #6 0x10001166d in LLVMFuzzerTestOneInput net_fuzzer.cc:665
+    #7 0x10017018a in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) FuzzerLoop.cpp:599
+    #8 0x1001479c4 in fuzzer::RunOneTest(fuzzer::Fuzzer*, char const*, unsigned long) FuzzerDriver.cpp:323
+    #9 0x10014cafe in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) FuzzerDriver.cpp:856
+    #10 0x10018a969 in main FuzzerMain.cpp:20
+    #11 0x7ff8095c741e in start+0x76e (dyld:x86_64+0xfffffffffff6e41e) (BuildId: afa3518c143e3060bbe8624d4ca4106332000000200000000100000000030d00)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow tcp_subr.c:2340 in tcp_ctlinput
+Shadow bytes around the buggy address:
+  0x1c2a000008f0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x1c2a00000900: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000910: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000920: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x1c2a00000930: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x1c2a00000940:[fa]fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000950: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000960: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000970: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000980: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x1c2a00000990: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==44876==ABORTING
+(lldb) bt
+error: Command requires a process which is currently stopped.
+(lldb) AddressSanitizer report breakpoint hit. Use 'thread info -s' to get extended information about the report.
+Process 44876 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = Heap buffer overflow
+    frame #0: 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
+libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie:
+->  0x10290bb40 <+0>: pushq  %rbp
+    0x10290bb41 <+1>: movq   %rsp, %rbp
+    0x10290bb44 <+4>: pushq  %rbx
+    0x10290bb45 <+5>: pushq  %rax
+Target 0: (net_fuzzer) stopped.
+(lldb) dis -f
+libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie:
+->  0x10290bb40 <+0>:   pushq  %rbp
+    0x10290bb41 <+1>:   movq   %rsp, %rbp
+    0x10290bb44 <+4>:   pushq  %rbx
+    0x10290bb45 <+5>:   pushq  %rax
+    0x10290bb46 <+6>:   movl   $0x1, %eax
+    0x10290bb4b <+11>:  lock
+    0x10290bb4c <+12>:  xaddl  %eax, 0x5d119(%rip)       ; __asan::AsanDie()::num_calls
+    0x10290bb53 <+19>:  testl  %eax, %eax
+    0x10290bb55 <+21>:  je     0x10290bb67               ; <+39>
+    0x10290bb57 <+23>:  nopw   (%rax,%rax)
+    0x10290bb60 <+32>:  callq  0x10291b960               ; __sanitizer::internal_sched_yield()
+    0x10290bb65 <+37>:  jmp    0x10290bb60               ; <+32>
+    0x10290bb67 <+39>:  leaq   0xa2f75a(%rip), %rax      ; __sanitizer::common_flags_dont_use
+    0x10290bb6e <+46>:  cmpl   $0x0, 0x50(%rax)
+    0x10290bb72 <+50>:  jle    0x10290bb79               ; <+57>
+    0x10290bb74 <+52>:  callq  0x10291dd80               ; __sanitizer::DumpProcessMap()
+    0x10290bb79 <+57>:  leaq   0xa2e3b0(%rip), %rbx      ; __asan::asan_flags_dont_use_directly
+    0x10290bb80 <+64>:  movl   0x40(%rbx), %esi
+    0x10290bb83 <+67>:  testl  %esi, %esi
+    0x10290bb85 <+69>:  je     0x10290bb9d               ; <+93>
+    0x10290bb87 <+71>:  leaq   0x3c151(%rip), %rdi       ; "Sleeping for %d second(s)\n"
+    0x10290bb8e <+78>:  xorl   %eax, %eax
+    0x10290bb90 <+80>:  callq  0x10291fde0               ; __sanitizer::Report(char const*, ...)
+    0x10290bb95 <+85>:  movl   0x40(%rbx), %edi
+    0x10290bb98 <+88>:  callq  0x102913590               ; __sanitizer::SleepForSeconds(unsigned int)
+    0x10290bb9d <+93>:  cmpb   $0x0, 0x49(%rbx)
+    0x10290bba1 <+97>:  je     0x10290bbf4               ; <+180>
+    0x10290bba3 <+99>:  movabsq $0x100000000000, %rbx     ; imm = 0x100000000000
+    0x10290bbad <+109>: movq   0xa2f6d4(%rip), %rsi      ; __asan::kMidMemBeg
+    0x10290bbb4 <+116>: testq  %rsi, %rsi
+    0x10290bbb7 <+119>: je     0x10290bbfb               ; <+187>
+    0x10290bbb9 <+121>: movabsq $-0x100000000000, %rax    ; imm = 0xFFFFF00000000000
+    0x10290bbc3 <+131>: addq   %rax, %rsi
+    0x10290bbc6 <+134>: movq   %rbx, %rdi
+    0x10290bbc9 <+137>: callq  0x10291e6f0               ; __sanitizer::UnmapOrDie(void*, unsigned long)
+    0x10290bbce <+142>: movq   0xa2f6bb(%rip), %rdi      ; __asan::kMidMemEnd
+    0x10290bbd5 <+149>: movq   0xa2f6a4(%rip), %rax      ; __asan::kHighMemEnd
+    0x10290bbdc <+156>: shrq   $0x3, %rax
+    0x10290bbe0 <+160>: subq   %rdi, %rbx
+    0x10290bbe3 <+163>: addq   %rax, %rbx
+    0x10290bbe6 <+166>: movq   %rbx, %rsi
+    0x10290bbe9 <+169>: addq   $0x8, %rsp
+    0x10290bbed <+173>: popq   %rbx
+    0x10290bbee <+174>: popq   %rbp
+    0x10290bbef <+175>: jmp    0x10291e6f0               ; __sanitizer::UnmapOrDie(void*, unsigned long)
+    0x10290bbf4 <+180>: addq   $0x8, %rsp
+    0x10290bbf8 <+184>: popq   %rbx
+    0x10290bbf9 <+185>: popq   %rbp
+    0x10290bbfa <+186>: retq
+    0x10290bbfb <+187>: movq   0xa2f67e(%rip), %rsi      ; __asan::kHighMemEnd
+    0x10290bc02 <+194>: shrq   $0x3, %rsi
+    0x10290bc06 <+198>: movq   %rbx, %rdi
+    0x10290bc09 <+201>: addq   $0x8, %rsp
+    0x10290bc0d <+205>: popq   %rbx
+    0x10290bc0e <+206>: popq   %rbp
+    0x10290bc0f <+207>: jmp    0x10291e6f0               ; __sanitizer::UnmapOrDie(void*, unsigned long)
+    0x10290bc14 <+212>: nopw   %cs:(%rax,%rax)
+(lldb) re re
+General Purpose Registers:
+       rax = 0x000000010290bb40  libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
+       rbx = 0x00007ff7bfefc920
+       rcx = 0x0000000000000000
+       rdx = 0x0000000000000000
+       rdi = 0x0000618000000480
+       rsi = 0x00000001001e6d65  "crash-"
+       rbp = 0x00007ff7bfefbc90
+       rsp = 0x00007ff7bfefbc88
+        r8 = 0x0000000000000000
+        r9 = 0xbfffff00000fffff
+       r10 = 0x4000000000000000
+       r11 = 0xefffffffffffffff
+       r12 = 0x1000000000000000
+       r13 = 0x2000000000000000
+       r14 = 0x6000000000000000
+       r15 = 0x0fffff0000000000
+       rip = 0x000000010290bb40  libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie()
+    rflags = 0x0000000000000202
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+
+(lldb) thread info -s
+thread #1: tid = 0xb9523, 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`__asan::AsanDie(), queue = 'com.apple.main-thread', stop reason = Heap buffer overflow
+
+{
+  "access_size": 4,
+  "access_type": 0,
+  "address": 106996225296900,
+  "description": "heap-buffer-overflow",
+  "instrumentation_class": "AddressSanitizer",
+  "pc": 4326699157,
+  "stop_type": "fatal_error"
+}
+(lldb)
+```
