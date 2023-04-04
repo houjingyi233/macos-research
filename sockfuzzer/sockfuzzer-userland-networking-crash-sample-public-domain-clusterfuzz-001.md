@@ -136,7 +136,51 @@ thread #1: tid = 0xb9523, 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`
   "pc": 4326699157,
   "stop_type": "fatal_error"
 }
-(lldb)
+frame #6: 0x0000000101d29b56 libxnu.dylib`icmp_input(m=0x0000615000004900, hlen=<unavailable>) at ip_icmp.c:605:4 [opt]
+   602
+   603 				lck_mtx_unlock(inet_domain_mutex);
+   604
+-> 605 				(*ctlfunc)(code, (struct sockaddr *)&icmpsrc,
+   606 				    (void *)&icp->icmp_ip, m->m_pkthdr.rcvif);
+   607
+   608 				lck_mtx_lock(inet_domain_mutex);
+(lldb) fr se 7
+frame #7: 0x0000000101d2fe47 libxnu.dylib`ip_proto_dispatch_in(m=0x0000615000004900, hlen=<unavailable>, proto=<unavailable>, inject_ipfref=<unavailable>) at ip_input.c:731:3 [opt]
+   728 			m_freem(m);
+   729 		} else if (!(ip_protox[ip->ip_p]->pr_flags & PR_PROTOLOCK)) {
+   730 			lck_mtx_lock(inet_domain_mutex);
+-> 731 			pr_input(m, hlen);
+   732 			lck_mtx_unlock(inet_domain_mutex);
+   733 		} else {
+   734 			pr_input(m, hlen);
+(lldb) fr se 8
+frame #8: 0x0000000101d33916 libxnu.dylib`ip_input(m=<unavailable>) at ip_input.c:0 [opt]
+   1739	 * try to reassemble.  Process options.  Pass to next level.
+   1740	 */
+   1741	void
+-> 1742	ip_input(struct mbuf *m)
+   1743	{
+   1744		struct ip *ip;
+   1745		unsigned int hlen;
+Note: this address is compiler-generated code in function ip_input that has no source code associated with it.
+(lldb) fr se 9
+frame #9: 0x0000000102058fef libxnu.dylib`ip_input_wrapper(m=<unavailable>) at backend.c:158:3 [opt]
+   155 	}
+   156
+   157 	__attribute__((visibility("default"))) void ip_input_wrapper(void* m) {
+-> 158 	  ip_input((mbuf_t)m);
+   159 	}
+   160
+   161 	__attribute__((visibility("default"))) void ip6_input_wrapper(void* m) {
+(lldb) fr se 10
+frame #10: 0x00000001000102d1 net_fuzzer`::DoIp4Packet(packet=0x00006040000162d0) at net_fuzzer.cc:603:3
+   600 	    return;
+   601 	  }
+   602
+-> 603 	  ip_input_wrapper(mbuf_data);
+   604 	}
+   605
+   606 	void DoIp6Packet(const Ip6Packet &packet)
 ```
 
 The XNU above is xnu-7195.141.2. Below, we can see the most recent XNU 8792.81.2 with the Fix:
