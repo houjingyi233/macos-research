@@ -1,4 +1,6 @@
-# LLDB reproduction for a heap-buffer-overflow  using SockFuzzer with PoC clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208
+# LLDB reproduction for a heap-buffer-overflow using SockFuzzer 
+PoC clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208 with xnu-7195.141.2
+------------
 ```
 (lldb) settings set -- target.run-args  "/Users/xss/Downloads/clusterfuzz-testcase-minimized-net_fuzzer-5484532464222208"
 (lldb) r
@@ -130,4 +132,40 @@ thread #1: tid = 0xb9523, 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`
   "stop_type": "fatal_error"
 }
 (lldb)
+```
+
+The XNU above is xnu-7195.141.2. Below, we can see the most recent XNU 8792.81.2 with the Fix:
+```
+	/* Check if we can safely get the sport, dport and the sequence number from the tcp header. */
+	if (m == NULL ||
+	    (m->m_len < off + (sizeof(unsigned short) + sizeof(unsigned short) + sizeof(tcp_seq)))) {
+		/* Insufficient length */
+		return;
+	}
+
+	th = (struct tcphdr*)(void*)(mtod(m, uint8_t*) + off);
+	icmp_tcp_seq = ntohl(th->th_seq);
+
+	inp = in_pcblookup_hash(&tcbinfo, faddr, th->th_dport,
+	    ip->ip_src, th->th_sport, 0, NULL);
+
+	if (inp == NULL ||
+	    inp->inp_socket == NULL) {
+#if SKYWALK
+		if (cmd == PRC_MSGSIZE) {
+			prctl_ev_val.val = ntohs(icp->icmp_nextmtu);
+		}
+		prctl_ev_val.tcp_seq_number = icmp_tcp_seq;
+
+		sock_laddr.sin.sin_family = AF_INET;
+		sock_laddr.sin.sin_len = sizeof(sock_laddr.sin);
+		sock_laddr.sin.sin_addr = ip->ip_src;
+
+		protoctl_event_enqueue_nwk_wq_entry(ifp,
+		    (struct sockaddr *)&sock_laddr, sa,
+		    th->th_sport, th->th_dport, IPPROTO_TCP,
+		    cmd, &prctl_ev_val);
+#endif /* SKYWALK */
+		return;
+	}
 ```
