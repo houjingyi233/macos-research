@@ -136,6 +136,7 @@ thread #1: tid = 0xb9523, 0x000000010290bb40 libclang_rt.asan_osx_dynamic.dylib`
   "pc": 4326699157,
   "stop_type": "fatal_error"
 }
+(lldb) fr se 6
 frame #6: 0x0000000101d29b56 libxnu.dylib`icmp_input(m=0x0000615000004900, hlen=<unavailable>) at ip_icmp.c:605:4 [opt]
    602
    603 				lck_mtx_unlock(inet_domain_mutex);
