@@ -154,6 +154,7 @@ SYS_SPRR_PERM_EL1 sys_reg(3, 6, 15, 1, 6)
 #include <unistd.h>
 #include <limits.h>
 
+/* Recover from Protected Page Access, setup Signal Handler, set x0 to a 0xdeadbeef (0x41414141) and increment program counter (pc), Return to ptr[0] = 0xd65f03c0. TODO, Fuzz the pc - done */
 static void sev_handler(int signo, siginfo_t *info, void *cx_)
 {
 //    printf("Now in sev_handler\n");
@@ -167,6 +168,7 @@ static void sev_handler(int signo, siginfo_t *info, void *cx_)
     cx->uc_mcontext->__ss.__pc = cx->uc_mcontext->__ss.__lr;
 }
 
+/* Recovering from Non-Executable Page Access, set x0 to 0xdeadbeef (0x41414141), set pc +4, jmp to link register (__ss.__lr) to Return */
 static void bus_handler(int signo, siginfo_t *info, void *cx_)
 {
 //    printf("Now in bus_handler\n");
@@ -174,9 +176,11 @@ static void bus_handler(int signo, siginfo_t *info, void *cx_)
     (void)info;
 //    printf("Now in bus_handler at ucontext_t *cx = cx_;\n");
     ucontext_t *cx = cx_;
+/* magic pattern like 0x41414141 or 0xdeadbeef*/
 //    printf("Now in bus_handler at cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;\n");
     cx->uc_mcontext->__ss.__x[0] = 0xdeadbeef;
 //    printf("Now in bus_handler at cx->uc_mcontext->__ss.__pc += 4;\n");
+/* Increase the Program Counter (pc) +4 on ARM - This is a jmp
     cx->uc_mcontext->__ss.__pc += 4;
 }
 
@@ -185,6 +189,7 @@ static void write_sprr_perm(uint64_t v)
     printf("Jumped to write_sprr_perm... Step 1...\n");
     clock_t start = clock();
     printf("Start __volatile__ write_sprr_perm\n");
+/* Write the magic pattern  */
     __asm__ __volatile__("msr S3_6_c15_c1_5, %0\n"
                          "isb sy\n" ::"r"(v)
                          :);
@@ -220,6 +225,7 @@ static bool can_read(void *ptr)
     printf("Hitting can_read at uint64_t v = 0\n");
     uint64_t v = 0;
     printf("Start __volatile__ can_read\n");
+/* Check the Read on magic pattern and Return */
     __asm__ __volatile__("ldr x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
@@ -242,6 +248,7 @@ static bool can_write(void *ptr)
     printf("Hitting can_write at uint64_t v = 0\n");
     uint64_t v = 0;
     printf("Start __volatile__ can_write\n");
+/* Can we Write the magic pattern */
     __asm__ __volatile__("str x0, [%0]\n"
                          "mov %0, x0\n"
                          : "=r"(v)
@@ -257,6 +264,7 @@ static bool can_write(void *ptr)
     return true;
 }
 
+/* Can we Execute */
 static bool can_exec(void *ptr)
 {
     printf("Jumped to can_exec... Step 7...\n");
@@ -290,7 +298,7 @@ static void sprr_test(void *ptr, uint64_t v)
     printf("Now at sprr_test before b = read_sprr_perm()\n\n");
     b = read_sprr_perm();
     printf("Finished at sprr_test after b = read_sprr_perm()\n\n");
-    
+/* Print Results */
     printf("Register Value:%llx: %c%c%c\n", b, can_read(ptr) ? 'r' : '-', can_write(ptr) ? 'w' : '-',
            can_exec(ptr) ? 'x' : '-');
     clock_t stop = clock();
@@ -306,6 +314,7 @@ static uint64_t make_sprr_val(uint8_t nibble)
     uint64_t res = 0;
     printf("Hitting make_sprr_val at int i = 0; i < 16; ++i \n");
     for (int i = 0; i < 16; ++i)
+/* Nibble 4 * i bytes at a time.. this is where undefined behavior creeps in ...  needs to be 16-byte aligned at all the time to not be undefined by C spec */
         res |= ((uint64_t)nibble) << (4 * i);
     printf("End of make_sprr_val\n");
     clock_t stop = clock();
@@ -333,6 +342,7 @@ uint64_t read_sprr(void)
     return v;
 }
 
+/* MAIN FUNCTION */
 int main(int argc, char *argv[])
 {
     //    printf("Program name is: %s\n", argv[0]);
@@ -420,11 +430,23 @@ int main(int argc, char *argv[])
     printf("Now hitting main() sigaction SIGSEGV, &sa\n");
     sigaction(SIGSEGV, &sa, 0);
     printf("Now hitting main() uint32_t *ptr = mmap(NULL, 0x4000, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0)\n\n");
+/* map a page with MAP_JIT and try to read, write or execute that memory for all four possible values in the system register */
     uint32_t *ptr = mmap(NULL, 0x4000, PROT_READ | PROT_WRITE | PROT_EXEC,
                          MAP_PRIVATE | MAP_ANONYMOUS | MAP_JIT, -1, 0);
     printf("Now hitting main() write_sprr_perm(0x3333333333333333)\n\n");
+/* Flip some bits - 64-bit */
     write_sprr_perm(0x3333333333333333);
     printf("Just executed main() write_sprr_perm(0x3333333333333333)\n\n");
+    /* 
+    Set memory to contain the RET instruction to attempt to execute. 
+    There are multiple valid encodings of return (which is really a special form of branch). 
+    These is the one clang seems to use: 
+      kRet = 0xd65f03c0,
+  		kBrk0 = 0xd4200000,
+  		kBrk1 = 0xd4200020,
+  		kBrkF000 = 0xd43e0000,
+  		kHlt0 = 0xd4400000,
+    */
     printf("Now in main() hitting ptr[0] 0xd65f03c0 RET\n\n");
     ptr[0] = 0xd65f03c0; // ret
     printf("Now in main() hitting for (int i = 0; i < 4; ++i)\n\n");
