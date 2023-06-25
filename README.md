@@ -3,7 +3,7 @@
 Last Updated: 25 JUN 2023
 - Added CVE-2022-26730 ICC Color Profile Sample PoC's
 - https://srd.cx/cve-2022-26730/
-- Added Info for BuildId: 8cb0b396011f31f2891594cde1abae84240000001000000000040d0000040d00
+- Added Info for ColorSync BuildId: 8cb0b396011f31f2891594cde1abae84240000001000000000040d0000040d00
 
 Mac Source Code files for osx research Built for ARM64e and X86_64
 
