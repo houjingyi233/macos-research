@@ -16,33 +16,27 @@ make
 Run:
 fuzz.sh
 
-#### Updated Crash List
 ##### SipMessageHeader Class Functions and Destructors:
-_ZN15SipMessageHeaderD2Ev
-ZN15SipMessageHeaderC2ERKS
-ZN15SipMessageHeaderaSERKS
+Destructor: SipMessageHeader::~SipMessageHeader()
+Constructor: SipMessageHeader::SipMessageHeader(const SipMessageHeader&)
+Assignment Operator: SipMessageHeader::operator=(const SipMessageHeader&)
 ##### SipContentType Destructor:
-_ZN14SipContentTypeD1Ev
+Destructor: SipContentType::~SipContentType()
 ##### SipContentLength Destructor:
-_ZN16SipContentLengthD1Ev
+Destructor: SipContentLength::~SipContentLength()
 ##### SipMultiStringHeader Functions and Destructors:
-_ZN20SipMultiStringHeaderD2Ev
-ZN20SipMultiStringHeaderC1ERKS
-ZN20SipMultiStringHeaderaSERKS
-SipMultiStringHeader::encodeValue(ImsOutStream&) const
+Destructor: SipMultiStringHeader::~SipMultiStringHeader()
+Constructor: SipMultiStringHeader::SipMultiStringHeader(const SipMultiStringHeader&)
+Assignment Operator: SipMultiStringHeader::operator=(const SipMultiStringHeader&)
+Function: SipMultiStringHeader::encodeValue(ImsOutStream&) const
 ##### SipSingleStringHeader Destructor:
-_ZN19SipSingleStringHeaderD2Ev
+Destructor: SipSingleStringHeader::~SipSingleStringHeader()
 ##### libIPTelephony.dylib Functions:
-libIPTelephony.dylibims::nextToken(...)
-libIPTelephony.dylibImsResult::~ImsResult()+0x1f
-libIPTelephony.dylib SipMessageEncodingMap::copyHeadersFromRequestToResponse(SipRequest const&, SipResponse*, bool) const
-SipMessageEncodingMap::decodeHeader(...) const
+Function: libIPTelephony.dylibims::nextToken(...)
+Destructor: libIPTelephony.dylib ImsResult::~ImsResult() + 0x1f
+Function: libIPTelephony.dylib SipMessageEncodingMap::copyHeadersFromRequestToResponse(const SipRequest&, SipResponse*, bool) const
+Function: SipMessageEncodingMap::decodeHeader(...) const
 ##### SipTimerContainer Function:
-SipTimerContainer::cancelAllTimers()
-SipTcpConnection Destructor:
-SipTcpConnection::~SipTcpConnection()
-##### Other
-Crash: SIGABRT (EXC_BAD_ACCESS):
-Exception Type: EXC_BAD_ACCESS (SIGABRT)
-Function Involved: SipPointerVectorHeader<SipAcceptContactValue>::mergeHeader(SipHeader const&) + 47
-Relevant Details: Invalid address access, memory-related issue, occurred in thread 0, associated with libIPTelephony.dylib.
+Function: SipTimerContainer::cancelAllTimers()
+##### SipTcpConnection Destructor:
+Destructor: SipTcpConnection::~SipTcpConnection()
