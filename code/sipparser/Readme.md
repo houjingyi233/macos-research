@@ -6,7 +6,10 @@ Google Project Zero wrote code that I've modified for Fuzzing, attached is the b
 REPRODUCTION
 ---------
 Compile:
-clang++ -g -o ZN20SipMultiStringHeader18setValueFromStringERKNSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE ZN20SipMultiStringHeader18setValueFromStringERKNSt3__112basic_stringIcNS0_11char_traitsIcEENS0_9allocatorIcEEEE.cpp
+make
+
+Run:
+fuzz.sh
 
 #### Updated Crash List
 ##### SipMessageHeader Class Functions and Destructors:
