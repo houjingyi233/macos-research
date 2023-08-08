@@ -1,7 +1,12 @@
 ### Project Zero Bug 2440 
 The was a use-after-free vulnerability in libIPTelephony.dylib inside the SIP message decoder (SipMessageDecoder::decode() function). 
 
-Google Project Zero wrote code that I've modified for Fuzzing, attached is the baseline .cpp.
+Google Project Zero wrote code that I've modified for Fuzzing.
+
+- These are all Zero Page Crashes
+- Apple has already resolved the Issues, apparently
+- Note that Zero Page Crashes on a Destructor typically are just NULL and Noise.
+- Whereas _any_ Crash for a Constructor is probably a Product Defect and/or Security Vulnerability
 
 REPRODUCTION
 ---------
