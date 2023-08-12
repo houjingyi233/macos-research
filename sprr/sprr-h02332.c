@@ -110,13 +110,21 @@ static void sprr_test(void *ptr, uint64_t v)
 }
 
 
-static uint64_t make_sprr_val(uint8_t nibble)
+static uint64_t repeat_4bit_value(uint8_t value)
 {
-    uint64_t res = 0;
-    for (int i = 0; i < 16; ++i)
-        res |= ((uint64_t)nibble) << (4 * i);
-    return res;
+    if (value > 0xF) {
+        fprintf(stderr, "Value out of 4-bit range.\n");
+        return 0; // Or handle this error appropriately
+    }
+    
+    uint64_t repeated_value = value & 0xF; // Ensure only 4 bits are used
+    for (int i = 1; i < 16; ++i) {
+        repeated_value |= ((uint64_t)value & 0xF) << (4 * i);
+    }
+    
+    return repeated_value;
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -148,7 +156,7 @@ int main(int argc, char *argv[])
     ptr[0] = 0xd65f03c0; // ret
 
     for (int i = 0; i < 4; ++i)
-        sprr_test(ptr, make_sprr_val(i));
+        sprr_test(ptr, repeat_4bit_value(i));
 
     // Freeing the mapped memory (added clean-up)
     munmap(ptr, 0x4000);
