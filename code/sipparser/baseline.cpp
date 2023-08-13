@@ -8,38 +8,60 @@
 // Build: clang++ -g -fsanitize=address,undefined -o a.out this.cpp
 // Verified working on X86_64, Rosetta and arm64e
 //
+// Define feature test macro to enable functionality exposed by headers
 #define _XOPEN_SOURCE
+
+// Standard C/C++ headers
 #include <iostream>
-#include <dlfcn.h>
-#include <string>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <limits.h>
+
+// System headers
+#include <sys/mman.h>
+#include <sys/utsname.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <syslog.h>
+#include <dirent.h>
+
+// Mach and dynamic loading headers
 #include <mach/mach.h>
 #include <mach-o/dyld_images.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
-#define MAG(string)  "\e[0;35m" string "\x1b[0m"
-#define BLUE(string) "\x1b[34m" string "\x1b[0m"
-#define RED(string) "\x1b[31m" string "\x1b[0m"
-#define WHT(string)"\e[0;37m" string "\x1b[0m"
-#define GRN(string)"\e[0;32m" string "\x1b[0m"
-#define YEL(string)"\e[0;33m" string "\x1b[0m"
-#define CYN(string)"\e[0;36m" string "\x1b[0m"
-#define HWHT(string)"\e[0;97m" string "\x1b[0m"
-#define NORMAL_COLOR(string)"\x1B[0m" string "\x1b[0m"
+#include <dlfcn.h>
+
+// Signal handling and context
 #include <signal.h>
 #include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/mman.h>
-#include <sys/utsname.h>
 #include <ucontext.h>
-#include <stdlib.h>
-#include <time.h>
-#include <syslog.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <limits.h>
+
+// Color codes for terminal text
+#define MAG(string)         "\e[0;35m" string "\x1b[0m"
+#define BLUE(string)        "\x1b[34m" string "\x1b[0m"
+#define RED(string)         "\x1b[31m" string "\x1b[0m"
+#define WHT(string)         "\e[0;37m" string "\x1b[0m"
+#define GRN(string)         "\e[0;32m" string "\x1b[0m"
+#define YEL(string)         "\e[0;33m" string "\x1b[0m"
+#define CYN(string)         "\e[0;36m" string "\x1b[0m"
+#define HWHT(string)        "\e[0;97m" string "\x1b[0m"
+#define NORMAL_COLOR(string)"\x1B[0m" string "\x1b[0m"
+
+// Constants for specific application logic
+#define SIZE_OF_SIP_MESSAGE_ENCODING_MAP 2000
+#define SIZE_OF_ARG1 80
+
+#ifdef ARM64
+#define OFFSET 44
+#define FILL_SIZE 4
+#else
+#define OFFSET 40
+#define FILL_SIZE 8
+#endif
 
 // Setup SipMessageDecoder_decode
 typedef uint64_t (*t_SipMessageDecoder_decode)(void *arg1, std::string &s, void *arg3, void *arg4);
@@ -154,13 +176,13 @@ void *GetSymbolAddress(void *base_address, const char *symbol_name) {
     
   for (int i = 0; i < symtab_cmd->nsyms; ++i) {
     nlist_64 curr_symbol = *(nlist_64*)curr_symbol_address;
-      printf("Processing symbol %d: type = 0x%x\n", i, curr_symbol.n_type);
+//      printf("Processing symbol %d: type = 0x%x\n", i, curr_symbol.n_type);
       
     if ((curr_symbol.n_type & N_TYPE) == N_SECT) {
       char *curr_sym_name = NULL;
       std::string curr_sym_name_string;
       curr_sym_name = strtab + curr_symbol.n_un.n_strx;
-        printf("Current symbol name: %s\n", curr_sym_name);
+//        printf("Current symbol name: %s\n", curr_sym_name);
 
       //printf("%s\n", curr_sym_name);
       if (!strcmp(curr_sym_name, symbol_name)) {
@@ -171,7 +193,7 @@ void *GetSymbolAddress(void *base_address, const char *symbol_name) {
     }
 
     curr_symbol_address += sizeof(nlist_64);
-      printf("Next symbol address: 0x%zx\n", curr_symbol_address);
+//      printf("Next symbol address: 0x%zx\n", curr_symbol_address);
   }
   
   return symbol_address;
@@ -269,70 +291,70 @@ int main(int argc, const char * argv[]) {
     fprintf(f, "Starting ZN21SipMessageEncodingMapC2Ev check\n");
 //    printf(RED("------------------------------------------------------------------------------") "\n");
     printf(HWHT("\nSystem Software & Hardware:\n"));
-    system("uname -a\n");
-    system("sysctl machdep.cpu.brand_string\n");
-    system("clang -v\n");
-    system("xcodebuild -version\n");
+    system("uname -a");
+    system("sysctl machdep.cpu.brand_string");
+    system("sysctl -a | grep hw.memsize");
+    system("clang -v");
+    system("xcodebuild -version");
+    system("df -h");
+
 //    printf(RED("---------------------------") "\n");
     setlogmask (LOG_UPTO (LOG_NOTICE));
     openlog ("Starting ZN21SipMessageEncodingMapC2Ev check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
     syslog (LOG_NOTICE, "Starting ZN21SipMessageEncodingMapC2Ev check as: %s", argv[0]);
     closelog ();
 //    printf(RED("---------------------------") "\n");
- // `time_t` is an arithmetic time type
-    time_t now;
- 
-    // Obtain current time
-    // `time()` returns the current time of the system as a `time_t` value
-    time(&now);
+    // `time_t` is an arithmetic time type
+       time_t now;
+    
+       // Obtain current time
+       // `time()` returns the current time of the system as a `time_t` value
+       time(&now);
 
-    // Convert the `time_t` value to calendar time and
-    // fill a `tm` structure with the corresponding values
-    struct tm *local = localtime(&now);
- 
-    int hours   = local->tm_hour;         // get hours since midnight (0-23)
-    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
-    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
-    int day     = local->tm_mday;         // get day of month (1 to 31)
-    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
-    int year    = local->tm_year + 1900;  // get year since 1900
+       // Convert the `time_t` value to calendar time and
+       // fill a `tm` structure with the corresponding values
+       struct tm *local = localtime(&now);
+    
+       int hours   = local->tm_hour;         // get hours since midnight (0-23)
+       int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
+       int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
+       int day     = local->tm_mday;         // get day of month (1 to 31)
+       int month   = local->tm_mon + 1;      // get month of year (0 to 11)
+       int year    = local->tm_year + 1900;  // get year since 1900
 
-    // Print the timestamp
-    printf("\nTimestamp: %s", ctime(&now));
+       // Print the timestamp
+       printf("\nTimestamp: %s", ctime(&now));
 
-    // Print the local time
-    if (hours < 12) { // before midday
-        printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
-    } else { // after midday
-        printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
-    }
+       // Print the local time
+       if (hours < 12) { // before midday
+           printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
+       } else { // after midday
+           printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
+       }
 
-    // Print the current date
-    printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+       // Print the current date
+       printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+
   std::string str;
   
   if(!ReadFileToString(argv[1], str)) return 0;
   
   printf("Running decoder\n");
 
-  char sipMessageEncodingMap[2000];
-  SipMessageEncodingMap_constructor(sipMessageEncodingMap);
-  
-  char arg1[80];
-  memset(arg1, 0, sizeof(arg1));
-#ifdef ARM64
-  memset(arg1 + 44, 0xAA, 4);
-#else
-  memset(arg1 + 40, 0xAA, 8);
-#endif
-  *(uint64_t*)(arg1 + 56) = (uint64_t)sipMessageEncodingMap;
+    char sipMessageEncodingMap[SIZE_OF_SIP_MESSAGE_ENCODING_MAP];
+    SipMessageEncodingMap_constructor(sipMessageEncodingMap);
 
-  void *arg3 = NULL;
-  char arg4 = 0;
-  
-  SipMessageDecoder_decode(arg1, str, &arg3, &arg4);
+    char arg1[SIZE_OF_ARG1];
+    memset(arg1, 0, sizeof(arg1));
 
-  printf("Done\n");
-  
-  return 0;
-}
+    // Check to make sure the offset and fill size don't exceed the array bounds
+    if (OFFSET + FILL_SIZE <= SIZE_OF_ARG1) {
+      memset(arg1 + OFFSET, 0xAA, FILL_SIZE);
+    } else {
+        // Log an error message to standard error
+        fprintf(stderr, "Error: OFFSET + FILL_SIZE exceeds SIZE_OF_ARG1, array bounds violation avoided.\n");
+        return 1; // Return an error code
+      }
+
+      return 0;
+    }
