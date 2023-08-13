@@ -279,50 +279,28 @@ int main(int argc, const char * argv[]) {
     syslog (LOG_NOTICE, "Starting ZN21SipMessageEncodingMapC2Ev check as: %s", argv[0]);
     closelog ();
 //    printf(RED("---------------------------") "\n");
-    // variables to store the date and time components
-    int hours, minutes, seconds, day, month, year;
- 
-    // `time_t` is an arithmetic time type
+ // `time_t` is an arithmetic time type
     time_t now;
  
     // Obtain current time
     // `time()` returns the current time of the system as a `time_t` value
     time(&now);
 
-    // localtime converts a `time_t` value to calendar time and
-    // returns a pointer to a `tm` structure with its members
-    // filled with the corresponding values
+    // Convert the `time_t` value to calendar time and
+    // fill a `tm` structure with the corresponding values
     struct tm *local = localtime(&now);
  
-    hours = local->tm_hour;         // get hours since midnight (0-23)
-    minutes = local->tm_min;        // get minutes passed after the hour (0-59)
-    seconds = local->tm_sec;        // get seconds passed after a minute (0-59)
- 
-    day = local->tm_mday;            // get day of month (1 to 31)
-    month = local->tm_mon + 1;      // get month of year (0 to 11)
-    year = local->tm_year + 1900;   // get year since 1900
- 
-    // print the current date
-    // printf("Run Date (D/M/Y) = %02d/%02d/%d\n", day, month, year);
-    
-    // print local time
-/*
-    if (hours < 12) {    // before midday
-        printf("MS Timer Start at %02d:%02d:%02d am\n", hours, minutes, seconds);
-    }
-    else {    // after midday
-        printf("MS Timer Start at %02d:%02d:%02d pm\n", hours - 12, minutes, seconds);
-    }
-*/
-//    printf(RED("---------------------------") "\n");
-//    printf(RED("---------------------------") "\n");
-    
-       // Convert to local time format and print to stdout
-       // printf("Today is %s\n", ctime(&now));
-//    printf(RED("------------------------------------------------------------------------------") "\n");
-    printf(GRN("\nTimestamp: " "%s\n") "",ctime(&now));
-//    printf(RED("------------------------------------------------------------------------------") "\n");
+    int hours   = local->tm_hour;         // get hours since midnight (0-23)
+    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
+    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
+    int day     = local->tm_mday;         // get day of month (1 to 31)
+    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
+    int year    = local->tm_year + 1900;  // get year since 1900
 
+    // Print the timestamp
+    printf("\nTimestamp: %s", ctime(&now));
+
+    // Print the local time
     if (hours < 12) { // before midday
         printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
     } else { // after midday
@@ -331,7 +309,6 @@ int main(int argc, const char * argv[]) {
 
     // Print the current date
     printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
-
   std::string str;
   
   if(!ReadFileToString(argv[1], str)) return 0;
