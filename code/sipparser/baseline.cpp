@@ -52,7 +52,7 @@
 #define NORMAL_COLOR(string)"\x1B[0m" string "\x1b[0m"
 
 // Constants for specific application logic
-#define SIZE_OF_SIP_MESSAGE_ENCODING_MAP 2000
+#define SIZE_OF_SIP_MESSAGE_ENCODING_MAP 1000
 #define SIZE_OF_ARG1 80
 
 #ifdef ARM64
@@ -94,9 +94,9 @@ void *LoadLibrary(const char *name) {
     printf("Total loaded images: %u\n", all_image_infos->infoArrayCount);
     
     for (uint32_t i = 0; i < all_image_infos->infoArrayCount; ++i) {
-        printf("Comparing: %s with %s\n", all_image_info_array[i].imageFilePath, name);
+//        printf("Comparing: %s with %s\n", all_image_info_array[i].imageFilePath, name);
         if (strcmp(all_image_info_array[i].imageFilePath, name) == 0) {
-          printf("Found matching library at address: %p\n", (void *)all_image_info_array[i].imageLoadAddress);
+//          printf("Found matching library at address: %p\n", (void *)all_image_info_array[i].imageLoadAddress);
           return (void *)all_image_info_array[i].imageLoadAddress;
         }
       }
@@ -109,34 +109,34 @@ void *GetLoadCommand(mach_header_64 *mach_header,
                               void *load_commands_buffer,
                               uint32_t load_cmd_type,
                               const char *segname) {
-  printf("Searching for load command type: 0x%x\n", load_cmd_type);
+//  printf("Searching for load command type: 0x%x\n", load_cmd_type);
   if (segname) {
-    printf("Segment name: %s\n", segname);
+//    printf("Segment name: %s\n", segname);
   }
 
-  printf("Number of load commands in mach_header: %u\n", mach_header->ncmds);
+//  printf("Number of load commands in mach_header: %u\n", mach_header->ncmds);
   uint64_t load_cmd_addr = (uint64_t)load_commands_buffer;
-  printf("Load commands buffer address: 0x%llx\n", load_cmd_addr);
+//  printf("Load commands buffer address: 0x%llx\n", load_cmd_addr);
 
   for (uint32_t i = 0; i < mach_header->ncmds; ++i) {
     load_command *load_cmd = (load_command *)load_cmd_addr;
-    printf("Load command %u, type: 0x%x, size: %u\n", i, load_cmd->cmd, load_cmd->cmdsize);
+//    printf("Load command %u, type: 0x%x, size: %u\n", i, load_cmd->cmd, load_cmd->cmdsize);
 
     if (load_cmd_type == LC_SEGMENT_64 && load_cmd->cmd == LC_SEGMENT_64) {
       segment_command_64 *seg_cmd = (segment_command_64 *)load_cmd;
-      printf("Segment name in load command: %s\n", seg_cmd->segname);
+//      printf("Segment name in load command: %s\n", seg_cmd->segname);
     }
 
     if (load_cmd->cmd == load_cmd_type) {
       if (load_cmd_type != LC_SEGMENT_64
           || (segname && !strcmp(((segment_command_64*)load_cmd)->segname, segname))) {
-        printf("Found matching load command\n");
+//        printf("Found matching load command\n");
         return load_cmd;
       }
     }
 
     load_cmd_addr += load_cmd->cmdsize;
-    printf("Next load command address: 0x%llx\n", load_cmd_addr);
+//    printf("Next load command address: 0x%llx\n", load_cmd_addr);
   }
 
   printf("No matching load command found\n");
@@ -296,7 +296,7 @@ int main(int argc, const char * argv[]) {
     system("sysctl -a | grep hw.memsize");
     system("clang -v");
     system("xcodebuild -version");
-    system("df -h");
+//    system("df -h");
 
 //    printf(RED("---------------------------") "\n");
     setlogmask (LOG_UPTO (LOG_NOTICE));
@@ -334,6 +334,16 @@ int main(int argc, const char * argv[]) {
 
        // Print the current date
        printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+    
+    task_t task = mach_task_self();
+    pid_t pid;
+    kern_return_t krt = pid_for_task(task, &pid);
+    if (krt == KERN_SUCCESS) {
+        printf("Got PID: %d\n", pid);
+    } else {
+        printf("Unable to retrieve PID, error code: %d\n", krt);
+    }
+
 
   std::string str;
   
