@@ -81,8 +81,8 @@ void *LoadLibrary(const char *name) {
   mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
 
   kern_return_t krt;
-    printf("Got task_info, %d\n", krt);
   krt = task_info(mach_task_self(), TASK_DYLD_INFO, (task_info_t)&task_dyld_info, &count);
+    printf("Got task_info, %d\n", krt);
   if (krt != KERN_SUCCESS) {
     printf("Unable to retrieve task_info, %d\n", krt);
     return NULL;
