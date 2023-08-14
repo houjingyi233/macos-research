@@ -102,6 +102,7 @@ void *LoadLibrary(const char *name) {
   task_dyld_info_data_t task_dyld_info;
   mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
 
+// Gets the Task Info
   kern_return_t krt;
   krt = task_info(mach_task_self(), TASK_DYLD_INFO, (task_info_t)&task_dyld_info, &count);
     printf("Got task_info, %d\n", krt);
@@ -110,6 +111,7 @@ void *LoadLibrary(const char *name) {
     return NULL;
   }
 
+// Search thru all the loaded dyld's
   dyld_all_image_infos *all_image_infos = (dyld_all_image_infos *)task_dyld_info.all_image_info_addr;
   const dyld_image_info *all_image_info_array = all_image_infos->infoArray;
   
@@ -127,6 +129,7 @@ void *LoadLibrary(const char *name) {
       return NULL;
     }
 
+// Search the load command types
 void *GetLoadCommand(mach_header_64 *mach_header,
                               void *load_commands_buffer,
                               uint32_t load_cmd_type,
@@ -166,35 +169,35 @@ void *GetLoadCommand(mach_header_64 *mach_header,
 }
 
 void *GetSymbolAddress(void *base_address, const char *symbol_name) {
-  printf("Getting symbol address for: %s\n", symbol_name);
-  printf("Base address: 0x%p\n", base_address);
+//  printf("Getting symbol address for: %s\n", symbol_name);
+//  printf("Base address: 0x%p\n", base_address);
 
   mach_header_64 *mach_header = (mach_header_64 *)base_address;
   void *load_commands_buffer = (void *)((uint64_t)base_address + sizeof(mach_header_64));
-  printf("Load commands buffer address: 0x%p\n", load_commands_buffer);
+//  printf("Load commands buffer address: 0x%p\n", load_commands_buffer);
 
   symtab_command *symtab_cmd = (symtab_command *)GetLoadCommand(mach_header, load_commands_buffer, LC_SYMTAB, NULL);
-  printf("Symbol table command address: 0x%p\n", symtab_cmd);
+//  printf("Symbol table command address: 0x%p\n", symtab_cmd);
 
   segment_command_64 *linkedit_cmd = (segment_command_64 *)GetLoadCommand(mach_header, load_commands_buffer, LC_SEGMENT_64, "__LINKEDIT");
-  printf("Link edit segment command address: 0x%p\n", linkedit_cmd);
+//  printf("Link edit segment command address: 0x%p\n", linkedit_cmd);
 
   segment_command_64 *text_cmd = (segment_command_64 *)GetLoadCommand(mach_header, load_commands_buffer, LC_SEGMENT_64, "__TEXT");
-  printf("Text segment command address: 0x%p\n", text_cmd);
+//  printf("Text segment command address: 0x%p\n", text_cmd);
 
   uint64_t file_vm_slide = (uint64_t)base_address - text_cmd->vmaddr;
-  printf("File VM slide: 0x%llx\n", file_vm_slide);
+//  printf("File VM slide: 0x%llx\n", file_vm_slide);
 
   char *strtab = (char *)linkedit_cmd->vmaddr + file_vm_slide + symtab_cmd->stroff - linkedit_cmd->fileoff;
-  printf("String table address: 0x%p\n", strtab);
+//  printf("String table address: 0x%p\n", strtab);
 
   char *symtab = (char *)(linkedit_cmd->vmaddr + file_vm_slide + symtab_cmd->symoff - linkedit_cmd->fileoff);
-  printf("Symbol table address: 0x%p\n", symtab);
+//  printf("Symbol table address: 0x%p\n", symtab);
 
   void *symbol_address = NULL;
 
   size_t curr_symbol_address = (size_t)symtab;
-    printf("Current symbol address start: 0x%zx\n", curr_symbol_address);
+//    printf("Current symbol address start: 0x%zx\n", curr_symbol_address);
     
   for (int i = 0; i < symtab_cmd->nsyms; ++i) {
     nlist_64 curr_symbol = *(nlist_64*)curr_symbol_address;
@@ -209,7 +212,7 @@ void *GetSymbolAddress(void *base_address, const char *symbol_name) {
       //printf("%s\n", curr_sym_name);
       if (!strcmp(curr_sym_name, symbol_name)) {
         symbol_address = (void*)((uint64_t)base_address - text_cmd->vmaddr + curr_symbol.n_value);
-          printf("Found matching symbol at address: 0x%p\n", symbol_address);
+//          printf("Found matching symbol at address: 0x%p\n", symbol_address);
         break;
       }
     }
@@ -236,8 +239,6 @@ void captureTelemetry(FILE* outputFile) {
     
     // Print the timestamp
     fprintf(outputFile, "Timestamp: %s", timeString); // ctime() includes a newline
-    
-    
     fprintf(outputFile, "User CPU time: %ld.%06d seconds\n", usage.ru_utime.tv_sec, (int)usage.ru_utime.tv_usec);
     fprintf(outputFile, "System CPU time: %ld.%06d seconds\n", usage.ru_stime.tv_sec, (int)usage.ru_stime.tv_usec);
     fprintf(outputFile, "Maximum resident set size: %ld bytes\n", usage.ru_maxrss);
@@ -331,11 +332,11 @@ int ReadFileToString(const char *filename, std::string &str) {
   str.assign(buf, size);
   
   free(buf);
-    printf("Injecting str...\n");
+    printf("The str is... \n");
     printf("----------\n");
     std::cout << str;
     printf("----------\n");
-    printf("End Fuzzed str...\n");
+//    printf("End Fuzzed str...\n");
 
   return 1;
 }
@@ -350,7 +351,7 @@ int main(int argc, const char * argv[]) {
 
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    printf("Starting check as: %s in Current working dir: %s\n", argv[0], cwd);
+    printf("Starting main() as: %s in Current working dir: %s\n", argv[0], cwd);
 
     char logFilename[PATH_MAX];
        snprintf(logFilename, sizeof(logFilename), "%s.log", argv[0]);
@@ -421,16 +422,19 @@ int main(int argc, const char * argv[]) {
     printf("Running decoder\n");
     char sipMessageEncodingMap[SIZE_OF_SIP_MESSAGE_ENCODING_MAP];
     SipMessageEncodingMap_constructor(sipMessageEncodingMap);
-
+    printf("Done running decoder\n");
+    
     FILE* logFile = fopen("telemetry.log", "a+");
     if (logFile == NULL) {
         perror("Failed to open log file");
         return 1;
     }
-    captureTelemetry(stdout);
+//    captureTelemetry(stdout);
     captureTelemetry(logFile);
     fclose(logFile);
 
+    
+/*
     // Process task info here...
     {
         kern_return_t krt;
@@ -447,7 +451,8 @@ int main(int argc, const char * argv[]) {
 
         return 0;
     }
-
+ */
+    
     char arg1[SIZE_OF_ARG1];
     memset(arg1, 0, sizeof(arg1));
     if (OFFSET + FILL_SIZE <= SIZE_OF_ARG1) {
