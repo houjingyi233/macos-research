@@ -355,10 +355,31 @@ int main(int argc, const char * argv[]) {
     closelog();
 
     time_t now;
+    // Obtain current time
+    // `time()` returns the current time of the system as a `time_t` value
     time(&now);
-    struct tm *local = localtime(&now);
-    // Print the timestamp, local time, and current date here...
 
+    // Convert the `time_t` value to calendar time and
+    // fill a `tm` structure with the corresponding values
+    struct tm *local = localtime(&now);
+ 
+    int hours   = local->tm_hour;         // get hours since midnight (0-23)
+    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
+    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
+    int day     = local->tm_mday;         // get day of month (1 to 31)
+    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
+    int year    = local->tm_year + 1900;  // get year since 1900
+
+    // Print the local time
+    if (hours < 12) { // before midday
+        printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
+    } else { // after midday
+        printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
+    }
+
+    // Print the current date
+    printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+    
     std::string str;
     if (!ReadFileToString(argv[1], str)) return 0;
 
@@ -376,6 +397,21 @@ int main(int argc, const char * argv[]) {
     fclose(logFile);
 
     // Process task info here...
+    {
+        kern_return_t krt;
+        task_dyld_info_data_t task_dyld_info;
+        mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
+
+        krt = task_info(mach_task_self(), TASK_DYLD_INFO, (task_info_t)&task_dyld_info, &count);
+
+        if (krt == KERN_SUCCESS) {
+            printf("Got task_info, Kernel slide: 0x%llx\n", task_dyld_info.all_image_info_size);
+        } else {
+            printf("Unable to retrieve task_info, %d\n", krt);
+        }
+
+        return 0;
+    }
 
     char arg1[SIZE_OF_ARG1];
     memset(arg1, 0, sizeof(arg1));
