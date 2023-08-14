@@ -68,6 +68,22 @@
 #define HWHT(string)        "\e[0;97m" string "\x1b[0m"
 #define NORMAL_COLOR(string) "\x1B[0m" string "\x1b[0m"
 
+// Function to log the result of a system command
+void logSystemCommand(FILE *f, const char *command) {
+    char buffer[128];
+    FILE *pipe = popen(command, "r");
+    if (pipe == NULL) {
+        fprintf(f, "Failed to run command: %s\n", command);
+        return;
+    }
+
+    // Read the output of the command and write it to the file
+    while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
+        fprintf(f, "%s", buffer);
+    }
+
+    pclose(pipe);
+}
 
 // Setup SipMessageDecoder_decode
 typedef uint64_t (*t_SipMessageDecoder_decode)(void *arg1, std::string &s, void *arg3, void *arg4);
@@ -315,7 +331,7 @@ int ReadFileToString(const char *filename, std::string &str) {
   str.assign(buf, size);
   
   free(buf);
-    printf("Starting 🔥🔥🔥🔥 with str...\n");
+    printf("Injecting str...\n");
     printf("----------\n");
     std::cout << str;
     printf("----------\n");
@@ -334,34 +350,23 @@ int main(int argc, const char * argv[]) {
 
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    printf("Starting check ZN21SipMessageEncodingMapC2Ev as: %s in Current working dir: %s\n", argv[0], cwd);
+    printf("Starting check as: %s in Current working dir: %s\n", argv[0], cwd);
 
-    FILE *f = fopen("ZN21SipMessageEncodingMapC2Ev.log", "a+");
-    if (f == NULL) {
-        perror("Error opening file");
-        return 1;
-    }
-    fprintf(f, "Starting ZN21SipMessageEncodingMapC2Ev check\n");
+    char logFilename[PATH_MAX];
+       snprintf(logFilename, sizeof(logFilename), "%s.log", argv[0]);
 
-    printf(HWHT("\nSystem Software & Hardware:\n"));
-    system("uname -a");
-    system("sysctl machdep.cpu.brand_string");
-    system("sysctl -a | grep hw.memsize");
-    system("clang -v");
-    system("xcodebuild -version");
+       FILE *f = fopen(logFilename, "a+");
+       if (f == NULL) {
+           perror("Error opening log file");
+           return 1;
+       }
 
-    openlog("Starting ZN21SipMessageEncodingMapC2Ev check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-    syslog(LOG_NOTICE, "Starting ZN21SipMessageEncodingMapC2Ev check as: %s", argv[0]);
-    closelog();
-
+    // Get current time
     time_t now;
-    // Obtain current time
-    // `time()` returns the current time of the system as a `time_t` value
     time(&now);
-
+    struct tm *local = localtime(&now);
     // Convert the `time_t` value to calendar time and
     // fill a `tm` structure with the corresponding values
-    struct tm *local = localtime(&now);
  
     int hours   = local->tm_hour;         // get hours since midnight (0-23)
     int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
@@ -370,15 +375,45 @@ int main(int argc, const char * argv[]) {
     int month   = local->tm_mon + 1;      // get month of year (0 to 11)
     int year    = local->tm_year + 1900;  // get year since 1900
 
+    // Get and log current time, program name, and arguments
+     fprintf(f, "Timestamp: %s", ctime(&now));
+     fprintf(f, "Program Name: %s\n", argv[0]);
+     fprintf(f, "Arguments: ");
+     for (int i = 1; i < argc; i++) {
+         fprintf(f, "%s ", argv[i]);
+     }
+     fprintf(f, "\n");
+
+    // Log system information
+        fprintf(f, "System Software & Hardware:\n");
+        logSystemCommand(f, "uname -a");
+        logSystemCommand(f, "sysctl machdep.cpu.brand_string");
+        logSystemCommand(f, "sysctl -a | grep hw.memsize");
+//        logSystemCommand(f, "clang -v");
+//        logSystemCommand(f, "xcodebuild -version");
+        fclose(f);
+
+        openlog(logFilename, LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+        syslog(LOG_NOTICE, "Starting %s check as: %s", argv[0], argv[0]);
+        closelog();
+
+//    printf(HWHT("\nSystem Software & Hardware:\n"));
+//    system("uname -a");
+//    system("sysctl machdep.cpu.brand_string");
+//    system("sysctl -a | grep hw.memsize");
+//    system("clang -v");
+//    system("xcodebuild -version");
+
+
     // Print the local time
-    if (hours < 12) { // before midday
-        printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
-    } else { // after midday
-        printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
-    }
+//    if (hours < 12) { // before midday
+//        printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
+//    } else { // after midday
+//        printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
+//    }
 
     // Print the current date
-    printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+//    printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
     
     std::string str;
     if (!ReadFileToString(argv[1], str)) return 0;
