@@ -9,6 +9,7 @@
 // Verified working on X86_64, Rosetta and arm64e
 //
 // Define feature test macro to enable functionality exposed by headers
+// Define the feature test macro for X/Open
 #define _XOPEN_SOURCE
 
 // Standard C/C++ headers
@@ -24,9 +25,13 @@
 #include <sys/mman.h>
 #include <sys/utsname.h>
 #include <sys/types.h>
+#include <sys/resource.h>
+#include <sys/sysctl.h>
 #include <unistd.h>
 #include <syslog.h>
 #include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
 
 // Mach and dynamic loading headers
 #include <mach/mach.h>
@@ -40,17 +45,6 @@
 #include <stdbool.h>
 #include <ucontext.h>
 
-// Color codes for terminal text
-#define MAG(string)         "\e[0;35m" string "\x1b[0m"
-#define BLUE(string)        "\x1b[34m" string "\x1b[0m"
-#define RED(string)         "\x1b[31m" string "\x1b[0m"
-#define WHT(string)         "\e[0;37m" string "\x1b[0m"
-#define GRN(string)         "\e[0;32m" string "\x1b[0m"
-#define YEL(string)         "\e[0;33m" string "\x1b[0m"
-#define CYN(string)         "\e[0;36m" string "\x1b[0m"
-#define HWHT(string)        "\e[0;97m" string "\x1b[0m"
-#define NORMAL_COLOR(string)"\x1B[0m" string "\x1b[0m"
-
 // Constants for specific application logic
 #define SIZE_OF_SIP_MESSAGE_ENCODING_MAP 1000
 #define SIZE_OF_ARG1 80
@@ -62,6 +56,18 @@
 #define OFFSET 40
 #define FILL_SIZE 8
 #endif
+
+// Terminal text color codes
+#define MAG(string)         "\e[0;35m" string "\x1b[0m"
+#define BLUE(string)        "\x1b[34m" string "\x1b[0m"
+#define RED(string)         "\x1b[31m" string "\x1b[0m"
+#define WHT(string)         "\e[0;37m" string "\x1b[0m"
+#define GRN(string)         "\e[0;32m" string "\x1b[0m"
+#define YEL(string)         "\e[0;33m" string "\x1b[0m"
+#define CYN(string)         "\e[0;36m" string "\x1b[0m"
+#define HWHT(string)        "\e[0;97m" string "\x1b[0m"
+#define NORMAL_COLOR(string) "\x1B[0m" string "\x1b[0m"
+
 
 // Setup SipMessageDecoder_decode
 typedef uint64_t (*t_SipMessageDecoder_decode)(void *arg1, std::string &s, void *arg3, void *arg4);
@@ -199,6 +205,51 @@ void *GetSymbolAddress(void *base_address, const char *symbol_name) {
   return symbol_address;
 }
 
+void captureTelemetry(FILE* outputFile) {
+    struct rusage usage;
+    
+    if (getrusage(RUSAGE_SELF, &usage) != 0) {
+        fprintf(stderr, "Failed to get resource usage: %s\n", strerror(errno));
+        return;
+    }
+    
+    // Get the current time
+    time_t currentTime;
+    time(&currentTime);
+    char* timeString = ctime(&currentTime);
+    
+    // Print the timestamp
+    fprintf(outputFile, "Timestamp: %s", timeString); // ctime() includes a newline
+    
+    
+    fprintf(outputFile, "User CPU time: %ld.%06d seconds\n", usage.ru_utime.tv_sec, (int)usage.ru_utime.tv_usec);
+    fprintf(outputFile, "System CPU time: %ld.%06d seconds\n", usage.ru_stime.tv_sec, (int)usage.ru_stime.tv_usec);
+    fprintf(outputFile, "Maximum resident set size: %ld bytes\n", usage.ru_maxrss);
+    fprintf(outputFile, "Page faults (hard): %ld\n", usage.ru_majflt);
+    fprintf(outputFile, "Page faults (soft): %ld\n", usage.ru_minflt);
+    fprintf(outputFile, "Swaps: %ld\n", usage.ru_nswap);
+    fprintf(outputFile, "Block input operations: %ld\n", usage.ru_inblock);
+    fprintf(outputFile, "Block output operations: %ld\n", usage.ru_oublock);
+    // Counting open file descriptors
+        long open_fds = 0;
+        for (int i = 0; i < sysconf(_SC_OPEN_MAX); i++) {
+            if (fcntl(i, F_GETFD) != -1) open_fds++;
+        }
+        fprintf(outputFile, "Open file descriptors: %ld\n", open_fds);
+
+        // Memory usage (OS specific, example for macOS or *BSD)
+        size_t len = sizeof(int);
+        int pagesize;
+        sysctlbyname("vm.pagesize", &pagesize, &len, NULL, 0);
+        fprintf(outputFile, "Memory page size: %d bytes\n", pagesize);
+
+        int64_t physmem;
+        len = sizeof(physmem);
+        sysctlbyname("hw.memsize", &physmem, &len, NULL, 0);
+        fprintf(outputFile, "Physical memory size: %lld bytes\n", physmem);
+    }
+
+
 int initIPTelephony() {
 //    printf(RED("------------------------------------------------------------------------------") "\n");
     printf(CYN("Original Code by: Google Project Zero - Bug 2440 | Modified for Fuzzing by David Hoyt @h02332 on August 4, 2023\n"));
@@ -287,7 +338,11 @@ int main(int argc, const char * argv[]) {
     printf("Writing to Syslogd at LOG_NOTICE for ZN21SipMessageEncodingMapC2Ev check as: %s in Current working dir: %s\n", argv[0], cwd);
     FILE *f;
     f = fopen("ZN21SipMessageEncodingMapC2Ev.log", "a+"); // a+ (create + append) option will allow appending which is useful in a log file
-    if (f == NULL) { /* Something is wrong   */}
+    if (f == NULL) {
+        perror("Error opening file");
+        return 1; // Return an error code, or handle the error as needed
+    }
+
     fprintf(f, "Starting ZN21SipMessageEncodingMapC2Ev check\n");
 //    printf(RED("------------------------------------------------------------------------------") "\n");
     printf(HWHT("\nSystem Software & Hardware:\n"));
@@ -334,7 +389,28 @@ int main(int argc, const char * argv[]) {
 
        // Print the current date
        printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+    std::string str;
     
+    if(!ReadFileToString(argv[1], str)) return 0;
+    
+    printf("Running decoder\n");
+
+      char sipMessageEncodingMap[SIZE_OF_SIP_MESSAGE_ENCODING_MAP];
+      SipMessageEncodingMap_constructor(sipMessageEncodingMap);
+     
+    FILE* logFile = fopen("telemetry.log", "a+");
+        if (logFile == NULL) {
+            perror("Failed to open log file");
+            return 1;
+        }
+
+        // Capture telemetry to both stdout and the log file
+        captureTelemetry(stdout);
+        captureTelemetry(logFile);
+
+        fclose(logFile);
+        return 0;
+ 
     task_t task = mach_task_self();
     pid_t pid;
     kern_return_t krt = pid_for_task(task, &pid);
@@ -344,19 +420,25 @@ int main(int argc, const char * argv[]) {
         printf("Unable to retrieve PID, error code: %d\n", krt);
     }
 
+    {
+        kern_return_t krt;
+        task_dyld_info_data_t task_dyld_info;
+        mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
 
-  std::string str;
-  
-  if(!ReadFileToString(argv[1], str)) return 0;
-  
-  printf("Running decoder\n");
+        krt = task_info(mach_task_self(), TASK_DYLD_INFO, (task_info_t)&task_dyld_info, &count);
 
-    char sipMessageEncodingMap[SIZE_OF_SIP_MESSAGE_ENCODING_MAP];
-    SipMessageEncodingMap_constructor(sipMessageEncodingMap);
+        if (krt == KERN_SUCCESS) {
+            printf("Got task_info, Kernel slide: 0x%llx\n", task_dyld_info.all_image_info_size);
+        } else {
+            printf("Unable to retrieve task_info, %d\n", krt);
+        }
 
+        return 0;
+    }
+    
     char arg1[SIZE_OF_ARG1];
     memset(arg1, 0, sizeof(arg1));
-
+    
     // Check to make sure the offset and fill size don't exceed the array bounds
     if (OFFSET + FILL_SIZE <= SIZE_OF_ARG1) {
       memset(arg1 + OFFSET, 0xAA, FILL_SIZE);
