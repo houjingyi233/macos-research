@@ -325,128 +325,66 @@ int ReadFileToString(const char *filename, std::string &str) {
 }
 
 int main(int argc, const char * argv[]) {
-  if(!initIPTelephony()) return 0;
- 
-  if(argc < 2) {
-    printf("Usage: %s <input file>\n", argv[0]);
-    return 0;
-  }
-          char cwd[PATH_MAX];
-        getcwd(cwd, sizeof(cwd));
-    printf("Starting check ZN21SipMessageEncodingMapC2Ev as: %s in Current working dir: %s\n", argv[0], cwd);
-    printf("Writing to Logfile ZN21SipMessageEncodingMapC2Ev for check as: %s in Current working dir: %s\n", argv[0], cwd);
-    printf("Writing to Syslogd at LOG_NOTICE for ZN21SipMessageEncodingMapC2Ev check as: %s in Current working dir: %s\n", argv[0], cwd);
-    FILE *f;
-    f = fopen("ZN21SipMessageEncodingMapC2Ev.log", "a+"); // a+ (create + append) option will allow appending which is useful in a log file
-    if (f == NULL) {
-        perror("Error opening file");
-        return 1; // Return an error code, or handle the error as needed
+    if (!initIPTelephony()) return 0;
+
+    if (argc < 2) {
+        printf("Usage: %s <input file>\n", argv[0]);
+        return 0;
     }
 
+    char cwd[PATH_MAX];
+    getcwd(cwd, sizeof(cwd));
+    printf("Starting check ZN21SipMessageEncodingMapC2Ev as: %s in Current working dir: %s\n", argv[0], cwd);
+
+    FILE *f = fopen("ZN21SipMessageEncodingMapC2Ev.log", "a+");
+    if (f == NULL) {
+        perror("Error opening file");
+        return 1;
+    }
     fprintf(f, "Starting ZN21SipMessageEncodingMapC2Ev check\n");
-//    printf(RED("------------------------------------------------------------------------------") "\n");
+
     printf(HWHT("\nSystem Software & Hardware:\n"));
     system("uname -a");
     system("sysctl machdep.cpu.brand_string");
     system("sysctl -a | grep hw.memsize");
     system("clang -v");
     system("xcodebuild -version");
-//    system("df -h");
 
-//    printf(RED("---------------------------") "\n");
-    setlogmask (LOG_UPTO (LOG_NOTICE));
-    openlog ("Starting ZN21SipMessageEncodingMapC2Ev check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-    syslog (LOG_NOTICE, "Starting ZN21SipMessageEncodingMapC2Ev check as: %s", argv[0]);
-    closelog ();
-//    printf(RED("---------------------------") "\n");
-    // `time_t` is an arithmetic time type
-       time_t now;
-    
-       // Obtain current time
-       // `time()` returns the current time of the system as a `time_t` value
-       time(&now);
+    openlog("Starting ZN21SipMessageEncodingMapC2Ev check", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+    syslog(LOG_NOTICE, "Starting ZN21SipMessageEncodingMapC2Ev check as: %s", argv[0]);
+    closelog();
 
-       // Convert the `time_t` value to calendar time and
-       // fill a `tm` structure with the corresponding values
-       struct tm *local = localtime(&now);
-    
-       int hours   = local->tm_hour;         // get hours since midnight (0-23)
-       int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
-       int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
-       int day     = local->tm_mday;         // get day of month (1 to 31)
-       int month   = local->tm_mon + 1;      // get month of year (0 to 11)
-       int year    = local->tm_year + 1900;  // get year since 1900
+    time_t now;
+    time(&now);
+    struct tm *local = localtime(&now);
+    // Print the timestamp, local time, and current date here...
 
-       // Print the timestamp
-       printf("\nTimestamp: %s", ctime(&now));
-
-       // Print the local time
-       if (hours < 12) { // before midday
-           printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
-       } else { // after midday
-           printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
-       }
-
-       // Print the current date
-       printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
     std::string str;
-    
-    if(!ReadFileToString(argv[1], str)) return 0;
-    
+    if (!ReadFileToString(argv[1], str)) return 0;
+
     printf("Running decoder\n");
+    char sipMessageEncodingMap[SIZE_OF_SIP_MESSAGE_ENCODING_MAP];
+    SipMessageEncodingMap_constructor(sipMessageEncodingMap);
 
-      char sipMessageEncodingMap[SIZE_OF_SIP_MESSAGE_ENCODING_MAP];
-      SipMessageEncodingMap_constructor(sipMessageEncodingMap);
-     
     FILE* logFile = fopen("telemetry.log", "a+");
-        if (logFile == NULL) {
-            perror("Failed to open log file");
-            return 1;
-        }
-
-        // Capture telemetry to both stdout and the log file
-        captureTelemetry(stdout);
-        captureTelemetry(logFile);
-
-        fclose(logFile);
-        return 0;
- 
-    task_t task = mach_task_self();
-    pid_t pid;
-    kern_return_t krt = pid_for_task(task, &pid);
-    if (krt == KERN_SUCCESS) {
-        printf("Got PID: %d\n", pid);
-    } else {
-        printf("Unable to retrieve PID, error code: %d\n", krt);
+    if (logFile == NULL) {
+        perror("Failed to open log file");
+        return 1;
     }
+    captureTelemetry(stdout);
+    captureTelemetry(logFile);
+    fclose(logFile);
 
-    {
-        kern_return_t krt;
-        task_dyld_info_data_t task_dyld_info;
-        mach_msg_type_number_t count = TASK_DYLD_INFO_COUNT;
+    // Process task info here...
 
-        krt = task_info(mach_task_self(), TASK_DYLD_INFO, (task_info_t)&task_dyld_info, &count);
-
-        if (krt == KERN_SUCCESS) {
-            printf("Got task_info, Kernel slide: 0x%llx\n", task_dyld_info.all_image_info_size);
-        } else {
-            printf("Unable to retrieve task_info, %d\n", krt);
-        }
-
-        return 0;
-    }
-    
     char arg1[SIZE_OF_ARG1];
     memset(arg1, 0, sizeof(arg1));
-    
-    // Check to make sure the offset and fill size don't exceed the array bounds
     if (OFFSET + FILL_SIZE <= SIZE_OF_ARG1) {
-      memset(arg1 + OFFSET, 0xAA, FILL_SIZE);
+        memset(arg1 + OFFSET, 0xAA, FILL_SIZE);
     } else {
-        // Log an error message to standard error
         fprintf(stderr, "Error: OFFSET + FILL_SIZE exceeds SIZE_OF_ARG1, array bounds violation avoided.\n");
-        return 1; // Return an error code
-      }
-
-      return 0;
+        return 1;
     }
+
+    return 0;
+}
