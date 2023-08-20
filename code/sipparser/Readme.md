@@ -1,6 +1,13 @@
 ### Project Zero Bug 2440 
 The was a use-after-free vulnerability in libIPTelephony.dylib inside the SIP message decoder (SipMessageDecoder::decode() function). 
 
+I made some changes to the code and uploaded baseline.cpp 
+- https://github.com/xsscx/macos-research/blob/main/code/sipparser/baseline.cpp
+
+- I've made further changes to the Code and written a Test Harness to find more Bugs
+- I'll Update the Code and include the Fuzzing Functions in .cpp
+- I've found it easier to use LLDB and set Breakpoint and inject to the specific function or args
+
 Google Project Zero wrote code that I've modified for Fuzzing.
 
 - These are all Zero Page Crashes
