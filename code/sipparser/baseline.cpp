@@ -134,34 +134,34 @@ void *GetLoadCommand(mach_header_64 *mach_header,
                               void *load_commands_buffer,
                               uint32_t load_cmd_type,
                               const char *segname) {
-//  printf("Searching for load command type: 0x%x\n", load_cmd_type);
+  printf("Searching for load command type: 0x%x\n", load_cmd_type);
   if (segname) {
-//    printf("Segment name: %s\n", segname);
+    printf("Segment name: %s\n", segname);
   }
 
-//  printf("Number of load commands in mach_header: %u\n", mach_header->ncmds);
+  printf("Number of load commands in mach_header: %u\n", mach_header->ncmds);
   uint64_t load_cmd_addr = (uint64_t)load_commands_buffer;
-//  printf("Load commands buffer address: 0x%llx\n", load_cmd_addr);
+  printf("Load commands buffer address: 0x%llx\n", load_cmd_addr);
 
   for (uint32_t i = 0; i < mach_header->ncmds; ++i) {
     load_command *load_cmd = (load_command *)load_cmd_addr;
-//    printf("Load command %u, type: 0x%x, size: %u\n", i, load_cmd->cmd, load_cmd->cmdsize);
+    printf("Load command %u, type: 0x%x, size: %u\n", i, load_cmd->cmd, load_cmd->cmdsize);
 
     if (load_cmd_type == LC_SEGMENT_64 && load_cmd->cmd == LC_SEGMENT_64) {
       segment_command_64 *seg_cmd = (segment_command_64 *)load_cmd;
-//      printf("Segment name in load command: %s\n", seg_cmd->segname);
+      printf("Segment name in load command: %s\n", seg_cmd->segname);
     }
 
     if (load_cmd->cmd == load_cmd_type) {
       if (load_cmd_type != LC_SEGMENT_64
           || (segname && !strcmp(((segment_command_64*)load_cmd)->segname, segname))) {
-//        printf("Found matching load command\n");
+        printf("Found matching load command\n");
         return load_cmd;
       }
     }
 
     load_cmd_addr += load_cmd->cmdsize;
-//    printf("Next load command address: 0x%llx\n", load_cmd_addr);
+    printf("Next load command address: 0x%llx\n", load_cmd_addr);
   }
 
   printf("No matching load command found\n");
@@ -169,56 +169,56 @@ void *GetLoadCommand(mach_header_64 *mach_header,
 }
 
 void *GetSymbolAddress(void *base_address, const char *symbol_name) {
-//  printf("Getting symbol address for: %s\n", symbol_name);
-//  printf("Base address: 0x%p\n", base_address);
+  printf("Getting symbol address for: %s\n", symbol_name);
+  printf("Base address: 0x%p\n", base_address);
 
   mach_header_64 *mach_header = (mach_header_64 *)base_address;
   void *load_commands_buffer = (void *)((uint64_t)base_address + sizeof(mach_header_64));
-//  printf("Load commands buffer address: 0x%p\n", load_commands_buffer);
+  printf("Load commands buffer address: 0x%p\n", load_commands_buffer);
 
   symtab_command *symtab_cmd = (symtab_command *)GetLoadCommand(mach_header, load_commands_buffer, LC_SYMTAB, NULL);
-//  printf("Symbol table command address: 0x%p\n", symtab_cmd);
+  printf("Symbol table command address: 0x%p\n", symtab_cmd);
 
   segment_command_64 *linkedit_cmd = (segment_command_64 *)GetLoadCommand(mach_header, load_commands_buffer, LC_SEGMENT_64, "__LINKEDIT");
-//  printf("Link edit segment command address: 0x%p\n", linkedit_cmd);
+  printf("Link edit segment command address: 0x%p\n", linkedit_cmd);
 
   segment_command_64 *text_cmd = (segment_command_64 *)GetLoadCommand(mach_header, load_commands_buffer, LC_SEGMENT_64, "__TEXT");
-//  printf("Text segment command address: 0x%p\n", text_cmd);
+  printf("Text segment command address: 0x%p\n", text_cmd);
 
   uint64_t file_vm_slide = (uint64_t)base_address - text_cmd->vmaddr;
-//  printf("File VM slide: 0x%llx\n", file_vm_slide);
+  printf("File VM slide: 0x%llx\n", file_vm_slide);
 
   char *strtab = (char *)linkedit_cmd->vmaddr + file_vm_slide + symtab_cmd->stroff - linkedit_cmd->fileoff;
-//  printf("String table address: 0x%p\n", strtab);
+  printf("String table address: 0x%p\n", strtab);
 
   char *symtab = (char *)(linkedit_cmd->vmaddr + file_vm_slide + symtab_cmd->symoff - linkedit_cmd->fileoff);
-//  printf("Symbol table address: 0x%p\n", symtab);
+  printf("Symbol table address: 0x%p\n", symtab);
 
   void *symbol_address = NULL;
 
   size_t curr_symbol_address = (size_t)symtab;
-//    printf("Current symbol address start: 0x%zx\n", curr_symbol_address);
+    printf("Current symbol address start: 0x%zx\n", curr_symbol_address);
     
   for (int i = 0; i < symtab_cmd->nsyms; ++i) {
     nlist_64 curr_symbol = *(nlist_64*)curr_symbol_address;
-//      printf("Processing symbol %d: type = 0x%x\n", i, curr_symbol.n_type);
+      printf("Processing symbol %d: type = 0x%x\n", i, curr_symbol.n_type);
       
     if ((curr_symbol.n_type & N_TYPE) == N_SECT) {
       char *curr_sym_name = NULL;
       std::string curr_sym_name_string;
       curr_sym_name = strtab + curr_symbol.n_un.n_strx;
-//        printf("Current symbol name: %s\n", curr_sym_name);
+        printf("Current symbol name: %s\n", curr_sym_name);
 
-      //printf("%s\n", curr_sym_name);
+      printf("%s\n", curr_sym_name);
       if (!strcmp(curr_sym_name, symbol_name)) {
         symbol_address = (void*)((uint64_t)base_address - text_cmd->vmaddr + curr_symbol.n_value);
-//          printf("Found matching symbol at address: 0x%p\n", symbol_address);
+          printf("Found matching symbol at address: 0x%p\n", symbol_address);
         break;
       }
     }
 
     curr_symbol_address += sizeof(nlist_64);
-//      printf("Next symbol address: 0x%zx\n", curr_symbol_address);
+      printf("Next symbol address: 0x%zx\n", curr_symbol_address);
   }
   
   return symbol_address;
@@ -369,12 +369,12 @@ int main(int argc, const char * argv[]) {
     // Convert the `time_t` value to calendar time and
     // fill a `tm` structure with the corresponding values
  
-    int hours   = local->tm_hour;         // get hours since midnight (0-23)
-    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
-    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
-    int day     = local->tm_mday;         // get day of month (1 to 31)
-    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
-    int year    = local->tm_year + 1900;  // get year since 1900
+//    int hours   = local->tm_hour;         // get hours since midnight (0-23)
+//    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
+//    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
+//    int day     = local->tm_mday;         // get day of month (1 to 31)
+//    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
+//    int year    = local->tm_year + 1900;  // get year since 1900
 
     // Get and log current time, program name, and arguments
      fprintf(f, "Timestamp: %s", ctime(&now));
