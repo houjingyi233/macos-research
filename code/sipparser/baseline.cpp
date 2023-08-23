@@ -365,16 +365,16 @@ int main(int argc, const char * argv[]) {
     // Get current time
     time_t now;
     time(&now);
-//    struct tm *local = localtime(&now);
+    struct tm *local = localtime(&now);
     // Convert the `time_t` value to calendar time and
     // fill a `tm` structure with the corresponding values
  
-//    int hours   = local->tm_hour;         // get hours since midnight (0-23)
-//    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
-//    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
-//    int day     = local->tm_mday;         // get day of month (1 to 31)
-//    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
-//    int year    = local->tm_year + 1900;  // get year since 1900
+    int hours   = local->tm_hour;         // get hours since midnight (0-23)
+    int minutes = local->tm_min;          // get minutes passed after the hour (0-59)
+    int seconds = local->tm_sec;          // get seconds passed after a minute (0-59)
+    int day     = local->tm_mday;         // get day of month (1 to 31)
+    int month   = local->tm_mon + 1;      // get month of year (0 to 11)
+    int year    = local->tm_year + 1900;  // get year since 1900
 
     // Get and log current time, program name, and arguments
      fprintf(f, "Timestamp: %s", ctime(&now));
@@ -390,31 +390,31 @@ int main(int argc, const char * argv[]) {
         logSystemCommand(f, "uname -a");
         logSystemCommand(f, "sysctl machdep.cpu.brand_string");
         logSystemCommand(f, "sysctl -a | grep hw.memsize");
-//        logSystemCommand(f, "clang -v");
-//        logSystemCommand(f, "xcodebuild -version");
+        logSystemCommand(f, "clang -v");
+        logSystemCommand(f, "xcodebuild -version");
         fclose(f);
 
         openlog(logFilename, LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
         syslog(LOG_NOTICE, "Starting %s check as: %s", argv[0], argv[0]);
         closelog();
 
-//    printf(HWHT("\nSystem Software & Hardware:\n"));
-//    system("uname -a");
-//    system("sysctl machdep.cpu.brand_string");
-//    system("sysctl -a | grep hw.memsize");
-//    system("clang -v");
-//    system("xcodebuild -version");
+    printf(HWHT("\nSystem Software & Hardware:\n"));
+    system("uname -a");
+    system("sysctl machdep.cpu.brand_string");
+     system("sysctl -a | grep hw.memsize");
+    system("clang -v");
+    system("xcodebuild -version");
 
 
     // Print the local time
-//    if (hours < 12) { // before midday
-//        printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
-//    } else { // after midday
-//        printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
-//    }
+    if (hours < 12) { // before midday
+        printf("Run Time: %02d:%02d:%02d am\n", hours == 0 ? 12 : hours, minutes, seconds);
+    } else { // after midday
+        printf("Run Time: %02d:%02d:%02d pm\n", hours == 12 ? 12 : hours - 12, minutes, seconds);
+    }
 
     // Print the current date
-//    printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
+    printf("Run Date (D/M/Y): %02d/%02d/%d\n", day, month, year);
     
     std::string str;
     if (!ReadFileToString(argv[1], str)) return 0;
