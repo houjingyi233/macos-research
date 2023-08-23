@@ -365,7 +365,7 @@ int main(int argc, const char * argv[]) {
     // Get current time
     time_t now;
     time(&now);
-    struct tm *local = localtime(&now);
+//    struct tm *local = localtime(&now);
     // Convert the `time_t` value to calendar time and
     // fill a `tm` structure with the corresponding values
  
