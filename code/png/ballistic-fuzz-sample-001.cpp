@@ -66,7 +66,19 @@ std::string getRandomImageType() {
 void ballistic(Magick::Image &image, int currentMaxIter, int currentDepositionSize) {
     int width = getRandomValue(50, 1500);  // Randomize both lower and upper bounds
     int height = getRandomValue(50, 1500);
-    int bitDepth = (getRandomValue(0, 1) == 0) ? 8 : 16;
+    int bitDepth;
+    int randomChoice = getRandomValue(0, 2);  // 3 choices: 0, 1, and 2
+    switch (randomChoice) {
+        case 0:
+            bitDepth = 8;
+            break;
+        case 1:
+            bitDepth = 16;
+            break;
+        case 2:
+            bitDepth = 32;
+            break;
+    }
 
     Magick::Color particleColor(getRandomValue(0, 65535), getRandomValue(0, 65535), getRandomValue(0, 65535));
     image.strokeColor(particleColor);
