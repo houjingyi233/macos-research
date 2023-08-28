@@ -3,8 +3,9 @@
 1-Click File Open to Xcode Crash. 
 --------
 - Did not meet the bar for servicing as a Security Issue, not a surprise == Its just a Null Byte Crash
+- Download cx.xss.json-001.zip, unzip and open in Xcode, Recursive DoS with Program Exit. Harmless junk
 
-This PoC is re-gaining traction.... lol.  31 MAR 2023
+This PoC is re-gaining traction.... lol.  28 AUGUST 2023
 
 Enjoy!
 
