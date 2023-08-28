@@ -14,13 +14,22 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <cstdlib>
+#include <random>
 
-const int MAX_ITERATIONS = 6000;
+const int MAX_ITERATIONS = 6000000;
 const int MAX_RETRIES = 5;
+
+std::random_device rd;
+std::mt19937 gen(rd());
 
 void log(const std::string &message) {
     std::ofstream logFile("fuzz_log.txt", std::ios_base::app);
     logFile << message << std::endl;
+}
+
+int getRandomValue(int min, int max) {
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
 }
 
 void ballistic(Magick::Image &image, int maxIter, int depositionSize) {
@@ -47,6 +56,36 @@ void ballistic(Magick::Image &image, int maxIter, int depositionSize) {
     }
 }
 
+// Introduce more manipulation techniques
+void applyManipulations(Magick::Image &image) {
+    int choice = rand() % 5;
+    switch (choice) {
+        case 0:
+            image.flip();
+            break;
+        case 1:
+            image.flop();
+            break;
+        case 2:
+            image.rotate(90.0);
+            break;
+        case 3:
+            image.negate();
+            break;
+        case 4:
+            image.blur(0.5, 2.0);
+            break;
+        default:
+            break;
+    }
+}
+
+std::string getRandomImageType() {
+    std::vector<std::string> imageTypes = {"png", "jpeg", "gif", "tiff", "bmp"};
+    int index = rand() % imageTypes.size();
+    return imageTypes[index];
+}
+
 int main(int argc, char **argv) {
     Magick::InitializeMagick(*argv);
 
@@ -63,21 +102,25 @@ int main(int argc, char **argv) {
     for (int i = 0; i < NUM_IMAGES; i++) {
         int width = 300 + (rand() % 1200);
         int height = 300 + (rand() % 1200);
-        int bitDepth = (rand() % 2 == 0) ? 8 : 16;
+        int bitDepth = (rand() % 3) ? 8 : ((rand() % 2 == 0) ? 16 : 32); // Added option for 32 bit depth
         int depositionSize = 10 + (rand() % (width / 2));
         int maxIter = (rand() % MAX_ITERATIONS);
 
+        std::string imageType = getRandomImageType();
         std::stringstream filename;
-        filename << dirName << "/ballistic_" << i << ".png";
+        filename << dirName << "/ballistic_" << i << "." << imageType;
 
         int retries = MAX_RETRIES;
         while (retries--) {
             try {
                 Magick::Image image(Magick::Geometry(width, height), Magick::Color(0, 0, 0));
                 image.depth(bitDepth);
-                        
+
                 // Varying the Ballistic Deposition parameters
                 ballistic(image, maxIter, depositionSize);
+
+                // Apply the introduced manipulations
+                applyManipulations(image);
 
                 if (image.type() == Magick::PaletteType && !image.isValid()) {
                     std::cerr << "Image is of PaletteType but lacks a valid palette. Skipping." << std::endl;
@@ -85,7 +128,7 @@ int main(int argc, char **argv) {
                     std::stringstream logMsgBeforeWrite;
                     logMsgBeforeWrite << "Attempting to write image: " << filename.str() << " with dimensions: " << width << "x" << height << ", bit depth: " << bitDepth << ", deposition size: " << depositionSize << ", max iterations: " << maxIter;
                     log(logMsgBeforeWrite.str());
-                    
+
                     image.write(filename.str());
                 }
 
@@ -93,7 +136,7 @@ int main(int argc, char **argv) {
                 logMsg << "Generated image: " << filename.str() << " with dimensions: " << width << "x" << height << ", bit depth: " << bitDepth << ", deposition size: " << depositionSize << ", max iterations: " << maxIter;
                 log(logMsg.str());
                 std::cout << logMsg.str() << std::endl;
-                        
+
                 // If success, break out of the retry loop
                 break;
 
@@ -109,5 +152,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-
