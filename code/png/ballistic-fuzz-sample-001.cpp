@@ -15,6 +15,8 @@
 #include <sys/stat.h>
 #include <cstdlib>
 #include <random>
+#include <vector>
+#include <string>
 
 const int MAX_ITERATIONS = 6000000;
 const int MAX_RETRIES = 5;
@@ -32,33 +34,8 @@ int getRandomValue(int min, int max) {
     return dis(gen);
 }
 
-void ballistic(Magick::Image &image, int maxIter, int depositionSize) {
-    int width = image.columns();
-    int height = image.rows();
-
-    Magick::Color red(65535, 0, 0);
-
-    image.strokeColor(red);
-    image.draw(Magick::DrawableLine(width / 2.0 - depositionSize / 2.0, 1, width / 2.0 + depositionSize / 2.0, 1));
-
-    for (int iii = 0; iii < maxIter; iii++) {
-        int rr = rand() % width;
-        for (int rrr = height - 1; rrr > 0; rrr--) {
-            if (image.pixelColor(rr, rrr) == red) {
-                if ((image.pixelColor(rr - 1, rrr) == red) ||
-                    (image.pixelColor(rr + 1, rrr) == red) ||
-                    (image.pixelColor(rr, rrr - 1) == red)) {
-                    image.pixelColor(rr, rrr, red);
-                    break;
-                }
-            }
-        }
-    }
-}
-
-// Introduce more manipulation techniques
 void applyManipulations(Magick::Image &image) {
-    int choice = rand() % 5;
+    int choice = getRandomValue(0, 4);  // Adjusted to use getRandomValue
     switch (choice) {
         case 0:
             image.flip();
@@ -82,71 +59,83 @@ void applyManipulations(Magick::Image &image) {
 
 std::string getRandomImageType() {
     std::vector<std::string> imageTypes = {"png", "jpeg", "gif", "tiff", "bmp"};
-    int index = rand() % imageTypes.size();
-    return imageTypes[index];
+    return imageTypes[getRandomValue(0, imageTypes.size() - 1)];
+}
+
+void ballistic(Magick::Image &image, int currentMaxIter, int currentDepositionSize) {
+    int width = 300 + getRandomValue(0, 1200);
+    int height = 300 + getRandomValue(0, 1200);
+    int bitDepth = (getRandomValue(0, 1) == 0) ? 8 : 16;
+
+    // Randomize the color
+    Magick::Color particleColor(getRandomValue(0, 65535), getRandomValue(0, 65535), getRandomValue(0, 65535));
+    image.strokeColor(particleColor);
+
+    // Create a larger seed line to ensure visibility
+    currentDepositionSize = std::min(currentDepositionSize, width - 10);
+    image.draw(Magick::DrawableLine(width / 2.0 - currentDepositionSize / 2.0, height / 2.0, width / 2.0 + currentDepositionSize / 2.0, height / 2.0));
+
+    for (int iii = 0; iii < currentMaxIter; iii++) {
+        int rr = getRandomValue(0, width - 1);
+        for (int rrr = height - 1; rrr > 0; rrr--) {
+            if (image.pixelColor(rr, rrr) == particleColor) {
+                if ((image.pixelColor(rr - 1, rrr) == particleColor) ||
+                    (image.pixelColor(rr + 1, rrr) == particleColor) ||
+                    (image.pixelColor(rr, rrr - 1) == particleColor)) {
+                    image.pixelColor(rr, rrr, particleColor);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 int main(int argc, char **argv) {
+    // Initialize ImageMagick's graphics system
     Magick::InitializeMagick(*argv);
 
-    srand(time(NULL));
-    const int NUM_IMAGES = 10;
-
-    // Create directory for output images
-    std::time_t t = std::time(nullptr);
-    char dirNameCStr[100];
-    strftime(dirNameCStr, sizeof(dirNameCStr), "fuzzing_%Y%m%d%H%M%S", std::localtime(&t));
-    std::string dirName = dirNameCStr;
-    mkdir(dirName.c_str(), 0777);
+    const int NUM_IMAGES = 10;  // Or adjust this as per your requirements.
 
     for (int i = 0; i < NUM_IMAGES; i++) {
-        int width = 300 + (rand() % 1200);
-        int height = 300 + (rand() % 1200);
-        int bitDepth = (rand() % 3) ? 8 : ((rand() % 2 == 0) ? 16 : 32); // Added option for 32 bit depth
-        int depositionSize = 10 + (rand() % (width / 2));
-        int maxIter = (rand() % MAX_ITERATIONS);
+        int width = 300 + getRandomValue(0, 1200);
+        int height = 300 + getRandomValue(0, 1200);
+        int bitDepth = (getRandomValue(0, 1) == 0) ? 8 : 16;
 
-        std::string imageType = getRandomImageType();
+        int currentDepositionSize = 50 + getRandomValue(0, width / 2);
+        int currentMaxIter = MAX_ITERATIONS + getRandomValue(0, 4000);
+
+        // Create an image object and set size, background, and depth
+        Magick::Image image(Magick::Geometry(width, height), Magick::Color("white"));
+        image.depth(bitDepth);
+
+        // Here you can construct the filename for the image as you were doing
         std::stringstream filename;
-        filename << dirName << "/ballistic_" << i << "." << imageType;
+        filename << "output_image_" << i << "." << getRandomImageType();  // Changed the filename to use getRandomImageType()
 
-        int retries = MAX_RETRIES;
-        while (retries--) {
-            try {
-                Magick::Image image(Magick::Geometry(width, height), Magick::Color(0, 0, 0));
-                image.depth(bitDepth);
+        ballistic(image, currentMaxIter, currentDepositionSize);
+        applyManipulations(image);  // Apply random image manipulations
 
-                // Varying the Ballistic Deposition parameters
-                ballistic(image, maxIter, depositionSize);
+        std::stringstream logMsgBeforeWrite;
+        logMsgBeforeWrite << "Attempting to write image: " << filename.str()
+                          << " with dimensions: " << width << "x" << height
+                          << ", bit depth: " << bitDepth
+                          << ", deposition size: " << currentDepositionSize
+                          << ", max iterations: " << currentMaxIter;
+        log(logMsgBeforeWrite.str());  // Log to file
 
-                // Apply the introduced manipulations
-                applyManipulations(image);
+        // Write the image
+        try {
+            image.write(filename.str());
 
-                if (image.type() == Magick::PaletteType && !image.isValid()) {
-                    std::cerr << "Image is of PaletteType but lacks a valid palette. Skipping." << std::endl;
-                } else {
-                    std::stringstream logMsgBeforeWrite;
-                    logMsgBeforeWrite << "Attempting to write image: " << filename.str() << " with dimensions: " << width << "x" << height << ", bit depth: " << bitDepth << ", deposition size: " << depositionSize << ", max iterations: " << maxIter;
-                    log(logMsgBeforeWrite.str());
-
-                    image.write(filename.str());
-                }
-
-                std::stringstream logMsg;
-                logMsg << "Generated image: " << filename.str() << " with dimensions: " << width << "x" << height << ", bit depth: " << bitDepth << ", deposition size: " << depositionSize << ", max iterations: " << maxIter;
-                log(logMsg.str());
-                std::cout << logMsg.str() << std::endl;
-
-                // If success, break out of the retry loop
-                break;
-
-            } catch (Magick::Exception &error) {
-                std::cerr << "Caught ImageMagick exception: " << error.what() << std::endl;
-                continue; // Retry with new random parameters
-            } catch (std::exception &e) {
-                std::cerr << "Caught standard exception: " << e.what() << std::endl;
-                break;
-            }
+            std::stringstream logMsg;
+            logMsg << "Generated image: " << filename.str()
+                   << " with dimensions: " << width << "x" << height
+                   << ", bit depth: " << bitDepth
+                   << ", deposition size: " << currentDepositionSize
+                   << ", max iterations: " << currentMaxIter;
+            log(logMsg.str());  // Log to file
+        } catch (Magick::Exception &error) {
+            std::cerr << "Error writing image: " << error.what() << std::endl;
         }
     }
 
