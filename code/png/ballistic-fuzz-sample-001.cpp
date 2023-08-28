@@ -2,7 +2,7 @@
 // Quick Fuzzing Loops for libpng, pngwriter, ImageMagick and others
 // This .cpp targets a quick check to ImageMagick
 // Compile with Instrumentation
-// clang++ -fprofile-instr-generate -fcoverage-mapping -mllvm -runtime-counter-relocation -g -fsanitize=undefined -O0 -o ball-fuzz19 ball-fuzz19.cpp -std=c++11 `Magick++-config --cppflags --cxxflags --ldflags --libs`
+// clang++ -fprofile-instr-generate -fcoverage-mapping -mllvm -runtime-counter-relocation -g -fsanitize=undefined -O0 -o ballistic-fuzz-sample-001 ballistic-fuzz-sample-001.cpp -std=c++11 `Magick++-config --cppflags --cxxflags --ldflags --libs`
 //
 //
 // Compile with attached zsh script
