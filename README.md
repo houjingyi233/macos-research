@@ -1,6 +1,7 @@
 # macOS | XNU Research | Source Code | PoC's and more....
 
-Last Updated: 28 AUG 2023
+Last Updated: 14 SEP 2023
+- Added sample ioageio.m for Fuzzing ImageIO https://github.com/xsscx/macos-research/blob/main/code/imageio/imageio.m
 - Added CVE-2022-26730 and CVE-2023-32443 using ICC Color Profile Sample PoC's
 - See URL https://github.com/xsscx/macos-research/tree/main/ColorSync-CVE-2022-26730
 - See https://srd.cx/cve-2023-32443/ and https://srd.cx/cve-2022-26730/
