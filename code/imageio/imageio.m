@@ -86,7 +86,7 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
         if (cgImg) {
             size_t width = CGImageGetWidth(cgImg);
             size_t height = CGImageGetHeight(cgImg);
-
+            printf("Width: %lu, height: %lu\n", width, height);
             // Test with various image sizes
             CGRect rect = CGRectMake(0, 0, width / (1 + (rand() % 3)), height / (1 + (rand() % 3))); // Randomly reduce size by up to 1/3
             CGContextDrawImage(ctx, rect, cgImg);
