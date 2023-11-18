@@ -409,7 +409,6 @@ Process finished normally
 ### TinyInst Crash File Reproduction 
 ```
 ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /tmp/out/crashes/other_0xxxxxxxxxx7ce_0x0_1
-
 ```
 
 #### TinyInst Reproduction Output
