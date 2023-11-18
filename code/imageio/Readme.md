@@ -29,9 +29,9 @@ export CGPDF_LOG_PAGES=1
 ```
 ### For your clean
 ```
-rm -rf CMakeScripts CMakeFiles Release Debug Build build
+rm -rf CMakeScripts CMakeFiles Release Debug build
 ```
-## Output
+## Program Output
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
@@ -54,11 +54,11 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-## Tracing Debug Info
+### Tracing Debug Info
 ```
 CG_PDF_VERBOSE=1 CG_CONTEXT_SHOW_BACKTRACE=1 CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1 CG_IMAGE_SHOW_MALLOC=1 CG_LAYER_SHOW_BACKTRACE=1 CGBITMAP_CONTEXT_LOG=1 CGCOLORDATAPROVIDER_VERBOSE=1 CGPDF_LOG_PAGES=1 ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f ~/Documents/fuzz/img
 ```
-### Tracing Output
+#### Tracing Output
 ```
 Debugger: Mach exception (5) @ address 0x10cae4040
 Debugger: Process created or attached
@@ -404,4 +404,44 @@ Debugger: Loaded module UserNotifications at 0x7ff813f0c000
 Debugger: Loaded module libTelephonyUtilDynamic.dylib at 0x7ff8185af000
 Debugger: Process exit
 Process finished normally
+```
+
+### TinyInst Crash File Reproduction 
+```
+../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /tmp/out/crashes/other_0xxxxxxxxxx7ce_0x0_1
+
+```
+
+#### TinyInst Reproduction Output
+```
+...
+Debugger: Process entrypoint reached
+Debugger: Loaded module RawCamera at 0x7ff915cc2000
+Debugger: Loaded module MobileAsset at 0x7ff818486000
+Debugger: Loaded module AppleJPEGXL at 0x7ffb0fd05000
+Debugger: Loaded module SoftwareUpdateCoreSupport at 0x7ff912d8b000
+Debugger: Loaded module SoftwareUpdateCoreConnect at 0x7ff91a4e7000
+Debugger: Loaded module StreamingZip at 0x7ff81fae3000
+Debugger: Loaded module RemoteServiceDiscovery at 0x7ff81f336000
+Debugger: Loaded module MSUDataAccessor at 0x7ff912a21000
+Debugger: Loaded module libbootpolicy.dylib at 0x7ff90ebd4000
+Debugger: Loaded module libpartition2_dynamic.dylib at 0x7ff920f4d000
+Debugger: Loaded module CMPhoto at 0x7ffb1126b000
+Debugger: Loaded module AppleVPA at 0x7ff81d98d000
+Debugger: Loaded module MediaToolbox at 0x7ff816bd1000
+Debugger: Loaded module CoreAVCHD at 0x7ff81cd33000
+Debugger: Loaded module Mangrove at 0x7ff81cd2f000
+Debugger: Loaded module CoreWiFi at 0x7ff81eefd000
+Debugger: Loaded module CoreTelephony at 0x7ff81d2c2000
+Debugger: Loaded module CoreAUC at 0x7ff81c974000
+Debugger: Loaded module WiFiPeerToPeer at 0x7ffa13fd1000
+Debugger: Loaded module UserNotifications at 0x7ff813f0c000
+Debugger: Loaded module libTelephonyUtilDynamic.dylib at 0x7ff8185af000
+Debugger: Loaded module libAppleEXR.dylib at 0x7ffa0d712000
+Debugger: Loaded module libCGInterfaces.dylib at 0x7ff9123e6000
+libc++abi: terminating due to uncaught exception of type int
+Debugger: Mach exception (5) @ address 0x7ff8072a37ce
+Exception at address 0x7ff8072a37ce
+Process crashed
+Debugger: Process exit
 ```
