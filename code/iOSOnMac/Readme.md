@@ -17,6 +17,7 @@ This Pull Request does the following:
 - Updates the Makefile to Build the Example Project on macOS 14.1.1 | 23B81
 - Adds some print statements to runner
 - Removes legacy compile comments at top of interpose.c
+- Added arm64e compile and run instructions & examples
 
 ### Required
 ```
@@ -54,7 +55,36 @@ Hello World from iOS!
 [*] Child exited with status 0
 ```
 
-### Testing with Apple Security Research Device Tools | Release 20C80
+### Testing arm64e 
+File Info
+```
+xcrun -sdk iphoneos clang -arch arm64e -g interpose.c -o interpose.dylib -shared
+codesign -s "ID" --entitlements entitlements.xml --force hello.app
+./runner hello.app/hello
+
+[+] Child process created with pid: 48331
+[*] Instrumenting process with PID 48331...
+[*] Attempting to attach to task with PID 48331...
+[+] Successfully attached to task with PID 48331
+[*] Finding patch point...
+[*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
+[*] Attaching to target process...
+[*] Scanning for /usr/lib/dyld in target's memory...
+[*] /usr/lib/dyld mapped at 0x1025e8000
+[*] Patching _amfi_check_dyld_policy_self...
+[+] Sucessfully patched _amfi_check_dyld_policy_self
+[*] Sending SIGCONT to continue child
+Hello from an iOS binary!
+[*] Child exited with status 0
+codesign -dvv hello.app/hello
+Executable=/Users/xss/tmp/iOSOnMac/hello.app/hello
+Identifier=cx.srd.hello
+Format=bundle with Mach-O thin (arm64e)
+CodeDirectory v=20400 size=752 flags=0x0(none) hashes=13+7 location=embedded
+...
+Sealed Resources version=2 rules=10 files=3
+Internal requirements count=1 size=172
+```
 ```
 ./runner hello.app/hello
 [+] Child process created with pid: 42536
