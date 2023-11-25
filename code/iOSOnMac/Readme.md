@@ -3,6 +3,8 @@
 - Updated the Makefile to Build on macOS 14
 - The Google CLA gets borked when a Commit comes thru a Github Desktop Client was wasn't configured
   - Too Much Pull Request Friction
+## Replay
+![iosonmac-example-build-run](https://github.com/xsscx/macos-research/assets/10790582/9d7ca4c4-594c-4423-a798-987bbb91d49e)
 
 ## Updates
 This Pull Request does the following:
