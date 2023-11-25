@@ -12,6 +12,11 @@ This Pull Request does the following:
 - Adds some print statements to runner
 - Removes legacy compile comments at top of interpose.c
 
+### Required
+```
+sudo nvram boot-args="amfi_get_out_of_my_way=1"
+```
+
 ## iOS App Tree Example
 ```
 tree main.app
