@@ -1,7 +1,7 @@
 # iOSOnMac 
 - See URL https://github.com/googleprojectzero/p0tools/tree/master/iOSOnMac
 - Updated the Makefile to Build on macOS 14
-- The Google CLA gets borked when a Commit comes thru a Github Desktop Client
+- The Google CLA gets borked when a Commit comes thru a Github Desktop Client was wasn't configured
   - Too Much Pull Request Friction
 
 ## Updates
