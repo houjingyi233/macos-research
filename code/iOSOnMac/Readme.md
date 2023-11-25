@@ -58,8 +58,8 @@ Hello World from iOS!
 ### Testing arm64e 
 #### arm64e Build Example
 ```
-xcrun -sdk iphoneos clang  -arch arm64e -g hello.c -o hello.app/hello interpose.dylib
 xcrun -sdk iphoneos clang -arch arm64e -g interpose.c -o interpose.dylib -shared
+xcrun -sdk iphoneos clang  -arch arm64e -g hello.c -o hello.app/hello interpose.dylib
 codesign -s "ID" --entitlements entitlements.xml --force hello.app
 ./runner hello.app/hello
 
