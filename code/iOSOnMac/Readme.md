@@ -150,4 +150,6 @@ otool -l interpose.dylib | grep platform
  platform 2
 otool -l runner | grep platform
  platform 1
+otool -l test-platform6 | grep platform
+ platform 6
 ```
