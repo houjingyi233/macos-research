@@ -22,6 +22,7 @@ This Pull Request does the following:
 ### Required
 ```
 sudo nvram boot-args="amfi_get_out_of_my_way=1"
+sudo reboot
 ```
 
 ## iOS App Tree Example
