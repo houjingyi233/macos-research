@@ -30,15 +30,20 @@ define log
     @echo "[`date +"%Y-%m-%d %H:%M:%S"`] [$(PROJECT_DISPLAY_NAME)] - $(1)"
 endef
 define log_build
-    $(call BLUE, "[++] Building $(notdir $(shell pwd))")
+    $(call BLUE, "[Build] [$(notdir $(shell pwd))] $(1)")
 endef
 define log_clean
-    $(call WHITE, "[---] Cleaning $(notdir $(shell pwd))")
+    $(call WHITE, "[Clean] [$(notdir $(shell pwd))] $(1)")
 endef
 define log_die
-    $(call RED, "$(1)"; exit 1)
+    $(call RED, "[Error] $(1)"; exit 1)
 endef
 define check_path
-    @which $(1) >/dev/null || { $(call RED, "[$(PROJECT_DISPLAY_NAME)] - Command not found: $(1)"); exit 1; }
+    @which $(1) >/dev/null || { $(call RED, "[Check] [$(PROJECT_DISPLAY_NAME)] - Command not found: $(1)"); exit 1; }
 endef
-
+define log_info
+    $(call GREEN, "[Info] [$(notdir $(shell pwd))] $(1)")
+endef
+define log_warning
+    $(call RED, "[Warning] [$(notdir $(shell pwd))] $(1)")
+endef
