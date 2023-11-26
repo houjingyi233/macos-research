@@ -136,6 +136,21 @@ main.app
 2023-11-26 15:09:56.576 ios6[68338:669986] Image drawn in bitmap context.
 [*] Child exited with status 0
 ```
+### Bug Sample
+```
+2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Program started. Number of arguments: 2
+2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Argument 0: imagefuzzer.app/imagefuzzer
+2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Argument 1: imagefuzzer.app/img/bug.exr
+2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Loading file from path: imagefuzzer.app/img/bug.exr
+2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Data loaded from file: imagefuzzer.app/img/bug.exr
+2023-11-26 16:30:47.388 imagefuzzer[93171:768680] UIImage created: <UIImage:0x60000005d290 anonymous {784, 734} renderingMode=automatic(original)>
+2023-11-26 16:30:47.388 imagefuzzer[93171:768680] CGImage created from UIImage. Dimensions: 784 x 734
+2023-11-26 16:30:47.388 imagefuzzer[93171:768680] RGB color space created.
+2023-11-26 16:30:47.388 imagefuzzer[93171:768680] Creating bitmap context...
+2023-11-26 16:30:47.388 imagefuzzer[93171:768680] Bitmap context created.
+2023-11-26 16:30:47.388 imagefuzzer[93171:768680] Drawing image in bitmap context...
+libc++abi: terminating due to uncaught exception of type int
+```
 
 ### Testing arm64e 
 #### hello.c | From Apple Security Research Device | SRT 20C80 | arm64e
