@@ -24,6 +24,11 @@ This Pull Request does the following:
 sudo nvram boot-args="amfi_get_out_of_my_way=1"
 sudo reboot
 ```
+## Build Instruction
+- download source
+- open terminal
+- make
+- ./runner main.app/main
 
 ## iOS App Tree Example
 ```
