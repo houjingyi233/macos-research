@@ -2,12 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <dlfcn.h>
-
 #include <signal.h>
 #include <unistd.h>
 #include <spawn.h>
 #include <sys/wait.h>
-
 #include <mach/mach.h>
 #include <mach/vm_map.h>
 #include <mach/vm_page_size.h>
@@ -134,7 +132,7 @@ void instrument(pid_t pid) {
     puts("[+] Sucessfully patched _amfi_check_dyld_policy_self");
 }
 
-int run(const char* binary) {
+int run(int argc, char* argv[]) {
     pid_t pid;
     int rv;
 
@@ -159,8 +157,8 @@ int run(const char* binary) {
         return -1;
     }
 
-    char* argv[] = {(char*)binary, NULL};
-    rv = posix_spawn(&pid, binary, NULL, &attr, argv, environ);
+    // Pass all arguments to the spawned process
+    rv = posix_spawn(&pid, argv[1], NULL, &attr, &argv[1], environ);
     if (rv != 0) {
         perror("posix_spawn");
         posix_spawnattr_destroy(&attr);
@@ -190,11 +188,9 @@ int run(const char* binary) {
 
 int main(int argc, char* argv[]) {
     if (argc <= 1) {
-        fprintf(stderr, "Usage: %s path/to/ios_binary\n", argv[0]);
+        fprintf(stderr, "Usage: %s path/to/ios_binary [args...]\n", argv[0]);
         return 1;
     }
 
-    const char* binary = argv[1];
-    return run(binary);
+    return run(argc, argv);
 }
-
