@@ -235,6 +235,42 @@ image.app/image:
 	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1336.0.0)
 	/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation (compatibility version 150.0.0, current version 2048.1.101)
 	/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)
+
 % otool -l image.app/image | grep platform
  platform 2
+
+% tree image.app
+image.app
+├── Info.plist
+├── _CodeSignature
+│   └── CodeResources
+├── demo.png
+└── image
+
+2 directories, 4 files
+
+%  codesign -dvvv image.app
+Executable=/Users/xss/tmp/iOSOnMac/image.app/image
+Identifier=cx.srd.image-demo
+Format=bundle with Mach-O thin (arm64)
+CodeDirectory v=20400 size=757 flags=0x0(none) hashes=13+7 location=embedded
+Hash type=sha256 size=32
+CandidateCDHash sha256=2169d9bcfa6d8b5c1493b96d5862a408e07231a2
+CandidateCDHashFull sha256=2169d9bcfa6d8b5c1493b96d5862a408e07231a2f600600d1c4cc6ec5b69f4bb
+Hash choices=sha256
+CMSDigest=2169d9bcfa6d8b5c1493b96d5862a408e07231a2f600600d1c4cc6ec5b69f4bb
+CMSDigestType=2
+CDHash=2169d9bcfa6d8b5c1493b96d5862a408e07231a2
+Signature size=8970
+Authority=Developer ID Application: David Hoyt (7KJ5XYCA8X)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Nov 26, 2023 at 13:06:20
+Info.plist entries=2
+TeamIdentifier=7KJ5XYCA8X
+Sealed Resources version=2 rules=10 files=2
+Internal requirements count=1 size=180
+
+% file image.app/image
+image.app/image: Mach-O 64-bit executable arm64
 ```
