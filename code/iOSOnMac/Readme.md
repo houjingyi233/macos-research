@@ -97,6 +97,7 @@ main.app
 
 ### Testing arm64e 
 #### hello.c | From Apple Security Research Device | SRT 20C80 | arm64e
+My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
 xcrun -sdk iphoneos clang -arch arm64e -g interpose.c -o interpose.dylib -shared
 xcrun -sdk iphoneos clang  -arch arm64e -g hello.c -o hello.app/hello interpose.dylib
@@ -128,6 +129,7 @@ Hello researcher from pid 42536!
 [*] Child exited with status 0
 ```
 ### Simple-Server Example | From Apple Security Research Device | SRT 20C80 | arm64e
+My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
 lldb -- ./runner simple-server.app/simple-server
 (lldb) target create "./runner"
@@ -156,6 +158,7 @@ Process 28561 launched: '/Users/xss/tmp/iOSOnMac/runner' (arm64)
 2023-11-25 10:00:43.143363-0500 simple-server[28565:155085] [simple-server] Waiting for a client to connect...
 ```
 #### Simple-Server Check | From Apple Security Research Device | SRT 20C80 | arm64e
+My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
 telnet 127.0.0.1 7777
 Trying 127.0.0.1...
