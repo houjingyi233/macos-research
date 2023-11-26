@@ -224,3 +224,17 @@ A sample image.app for the command line and introspection is provided. This can 
 2023-11-26 13:07:18.308 image[67178:613463] Image details - Width: 157, Height: 157
 ^C
 ```
+### image.app details
+```
+% otool -L image.app/image
+image.app/image:
+	/System/Library/Frameworks/UIKit.framework/UIKit (compatibility version 1.0.0, current version 7082.1.111)
+	/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 2048.1.101)
+	/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics (compatibility version 64.0.0, current version 1774.0.1)
+	interpose.dylib (compatibility version 0.0.0, current version 0.0.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1336.0.0)
+	/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation (compatibility version 150.0.0, current version 2048.1.101)
+	/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)
+% otool -l image.app/image | grep platform
+ platform 2
+```
