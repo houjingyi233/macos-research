@@ -7,59 +7,45 @@ export VERBOSE ?= 1
 include logging.mk
 include build.mk
 
-# Define tools and flags
-CC = clang
-XCRUN = xcrun -sdk iphoneos
-CFLAGS = -arch $(ARCH) -g  # Ensure ARCH is used here
-CODESIGN = codesign
-DEVELOPER_ID = "79744B7FFC78720777469A82065993CA962BC8E8"
-ENTITLEMENTS = entitlements.xml
-
-# Targets
-RUNNER_TARGET = runner
-RUNNER_SRC = runner.c
-RUNNER_DIST_TARGET = runner_dist
-RUNNER_DIST_SRC = runner_dist.c
-INTERPOSE_TARGET = interpose.dylib
-INTERPOSE_SRC = interpose.c
-MAIN_TARGET = main.app/main
-MAIN_SRC = main.c
-APP_DIR = main.app
-
 # Default target
 all: $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(MAIN_TARGET)
 
 # Build runner
 $(RUNNER_TARGET): $(RUNNER_SRC)
-	$(call log_build, Building runner with macOS SDK)
+	$(call log_build, "Starting build for runner")
 	$(CC) -o $(RUNNER_TARGET) $(RUNNER_SRC)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_TARGET)
+	$(call log_info, "Runner build completed")
 
 # Build runner_dist
 $(RUNNER_DIST_TARGET): $(RUNNER_DIST_SRC)
-	$(call log_build, Building runner_dist with macOS SDK)
+	$(call log_build, "Starting build for runner_dist")
 	$(CC) -o $(RUNNER_DIST_TARGET) $(RUNNER_DIST_SRC)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_DIST_TARGET)
+	$(call log_info, "Runner_dist build completed")
 
 # Build main and create app bundle
 $(MAIN_TARGET): $(MAIN_SRC) $(INTERPOSE_TARGET)
-	$(call log_build, Building main.app with iOS SDK)
+	$(call log_build, "Starting build for main.app")
 	$(XCRUN) $(CC) $(CFLAGS) -o main $(MAIN_SRC) $(INTERPOSE_TARGET)
-	$(call log, Creating main.app...)
+	$(call log, "Creating main.app...")
 	mkdir -p $(APP_DIR)
 	cp Info.plist $(APP_DIR)/
 	mv main $(APP_DIR)/
-	$(call log, Created main.app... Codesigning....)
+	$(call log, "Created main.app... Codesigning....")
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(APP_DIR)
+	$(call log_info, "Main.app build and packaging completed")
 
 # Build interpose.dylib
 $(INTERPOSE_TARGET): $(INTERPOSE_SRC)
-	$(call log_build, Building interpose.dylib with iOS SDK)
+	$(call log_build, "Starting build for interpose.dylib")
 	$(XCRUN) $(CC) $(CFLAGS) -o $(INTERPOSE_TARGET) -shared $(INTERPOSE_SRC)
+	$(call log_info, "Interpose.dylib build completed")
 
 # Clean up build artifacts
 clean:
-	$(call log_clean, Cleaning up......)
+	$(call log_clean, "Starting clean up")
 	rm -rf $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
+	$(call log_info, "Clean up completed")
 
 .PHONY: all clean
