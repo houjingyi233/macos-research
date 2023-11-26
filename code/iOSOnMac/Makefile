@@ -1,10 +1,8 @@
 # Set VERBOSE=1 on the command line for more verbosity!
-export VERBOSE ?=1
+export VERBOSE ?= 1
 
-# add logging.mk
+# Include additional Makefiles
 include logging.mk
-
-# add build.mk
 include build.mk
 
 # Define tools and flags
@@ -12,7 +10,7 @@ CC = clang
 XCRUN = xcrun -sdk iphoneos
 CFLAGS = -arch arm64 -g
 CODESIGN = codesign
-DEVELOPER_ID = "Dev ID"
+DEVELOPER_ID = "Developer ID"
 ENTITLEMENTS = entitlements.xml
 
 # Targets
@@ -55,3 +53,4 @@ clean:
 	rm -rf $(RUNNER_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
 
 .PHONY: all clean
+
