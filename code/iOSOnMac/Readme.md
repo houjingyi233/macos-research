@@ -31,56 +31,68 @@ sudo reboot
 
 ### Reproduction
 ```
-% make clean
- [---] Cleaning iOSOnMac
+make clean
+ [Clean] [iOSOnMac] Starting clean up
 rm -rf runner runner_dist interpose.dylib main.app
+ [Info] [iOSOnMac] Clean up completed
 
-% make
- [++] Building iOSOnMac
+make
+ [Build] [iOSOnMac] Starting build for runner
 clang -o runner runner.c
-codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force runner
+codesign -s "DEV ID" --entitlements entitlements.xml --force runner
 runner: replacing existing signature
- [++] Building iOSOnMac
+ [Info] [iOSOnMac] Runner build completed
+
+ [Build] [iOSOnMac] Starting build for runner_dist
 clang -o runner_dist runner_dist.c
-codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force runner_dist
+codesign -s "DEV ID" --entitlements entitlements.xml --force runner_dist
 runner_dist: replacing existing signature
- [++] Building iOSOnMac
-xcrun -sdk iphoneos clang -arch arm64   -g   -o interpose.dylib -shared interpose.c
- [++] Building iOSOnMac
-xcrun -sdk iphoneos clang -arch arm64   -g   -o main main.c interpose.dylib
-[2023-11-26 10:01:36] [iOSOnMac] -  Creating main.app...
+ [Info] [iOSOnMac] Runner_dist build completed
+
+ [Build] [iOSOnMac] Starting build for interpose.dylib
+xcrun -sdk iphoneos clang -arch arm64   -g -o interpose.dylib -shared interpose.c
+ [Info] [iOSOnMac] Interpose.dylib build completed
+
+ [Build] [iOSOnMac] Starting build for main.app
+xcrun -sdk iphoneos clang -arch arm64   -g -o main main.c interpose.dylib
+[2023-11-26 12:16:02] [iOSOnMac] -  Creating main.app...
 mkdir -p main.app
 cp Info.plist main.app/
 mv main main.app/
-[2023-11-26 10:01:36] [iOSOnMac] -  Created main.app... Codesigning....
-codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force main.app
+[2023-11-26 12:16:02] [iOSOnMac] -  Created main.app... Codesigning....
+codesign -s "DEV ID" --entitlements entitlements.xml --force main.app
+ [Info] [iOSOnMac] Main.app build and packaging completed
 
-% ./runner main.app/main
-[+] Child process created with pid: 62142
-[*] Instrumenting process with PID 62142...
-[*] Attempting to attach to task with PID 62142...
-[+] Successfully attached to task with PID 62142
+ [Info] [iOSOnMac] Testing runner...
+./runner main.app/main
+[+] Child process created with pid: 66096
+[*] Instrumenting process with PID 66096...
+[*] Attempting to attach to task with PID 66096...
+[+] Successfully attached to task with PID 66096
 [*] Finding patch point...
 [*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
 [*] Attaching to target process...
 [*] Scanning for /usr/lib/dyld in target's memory...
-[*] /usr/lib/dyld mapped at 0x100e64000
+[*] /usr/lib/dyld mapped at 0x1010f0000
 [*] Patching _amfi_check_dyld_policy_self...
 [+] Sucessfully patched _amfi_check_dyld_policy_self
 [*] Sending SIGCONT to continue child
 Hello World from iOS!
 [*] Child exited with status 0
-
-% ./runner_dist main.app/main
+ [Info] [iOSOnMac] Runner test completed
+ 
+ [Info] [iOSOnMac] Testing runner_dist...
+./runner_dist main.app/main
 [*] Preparing to execute iOS binary main.app/main
-[+] Child process created with pid: 62153
+[+] Child process created with pid: 66107
 [*] Patching child process to allow dyld interposing...
 [*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
-[*] /usr/lib/dyld mapped at 0x100794000
+[*] /usr/lib/dyld mapped at 0x101194000
 [+] Sucessfully patched _amfi_check_dyld_policy_self
 [*] Sending SIGCONT to continue child
 Hello World from iOS!
 [*] Child exited with status 0
+ [Info] [iOSOnMac] Runner_dist test completed
 ```
 
 ## iOS App Tree Example
