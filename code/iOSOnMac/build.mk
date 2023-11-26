@@ -16,7 +16,7 @@ CC = clang
 XCRUN = xcrun -sdk iphoneos
 CFLAGS = -arch $(ARCH) -g
 CODESIGN = codesign
-DEVELOPER_ID = "79744B7FFC78720777469A82065993CA962BC8E8"
+DEVELOPER_ID = "DEV ID"
 ENTITLEMENTS = entitlements.xml
 
 # Targets
