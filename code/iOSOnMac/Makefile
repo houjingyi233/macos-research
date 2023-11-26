@@ -12,12 +12,14 @@ CC = clang
 XCRUN = xcrun -sdk iphoneos
 CFLAGS = -arch $(ARCH) -g  # Ensure ARCH is used here
 CODESIGN = codesign
-DEVELOPER_ID = "DEV ID"
+DEVELOPER_ID = "79744B7FFC78720777469A82065993CA962BC8E8"
 ENTITLEMENTS = entitlements.xml
 
 # Targets
 RUNNER_TARGET = runner
 RUNNER_SRC = runner.c
+RUNNER_DIST_TARGET = runner_dist
+RUNNER_DIST_SRC = runner_dist.c
 INTERPOSE_TARGET = interpose.dylib
 INTERPOSE_SRC = interpose.c
 MAIN_TARGET = main.app/main
@@ -25,13 +27,19 @@ MAIN_SRC = main.c
 APP_DIR = main.app
 
 # Default target
-all: $(RUNNER_TARGET) $(MAIN_TARGET)
+all: $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(MAIN_TARGET)
 
 # Build runner
 $(RUNNER_TARGET): $(RUNNER_SRC)
 	$(call log_build, Building runner with macOS SDK)
 	$(CC) -o $(RUNNER_TARGET) $(RUNNER_SRC)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_TARGET)
+
+# Build runner_dist
+$(RUNNER_DIST_TARGET): $(RUNNER_DIST_SRC)
+	$(call log_build, Building runner_dist with macOS SDK)
+	$(CC) -o $(RUNNER_DIST_TARGET) $(RUNNER_DIST_SRC)
+	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_DIST_TARGET)
 
 # Build main and create app bundle
 $(MAIN_TARGET): $(MAIN_SRC) $(INTERPOSE_TARGET)
@@ -52,7 +60,6 @@ $(INTERPOSE_TARGET): $(INTERPOSE_SRC)
 # Clean up build artifacts
 clean:
 	$(call log_clean, Cleaning up......)
-	rm -rf $(RUNNER_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
+	rm -rf $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
 
 .PHONY: all clean
-
