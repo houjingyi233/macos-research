@@ -17,6 +17,7 @@ This Pull Request does the following:
 - Adds some print statements to runner
 - Removes legacy compile comments at top of interpose.c
 - Added arm64e compile and run instructions & examples
+- Added Image App Sample for command line - fuzzing is possible too...
 
 ### Required
 ```
@@ -203,4 +204,23 @@ Platform 5: bridgeOS
 Platform 6: iOS Simulator
 Platform 7: tvOS Simulator
 Platform 8: watchOS Simulator
+```
+## Fuzzing iOS on Mac
+A sample image.app for the command line and introspection is provided. This can be expanded for Fuzzing native iOS Frameworks
+```
+./runner image.app/image
+[+] Child process created with pid: 67178
+[*] Instrumenting process with PID 67178...
+[*] Attempting to attach to task with PID 67178...
+[+] Successfully attached to task with PID 67178
+[*] Finding patch point...
+[*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
+[*] Attaching to target process...
+[*] Scanning for /usr/lib/dyld in target's memory...
+[*] /usr/lib/dyld mapped at 0x100b44000
+[*] Patching _amfi_check_dyld_policy_self...
+[+] Sucessfully patched _amfi_check_dyld_policy_self
+[*] Sending SIGCONT to continue child
+2023-11-26 13:07:18.308 image[67178:613463] Image details - Width: 157, Height: 157
+^C
 ```
