@@ -95,27 +95,8 @@ main.app
 2 directories, 3 files
 ```
 
-## Testing with Example Code
-```
-/runner main.app/main
-[+] Child process created with pid: 42525
-[*] Instrumenting process with PID 42525...
-[*] Attempting to attach to task with PID 42525...
-[+] Successfully attached to task with PID 42525
-[*] Finding patch point...
-[*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
-[*] Attaching to target process...
-[*] Scanning for /usr/lib/dyld in target's memory...
-[*] /usr/lib/dyld mapped at 0x104348000
-[*] Patching _amfi_check_dyld_policy_self...
-[+] Sucessfully patched _amfi_check_dyld_policy_self
-[*] Sending SIGCONT to continue child
-Hello World from iOS!
-[*] Child exited with status 0
-```
-
 ### Testing arm64e 
-#### arm64e Build Example
+#### hello.c | From Apple Security Research Device | SRT 20C80 | arm64e
 ```
 xcrun -sdk iphoneos clang -arch arm64e -g interpose.c -o interpose.dylib -shared
 xcrun -sdk iphoneos clang  -arch arm64e -g hello.c -o hello.app/hello interpose.dylib
@@ -162,7 +143,7 @@ Internal requirements count=1 size=172
 Hello researcher from pid 42536!
 [*] Child exited with status 0
 ```
-### Simple-Server Example | 20C80
+### Simple-Server Example | From Apple Security Research Device | SRT 20C80 | arm64e
 ```
 lldb -- ./runner simple-server.app/simple-server
 (lldb) target create "./runner"
@@ -190,7 +171,7 @@ Process 28561 launched: '/Users/xss/tmp/iOSOnMac/runner' (arm64)
 2023-11-25 10:00:43.143323-0500 simple-server[28565:155085] [simple-server] Hello! I'm process 28565
 2023-11-25 10:00:43.143363-0500 simple-server[28565:155085] [simple-server] Waiting for a client to connect...
 ```
-#### Simple-Server Check | 20C80 Example
+#### Simple-Server Check | From Apple Security Research Device | SRT 20C80 | arm64e
 ```
 telnet 127.0.0.1 7777
 Trying 127.0.0.1...
