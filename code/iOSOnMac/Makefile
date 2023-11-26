@@ -8,7 +8,7 @@ include logging.mk
 include build.mk
 
 # Default target
-all: $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(MAIN_TARGET)
+all: $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(MAIN_TARGET) test
 
 # Build runner
 $(RUNNER_TARGET): $(RUNNER_SRC)
@@ -42,10 +42,23 @@ $(INTERPOSE_TARGET): $(INTERPOSE_SRC)
 	$(XCRUN) $(CC) $(CFLAGS) -o $(INTERPOSE_TARGET) -shared $(INTERPOSE_SRC)
 	$(call log_info, "Interpose.dylib build completed")
 
+# Testing targets
+test: test_runner test_runner_dist
+
+test_runner: $(RUNNER_TARGET) $(MAIN_TARGET)
+	$(call log_info, "Testing runner...")
+	./runner main.app/main
+	$(call log_info, "Runner test completed")
+
+test_runner_dist: $(RUNNER_DIST_TARGET) $(MAIN_TARGET)
+	$(call log_info, "Testing runner_dist...")
+	./runner_dist main.app/main
+	$(call log_info, "Runner_dist test completed")
+
 # Clean up build artifacts
 clean:
 	$(call log_clean, "Starting clean up")
 	rm -rf $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
 	$(call log_info, "Clean up completed")
 
-.PHONY: all clean
+.PHONY: all clean test test_runner test_runner_dist test_main_app
