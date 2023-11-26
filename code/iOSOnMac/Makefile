@@ -1,4 +1,6 @@
-# Set VERBOSE=1 on the command line for more verbosity!
+# Makefile for iOS/macOS Application Development
+
+# Set VERBOSE=1 on the command line for more verbosity
 export VERBOSE ?= 1
 
 # Include additional Makefiles
@@ -8,9 +10,9 @@ include build.mk
 # Define tools and flags
 CC = clang
 XCRUN = xcrun -sdk iphoneos
-CFLAGS = -arch arm64 -g
+CFLAGS = -arch $(ARCH) -g  # Ensure ARCH is used here
 CODESIGN = codesign
-DEVELOPER_ID = "Developer ID"
+DEVELOPER_ID = "DEV ID"
 ENTITLEMENTS = entitlements.xml
 
 # Targets
@@ -27,29 +29,29 @@ all: $(RUNNER_TARGET) $(MAIN_TARGET)
 
 # Build runner
 $(RUNNER_TARGET): $(RUNNER_SRC)
-	@$(call log, Building runner with macOS SDK)
+	$(call log_build, Building runner with macOS SDK)
 	$(CC) -o $(RUNNER_TARGET) $(RUNNER_SRC)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_TARGET)
 
 # Build main and create app bundle
 $(MAIN_TARGET): $(MAIN_SRC) $(INTERPOSE_TARGET)
-	@$(call log, Building main.app with iOS SDK)
+	$(call log_build, Building main.app with iOS SDK)
 	$(XCRUN) $(CC) $(CFLAGS) -o main $(MAIN_SRC) $(INTERPOSE_TARGET)
-	@$(call log, Creating main.app...)
+	$(call log, Creating main.app...)
 	mkdir -p $(APP_DIR)
 	cp Info.plist $(APP_DIR)/
 	mv main $(APP_DIR)/
-	@$(call log, Created main.app... Codesigning....)
+	$(call log, Created main.app... Codesigning....)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(APP_DIR)
 
 # Build interpose.dylib
 $(INTERPOSE_TARGET): $(INTERPOSE_SRC)
-	@$(call log, Building interpose.dylib with iOS SDK)
+	$(call log_build, Building interpose.dylib with iOS SDK)
 	$(XCRUN) $(CC) $(CFLAGS) -o $(INTERPOSE_TARGET) -shared $(INTERPOSE_SRC)
 
 # Clean up build artifacts
 clean:
-	@$(call log, Cleaning up......)
+	$(call log_clean, Cleaning up......)
 	rm -rf $(RUNNER_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
 
 .PHONY: all clean
