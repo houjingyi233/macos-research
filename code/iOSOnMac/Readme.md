@@ -131,6 +131,7 @@ Hello researcher from pid 42536!
 ### Simple-Server Example | From Apple Security Research Device | SRT 20C80 | arm64e
 My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
+% export CRYPTEX_MOUNT_PATH=./
 lldb -- ./runner simple-server.app/simple-server
 (lldb) target create "./runner"
 Current executable set to '/Users/xss/tmp/iOSOnMac/runner' (arm64).
@@ -160,7 +161,6 @@ Process 28561 launched: '/Users/xss/tmp/iOSOnMac/runner' (arm64)
 #### Simple-Server Check | From Apple Security Research Device | SRT 20C80 | arm64e
 My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
-% export CRYPTEX_MOUNT_PATH=./
 % telnet 127.0.0.1 7777
 Trying 127.0.0.1...
 Connected to localhost.
