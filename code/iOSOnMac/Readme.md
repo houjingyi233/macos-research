@@ -31,6 +31,45 @@ sudo reboot
 - make
 - ./runner main.app/main
 
+### Reproduction
+```
+make clean
+ [---] Cleaning iOSOnMac
+rm -rf runner interpose.dylib main.app
+% make all
+ [++] Building iOSOnMac
+clang -o runner runner.c
+codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force runner
+runner: replacing existing signature
+ [++] Building iOSOnMac
+xcrun -sdk iphoneos clang -arch arm64   -g   -o interpose.dylib -shared interpose.c
+ [++] Building iOSOnMac
+xcrun -sdk iphoneos clang -arch arm64   -g   -o main main.c interpose.dylib
+[2023-11-26 09:41:02] [iOSOnMac] -  Creating main.app...
+mkdir -p main.app
+cp Info.plist main.app/
+mv main main.app/
+[2023-11-26 09:41:02] [iOSOnMac] -  Created main.app... Codesigning....
+codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force main.app
+% make
+make: Nothing to be done for `all'.
+% ./runner main.app/main
+[+] Child process created with pid: 61466
+[*] Instrumenting process with PID 61466...
+[*] Attempting to attach to task with PID 61466...
+[+] Successfully attached to task with PID 61466
+[*] Finding patch point...
+[*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
+[*] Attaching to target process...
+[*] Scanning for /usr/lib/dyld in target's memory...
+[*] /usr/lib/dyld mapped at 0x1042f4000
+[*] Patching _amfi_check_dyld_policy_self...
+[+] Sucessfully patched _amfi_check_dyld_policy_self
+[*] Sending SIGCONT to continue child
+Hello World from iOS!
+[*] Child exited with status 0
+```
+
 ## iOS App Tree Example
 ```
 tree main.app
@@ -170,40 +209,4 @@ Platform 5: bridgeOS
 Platform 6: iOS Simulator
 Platform 7: tvOS Simulator
 Platform 8: watchOS Simulator
-```
-### Reproduction
-```
-% make clean
-[iOSOnMac] - Cleaning up......
-rm -rf runner interpose.dylib main.app
-% make
-[iOSOnMac] - Building runner with macOS SDK
-clang -o runner runner.c
-codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force runner
-runner: replacing existing signature
-[iOSOnMac] - Building interpose.dylib with iOS SDK
-xcrun -sdk iphoneos clang -arch arm64 -g -o interpose.dylib -shared interpose.c
-[iOSOnMac] - Building main.app with iOS SDK
-xcrun -sdk iphoneos clang -arch arm64 -g -o main main.c interpose.dylib
-[iOSOnMac] - Creating main.app...
-mkdir -p main.app
-cp Info.plist main.app/
-mv main main.app/
-[iOSOnMac] - Created main.app... Codesigning....
-codesign -s "DEV ID" --entitlements entitlements.xml --force main.app
-% ./runner main.app/main
-[+] Child process created with pid: 59887
-[*] Instrumenting process with PID 59887...
-[*] Attempting to attach to task with PID 59887...
-[+] Successfully attached to task with PID 59887
-[*] Finding patch point...
-[*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
-[*] Attaching to target process...
-[*] Scanning for /usr/lib/dyld in target's memory...
-[*] /usr/lib/dyld mapped at 0x100c64000
-[*] Patching _amfi_check_dyld_policy_self...
-[+] Sucessfully patched _amfi_check_dyld_policy_self
-[*] Sending SIGCONT to continue child
-Hello World from iOS!
-[*] Child exited with status 0
 ```
