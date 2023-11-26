@@ -1,27 +1,44 @@
+# logging.mk for iOS/macOS Application Development
+
+# Verbosity Control
 export VERBOSE ?= 0
 
-# Control echoing based on VERBOSE
-ifeq (0, $(VERBOSE))
+# Control Echoing Based on VERBOSE
+ifeq ($(VERBOSE),0)
 .SILENT:
 endif
 
-# Redirect output if VERBOSE is 0
-export _REDIRECT_OUTPUT = $(if $(findstring 0, $(VERBOSE)), > /dev/null)
-export EXTRA_MAKE_FLAGS = $(if $(findstring 0, $(VERBOSE)), -s)
+# Define Color Codes for Logging
+define BLUE
+    @echo "\033[0;36m$(1)\033[0m"
+endef
+define GREEN
+    @echo "\033[0;32m$(1)\033[0m"
+endef
+define WHITE
+    @echo "\033[0;37m$(1)\033[0m"
+endef
+define RED
+    @echo "\033[0;31m$(1)\033[0m"
+endef
 
-# Define color codes for logging
-export BLUE := tput -Txterm setaf 6
-export GREEN := tput -Txterm setaf 2
-export WHITE := tput -Txterm setaf 7
-export RED := tput -Txterm setaf 1
-export RESET := tput -Txterm sgr0
+# Set Project Display Name
+export PROJECT_DISPLAY_NAME := $(or $(PROJECT_NAME), $(notdir $(shell pwd)))
 
-# Set project display name
-export PROJECT_DISPLAY_NAME := $(or ${PROJECT_NAME}, $(notdir $(shell pwd)))
+# Define Logging Functions
+define log
+    @echo "[`date +"%Y-%m-%d %H:%M:%S"`] [$(PROJECT_DISPLAY_NAME)] - $(1)"
+endef
+define log_build
+    $(call BLUE, "[++] Building $(notdir $(shell pwd))")
+endef
+define log_clean
+    $(call WHITE, "[---] Cleaning $(notdir $(shell pwd))")
+endef
+define log_die
+    $(call RED, "$(1)"; exit 1)
+endef
+define check_path
+    @which $(1) >/dev/null || { $(call RED, "[$(PROJECT_DISPLAY_NAME)] - Command not found: $(1)"); exit 1; }
+endef
 
-# Define logging functions
-log = @echo [$(PROJECT_DISPLAY_NAME)] - $(1)
-log_build = ${BLUE} && $(call log, [++] Building $(notdir $(shell pwd))) && ${RESET}
-log_clean = ${WHITE} && $(call log, [---] Cleaning $(notdir $(shell pwd))) && ${RESET}
-log_die = ${RED} && @echo $1 && ${RESET} && @exit 1
-check_path = which $1 >/dev/null || ($(RED) && echo "[$(PROJECT_DISPLAY_NAME)] - $2" && $(RESET) && exit 1)
