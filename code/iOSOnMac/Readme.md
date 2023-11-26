@@ -160,12 +160,13 @@ Process 28561 launched: '/Users/xss/tmp/iOSOnMac/runner' (arm64)
 #### Simple-Server Check | From Apple Security Research Device | SRT 20C80 | arm64e
 My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
-telnet 127.0.0.1 7777
+% export CRYPTEX_MOUNT_PATH=./
+% telnet 127.0.0.1 7777
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
 Hello! I'm process 28668
-The environment variable CRYPTEX_MOUNT_PATH  contains: "/Users/xss/Documents/iphone11/com.example.cryptex.dstroot/usr/bin/sh"
+The environment variable CRYPTEX_MOUNT_PATH  contains: "/Users/xss/Documents/iphone11/com.example.cryptex.dstroot/"
 ```
 ### Platform Checks
 ```
