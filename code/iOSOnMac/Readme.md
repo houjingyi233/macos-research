@@ -11,8 +11,6 @@ ProductName:		macOS
 ProductVersion:		14.1.1
 BuildVersion:		23B81
 ```
-![iosonmac-example-build-run](https://github.com/xsscx/macos-research/assets/10790582/9d7ca4c4-594c-4423-a798-987bbb91d49e)
-
 ## Updates
 This Pull Request does the following:
 - Updates the Makefile to Build the Example Project on macOS 14.1.1 | 23B81
@@ -33,37 +31,52 @@ sudo reboot
 
 ### Reproduction
 ```
-make clean
+% make clean
  [---] Cleaning iOSOnMac
-rm -rf runner interpose.dylib main.app
-% make all
+rm -rf runner runner_dist interpose.dylib main.app
+
+% make
  [++] Building iOSOnMac
 clang -o runner runner.c
 codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force runner
 runner: replacing existing signature
  [++] Building iOSOnMac
+clang -o runner_dist runner_dist.c
+codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force runner_dist
+runner_dist: replacing existing signature
+ [++] Building iOSOnMac
 xcrun -sdk iphoneos clang -arch arm64   -g   -o interpose.dylib -shared interpose.c
  [++] Building iOSOnMac
 xcrun -sdk iphoneos clang -arch arm64   -g   -o main main.c interpose.dylib
-[2023-11-26 09:41:02] [iOSOnMac] -  Creating main.app...
+[2023-11-26 10:01:36] [iOSOnMac] -  Creating main.app...
 mkdir -p main.app
 cp Info.plist main.app/
 mv main main.app/
-[2023-11-26 09:41:02] [iOSOnMac] -  Created main.app... Codesigning....
+[2023-11-26 10:01:36] [iOSOnMac] -  Created main.app... Codesigning....
 codesign -s "79744B7FFC78720777469A82065993CA962BC8E8" --entitlements entitlements.xml --force main.app
-% make
-make: Nothing to be done for `all'.
+
 % ./runner main.app/main
-[+] Child process created with pid: 61466
-[*] Instrumenting process with PID 61466...
-[*] Attempting to attach to task with PID 61466...
-[+] Successfully attached to task with PID 61466
+[+] Child process created with pid: 62142
+[*] Instrumenting process with PID 62142...
+[*] Attempting to attach to task with PID 62142...
+[+] Successfully attached to task with PID 62142
 [*] Finding patch point...
 [*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
 [*] Attaching to target process...
 [*] Scanning for /usr/lib/dyld in target's memory...
-[*] /usr/lib/dyld mapped at 0x1042f4000
+[*] /usr/lib/dyld mapped at 0x100e64000
 [*] Patching _amfi_check_dyld_policy_self...
+[+] Sucessfully patched _amfi_check_dyld_policy_self
+[*] Sending SIGCONT to continue child
+Hello World from iOS!
+[*] Child exited with status 0
+
+% ./runner_dist main.app/main
+[*] Preparing to execute iOS binary main.app/main
+[+] Child process created with pid: 62153
+[*] Patching child process to allow dyld interposing...
+[*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
+[*] /usr/lib/dyld mapped at 0x100794000
 [+] Sucessfully patched _amfi_check_dyld_policy_self
 [*] Sending SIGCONT to continue child
 Hello World from iOS!
