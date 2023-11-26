@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # Example poor man's Fuzzing Script
-# Load the Image into iOS Image Libs to Crash
+# Load the Image into iOS Image Libs to Crash, copy fuzzed images to image.app/img/
 # ./runner image.app/image image.app/img/
 # Check for correct number of arguments
 if [ "$#" -ne 1 ]; then
@@ -37,7 +37,7 @@ for img_file in "$img_dir"/*.png; do
     output_file="$output_dir/$base_name-output.png" # Replace ".ext" with the expected output extension if known
     
     # Run runner command
-    if ./runner ios6.app/ios6 "$img_file" > "$output_file"; then
+    if ./runner iomage.app/image "$img_file" > "$output_file"; then
         echo "Processed $img_file to $output_file"
     else
         echo "Error processing $img_file."
