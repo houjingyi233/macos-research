@@ -1,9 +1,12 @@
-# Set up all the variables we need to compile command line iOS applications
-export PROJECT_PATH ?= $(dir $(realpath $(firstword ${MAKEFILE_LIST})))
+# build.mk for iOS/macOS Application Development
 
+# Project Path Configuration
+export PROJECT_PATH ?= $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
+# Toolchain and SDK Settings
 export TOOLCHAIN ?= iOS17.0
 export MACOS_TOOLCHAIN ?= MacOSX14.0
 
-# export ARCH:=arm64e
-export SDK:=iphoneos
-
+# Architecture and SDK Configuration
+export ARCH ?= arm64  # Adjust this to your target architecture
+export SDK ?= iphoneos
