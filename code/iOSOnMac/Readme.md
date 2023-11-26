@@ -275,9 +275,9 @@ Internal requirements count=1 size=180
 image.app/image: Mach-O 64-bit executable arm64
 ```
 
-### exr-loader example
+### exr-loader.app example
 ```
- ./runner iexr-loader.app/exr-loader
+ ./runner exr-loader.app/exr-loader
 [+] Child process created with pid: 67855
 [*] Instrumenting process with PID 67855...
 [*] Attempting to attach to task with PID 67855...
