@@ -159,3 +159,12 @@ otool -l runner | grep platform
 otool -l test-platform6 | grep platform
  platform 6
 ```
+### Plaform Identifiers
+- Platform 1: macOS
+- Platform 2: iOS
+- Platform 3: tvOS
+- Platform 4: watchOS
+- Platform 5: bridgeOS
+- Platform 6: iOS Simulator
+- Platform 7: tvOS Simulator
+- Platform 8: watchOS Simulator
