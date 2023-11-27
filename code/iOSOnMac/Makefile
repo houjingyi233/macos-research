@@ -8,19 +8,19 @@ include logging.mk
 include build.mk
 
 # Default target
-all: $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(MAIN_TARGET) test
+all: $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(MAIN_TARGET) $(INTERPOSE_TARGET) $(INTERPOSE_DIST_TARGET) test
 
 # Build runner
 $(RUNNER_TARGET): $(RUNNER_SRC)
 	$(call log_build, "Starting build for runner")
-	$(CC) -o $(RUNNER_TARGET) $(RUNNER_SRC)
+	$(CC) $(CFLAGS) -o $(RUNNER_TARGET) $(RUNNER_SRC)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_TARGET)
 	$(call log_info, "Runner build completed")
 
 # Build runner_dist
 $(RUNNER_DIST_TARGET): $(RUNNER_DIST_SRC)
 	$(call log_build, "Starting build for runner_dist")
-	$(CC) -o $(RUNNER_DIST_TARGET) $(RUNNER_DIST_SRC)
+	$(CC) $(CFLAGS) -o $(RUNNER_DIST_TARGET) $(RUNNER_DIST_SRC)
 	$(CODESIGN) -s $(DEVELOPER_ID) --entitlements $(ENTITLEMENTS) --force $(RUNNER_DIST_TARGET)
 	$(call log_info, "Runner_dist build completed")
 
@@ -39,26 +39,33 @@ $(MAIN_TARGET): $(MAIN_SRC) $(INTERPOSE_TARGET)
 # Build interpose.dylib
 $(INTERPOSE_TARGET): $(INTERPOSE_SRC)
 	$(call log_build, "Starting build for interpose.dylib")
-	$(XCRUN) $(CC) $(CFLAGS) -o $(INTERPOSE_TARGET) -shared $(INTERPOSE_SRC)
+	$(XCRUN) $(CC) $(CFLAGS) -shared -o $(INTERPOSE_TARGET) $(INTERPOSE_SRC)
 	$(call log_info, "Interpose.dylib build completed")
+
+# Build interpose_dist.dylib
+$(INTERPOSE_DIST_TARGET): $(INTERPOSE_DIST_SRC)
+	$(call log_build, "Starting build for interpose_dist.dylib")
+	$(XCRUN) $(CC) $(CFLAGS) -shared -o $(INTERPOSE_DIST_TARGET) $(INTERPOSE_DIST_SRC)
+	$(call log_info, "Interpose_dist.dylib build completed")
 
 # Testing targets
 test: test_runner test_runner_dist
 
 test_runner: $(RUNNER_TARGET) $(MAIN_TARGET)
 	$(call log_info, "Testing runner...")
-	./runner main.app/main
+	./$(RUNNER_TARGET) $(APP_DIR)/main
 	$(call log_info, "Runner test completed")
 
 test_runner_dist: $(RUNNER_DIST_TARGET) $(MAIN_TARGET)
 	$(call log_info, "Testing runner_dist...")
-	./runner_dist main.app/main
+	./$(RUNNER_DIST_TARGET) $(APP_DIR)/main
 	$(call log_info, "Runner_dist test completed")
 
 # Clean up build artifacts
 clean:
 	$(call log_clean, "Starting clean up")
-	rm -rf $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(INTERPOSE_TARGET) $(APP_DIR)
+	rm -rf $(RUNNER_TARGET) $(RUNNER_DIST_TARGET) $(INTERPOSE_TARGET) $(INTERPOSE_DIST_TARGET) $(APP_DIR)
 	$(call log_info, "Clean up completed")
 
-.PHONY: all clean test test_runner test_runner_dist test_main_app
+.PHONY: all clean test test_runner test_runner_dist
+

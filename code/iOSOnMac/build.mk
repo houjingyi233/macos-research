@@ -16,7 +16,7 @@ CC = clang
 XCRUN = xcrun -sdk iphoneos
 CFLAGS = -arch $(ARCH) -g
 CODESIGN = codesign
-DEVELOPER_ID = "DEV ID"
+DEVELOPER_ID = "79744B7FFC78720777469A82065993CA962BC8E8"
 ENTITLEMENTS = entitlements.xml
 
 # Targets
@@ -29,3 +29,5 @@ INTERPOSE_SRC = interpose.c
 MAIN_TARGET = main.app/main
 MAIN_SRC = main.c
 APP_DIR = main.app
+INTERPOSE_DIST_TARGET := interpose_dist.dylib
+INTERPOSE_DIST_SRC := interpose_dist.c
