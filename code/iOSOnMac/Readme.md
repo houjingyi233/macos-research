@@ -18,6 +18,7 @@ This Pull Request does the following:
 - Removes legacy compile comments at top of interpose.c
 - Added arm64e compile and run instructions & examples
 - Added Image App Sample for command line - fuzzing is possible too...
+- Added sample Fuzzing Code for Bitmap Crawing Context (ctx) .. example...
 
 ### Required
 ```
@@ -148,8 +149,45 @@ main.app
 2023-11-26 16:30:47.388 imagefuzzer[93171:768680] Drawing image in bitmap context...
 libc++abi: terminating due to uncaught exception of type int
 ```
+### Bitmap Context Notes
 
-### Testing arm64e 
+Creating a bitmap context with CGBitmapContextCreate involves several parameters that define the characteristics of the context, such as the width, height, bit depth, bytes per row, color space, and alpha info. Varying these parameters can significantly alter the behavior and output of the context. Below are 10 permutations of the CGBitmapContextCreate function call, each demonstrating a different configuration:
+```
+Standard RGB with No Alpha:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 0, colorspace, kCGImageAlphaNone);
+
+Premultiplied First Alpha:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaPremultipliedFirst);
+
+Non-Premultiplied Alpha:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaLast);
+
+16-bit Depth Per Component:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 16, 8 * width, colorspace, kCGImageAlphaPremultipliedLast);
+
+Grayscale Without Alpha:
+CGColorSpaceRef graySpace = CGColorSpaceCreateDeviceGray();
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width, graySpace, kCGImageAlphaNone);
+CGColorSpaceRelease(graySpace);
+
+High Dynamic Range (HDR) with Float Components:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 32, 16 * width, colorspace, kCGImageAlphaPremultipliedLast | kCGBitmapFloatComponents);
+
+Bitmap Context with Alpha Only:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width, NULL, kCGImageAlphaOnly);
+
+1-Bit Monochrome:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 1, width / 8, NULL, kCGImageAlphaNone);
+
+Big Endian Pixel Format:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+
+Little Endian Pixel Format:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+```
+Each permutation represents a different way of handling pixel formats, alpha channels, color spaces, and bit depths. The choice of parameters depends on the specific requirements of the image processing task at hand. For example, a grayscale context might be suitable for processing black-and-white images, while a context with HDR and float components would be more appropriate for high-quality image rendering.
+
+### Other | Testing arm64e 
 #### hello.c | From Apple Security Research Device | SRT 20C80 | arm64e
 My Repo https://github.com/xsscx/srd/tree/main/srd_tools-24.100.3/example-cryptex
 ```
