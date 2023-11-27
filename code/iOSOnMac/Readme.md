@@ -375,3 +375,6 @@ image.app/image: Mach-O 64-bit executable arm64
 2023-11-26 14:33:37.773 img2[67855:652901] Drawing image in bitmap context...
 2023-11-26 14:33:37.777 img2[67855:652901] Image drawn in bitmap context.
 ```
+## Interposing via dyld
+- The Example is just a placeholder, waiting for an Implementation
+- Work in Progress.. any input appreciated
