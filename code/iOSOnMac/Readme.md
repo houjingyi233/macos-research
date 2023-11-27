@@ -1,9 +1,9 @@
-Updated: Sunday, 26 NOV 2023
-# iOSOnMac 
+Updated: Monday, 27 NOV 2023 @ 1030 EST
+# iOSOnMac | Interposing iOS Applications
 - Original Source URL https://github.com/googleprojectzero/p0tools/tree/master/iOSOnMac
 - Updated the Makefile to Build on macOS 14
-- The Google CLA gets borked when a Commit comes thru a Github Desktop Client that was configured user@mbp
-  - Too Much Pull Request Friction
+- Made some changes
+- Added some Examples
 ## Replay
 ```
 sw_vers
