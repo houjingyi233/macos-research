@@ -376,5 +376,52 @@ image.app/image: Mach-O 64-bit executable arm64
 2023-11-26 14:33:37.777 img2[67855:652901] Image drawn in bitmap context.
 ```
 ## Interposing via dyld
-- The Example is just a placeholder, waiting for an Implementation
+- The Example is just a placeholder, working on an Implementation for main.app
 - Work in Progress.. any input appreciated
+```
+Crashed Thread:        0  Dispatch queue: com.apple.main-thread
+
+Exception Type:        EXC_BAD_ACCESS (SIGSEGV)
+Exception Codes:       KERN_PROTECTION_FAILURE at 0x000000016a797ff0
+Exception Codes:       0x0000000000000002, 0x000000016a797ff0
+
+Termination Reason:    Namespace SIGNAL, Code 11 Segmentation fault: 11
+Terminating Process:   exc handler [98805]
+
+VM Region Info: 0x16a797ff0 is in 0x166f94000-0x16a798000;  bytes after start: 58736624  bytes before end: 15
+      REGION TYPE                    START - END         [ VSIZE] PRT/MAX SHRMOD  REGION DETAIL
+      MALLOC_SMALL                136800000-137000000    [ 8192K] rw-/rwx SM=PRV  
+      GAP OF 0x2ff94000 BYTES
+--->  STACK GUARD                 166f94000-16a798000    [ 56.0M] ---/rwx SM=NUL  ... for thread 0
+      Stack                       16a798000-16af94000    [ 8176K] rw-/rwx SM=SHM  thread 0
+
+Thread 0 Crashed::  Dispatch queue: com.apple.main-thread
+0   interpose.dylib               	       0x1052d7f04 my_puts + 4 (interpose.c:9)
+1   interpose.dylib               	       0x1052d7f60 my_puts + 96 (interpose.c:16)
+2   interpose.dylib               	       0x1052d7f60 my_puts + 96 (interpose.c:16)
+...
+509 interpose.dylib               	       0x1052d7f60 my_puts + 96 (interpose.c:16)
+510 interpose.dylib               	       0x1052d7f60 my_puts + 96 (interpose.c:16)
+
+
+Thread 0 crashed with ARM Thread State (64-bit):
+    x0: 0x00000001052d7f7d   x1: 0x000000001f08000c   x2: 0x00000001052d7f00   x3: 0x0000000000000000
+    x4: 0x0000000000000000   x5: 0x0000000000000000   x6: 0x0000000000000000   x7: 0x0000000000000000
+    x8: 0x00000001052d7f00   x9: 0xce59a7ff2b04006a  x10: 0x000000018d775510  x11: 0x00000000002d33b0
+   x12: 0x0000000000000002  x13: 0x00000001802d2000  x14: 0x000000000007effc  x15: 0x0000000000008000
+   x16: 0x0000000000000000  x17: 0x00000001052d7f00  x18: 0x0000000000000000  x19: 0x0000000105281bd0
+   x20: 0x0000000104e6ff50  x21: 0x000000016af933f0  x22: 0x0000000105281910  x23: 0x000000016af93470
+   x24: 0x000000016af934b0  x25: 0x000000018d5b45bb  x26: 0x0000000000000000  x27: 0x0000000000000000
+   x28: 0x0000000000000000   fp: 0x000000016a798010   lr: 0x00000001052d7f60
+    sp: 0x000000016a797fe0   pc: 0x00000001052d7f04 cpsr: 0x20001000
+   far: 0x000000016a797ff0  esr: 0x92000047 (Data Abort) byte write Translation fault
+
+Binary Images:
+       0x1052d4000 -        0x1052d7fff interpose.dylib (*) <a38112e0-f0c4-31cd-9928-9f6cf7d46246> /Users/USER/*/interpose.dylib
+       0x104e6c000 -        0x104e6ffff cx.srd.main-interpose (*) <0271c554-7512-3030-b2a1-931053c3f5ec> /Users/USER/*/main.app/main
+               0x0 - 0xffffffffffffffff ??? (*) <00000000-0000-0000-0000-000000000000> ???
+       0x18d74a000 -        0x18d7c8ffb libsystem_c.dylib (*) <decb8685-f34a-3979-afcb-71fb55747e41> /usr/lib/system/libsystem_c.dylib
+       0x18d52f000 -        0x18d5c3317 dyld (*) <ec7a3ba0-f9bf-3ab8-a0f4-8622e5606b20> /usr/lib/dyld
+...
+
+```  
