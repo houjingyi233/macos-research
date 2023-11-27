@@ -15,7 +15,7 @@ PNG_DIR="image.app/img"
         # Process each image with all 12 permutations
         for i in {1..12}; do
             echo "Applying permutation $i to $img"
-            ./runner ios11.app/ios11 "$img" $i
+            ./runner image.app/image "$img" $i
         done
     done
 } | tee "$LOGFILE"
