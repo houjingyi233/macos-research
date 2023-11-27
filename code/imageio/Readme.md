@@ -54,7 +54,45 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-### Tracing Debug Info
+## Bitmap Context Notes
+
+Creating a bitmap context with CGBitmapContextCreate involves several parameters that define the characteristics of the context, such as the width, height, bit depth, bytes per row, color space, and alpha info. Varying these parameters can significantly alter the behavior and output of the context. Below are 10 permutations of the CGBitmapContextCreate function call, each demonstrating a different configuration:
+```
+Standard RGB with No Alpha:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 0, colorspace, kCGImageAlphaNone);
+
+Premultiplied First Alpha:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaPremultipliedFirst);
+
+Non-Premultiplied Alpha:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaLast);
+
+16-bit Depth Per Component:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 16, 8 * width, colorspace, kCGImageAlphaPremultipliedLast);
+
+Grayscale Without Alpha:
+CGColorSpaceRef graySpace = CGColorSpaceCreateDeviceGray();
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width, graySpace, kCGImageAlphaNone);
+CGColorSpaceRelease(graySpace);
+
+High Dynamic Range (HDR) with Float Components:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 32, 16 * width, colorspace, kCGImageAlphaPremultipliedLast | kCGBitmapFloatComponents);
+
+Bitmap Context with Alpha Only:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width, NULL, kCGImageAlphaOnly);
+
+1-Bit Monochrome:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 1, width / 8, NULL, kCGImageAlphaNone);
+
+Big Endian Pixel Format:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+
+Little Endian Pixel Format:
+CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colorspace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+```
+Each permutation represents a different way of handling pixel formats, alpha channels, color spaces, and bit depths. The choice of parameters depends on the specific requirements of the image processing task at hand. For example, a grayscale context might be suitable for processing black-and-white images, while a context with HDR and float components would be more appropriate for high-quality image rendering.
+
+## Tracing Debug Info
 ```
 CG_PDF_VERBOSE=1 CG_CONTEXT_SHOW_BACKTRACE=1 CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1 CG_IMAGE_SHOW_MALLOC=1 CG_LAYER_SHOW_BACKTRACE=1 CGBITMAP_CONTEXT_LOG=1 CGCOLORDATAPROVIDER_VERBOSE=1 CGPDF_LOG_PAGES=1 ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f ~/Documents/fuzz/img
 ```
