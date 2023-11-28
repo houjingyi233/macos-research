@@ -1,3 +1,23 @@
+/**
+ * @file       ios-image-fuzzer-example.mm
+ * @brief      Proof of concept iOS Image Fuzzer
+ * @author     @h02332 | David Hoyt
+ * @date       Modified 27 Nov 2023 | 2939 EST
+ *
+ * Detailed description of the file, if necessary.
+ *
+ * @section    CHANGES
+ * [Date] [Author] - [Description of Changes]
+ * - [26/11/2023] [h02332] - Initial commit
+ * - [27/11/2023] [Author's Initials] - Removed Grayscale Feature pending Implementation
+ *
+ * @section    TODO
+ * - [ ] Grayscale Implementation
+ * - [ ] ICC Color Profiles
+ * - [ ] Refactor Example Fuzzer 
+ *
+ */
+
 #include <Foundation/Foundation.h>
 #include <UIKit/UIKit.h>
 #include <iostream>
