@@ -41,19 +41,43 @@ void createBitmapContextLittleEndian(CGImageRef cgImg);
 void createBitmapContext8BitInvertedColors(CGImageRef cgImg);
 void createBitmapContext32BitFloat4Component(CGImageRef cgImg);
 void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height);
+void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message);
 
+void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message) {
+    int randomX = rand() % width;
+    int randomY = rand() % height;
+    size_t pixelIndex = (randomY * width + randomX) * 4;
+
+    NSLog(@"%s - Pixel[%d, %d]: R=%d, G=%d, B=%d, A=%d",
+          message, randomX, randomY,
+          rawData[pixelIndex], rawData[pixelIndex + 1],
+          rawData[pixelIndex + 2], rawData[pixelIndex + 3]);
+}
 
 void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height) {
+    // Log pixel data before fuzzing
+    logPixelData(rawData, width, height, "Before fuzzing");
+
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            size_t pixelIndex = (y * width + x) * 4; // Assuming 4 bytes per pixel (RGBA)
-            rawData[pixelIndex] += rand() % 5 - 2; // Alter Red value
-            rawData[pixelIndex + 1] += rand() % 5 - 2; // Alter Green value
-            rawData[pixelIndex + 2] += rand() % 5 - 2; // Alter Blue value
+            size_t pixelIndex = (y * width + x) * 4; // 4 bytes per pixel (RGBA)
+
+            // Fuzzing each color component (R, G, B) within the range of 0-255
+            for (int i = 0; i < 3; i++) { // Looping over R, G, B components
+                int fuzzFactor = rand() % 51 - 25; // Random number between -25 and 25
+                int newValue = rawData[pixelIndex + i] + fuzzFactor;
+                rawData[pixelIndex + i] = (unsigned char) fmax(0, fmin(255, newValue));
+            }
             // Alpha (offset + 3) is not altered
         }
     }
+
+    // Log pixel data after fuzzing
+    logPixelData(rawData, width, height, "After fuzzing");
+
+    NSLog(@"Fuzzing applied to RGB components of the bitmap context");
 }
+
 
 int main(int argc, const char * argv[]) {
     NSLog(@"Starting up...");
