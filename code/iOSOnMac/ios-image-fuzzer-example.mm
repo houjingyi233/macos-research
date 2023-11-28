@@ -1,7 +1,3 @@
-// @h02332 DHoyt - written to demo using iOSOnMac and interposing iOS apps on macOS.
-// xcrun -sdk iphoneos clang++ -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk -framework UIKit -framework Foundation -framework CoreGraphics -miphoneos-version-min=12.0 -o imagefuzzer ios-image-fuzzer-example.mm interpose.dylib
-// ./runner imgfuzzer.app/imgfuzzer /mnt/fuzzing/img/cve.png 1
-//
 #include <Foundation/Foundation.h>
 #include <UIKit/UIKit.h>
 #include <iostream>
@@ -24,8 +20,23 @@ void createBitmapContextBigEndian(CGImageRef cgImg);
 void createBitmapContextLittleEndian(CGImageRef cgImg);
 void createBitmapContext8BitInvertedColors(CGImageRef cgImg);
 void createBitmapContext32BitFloat4Component(CGImageRef cgImg);
+void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height);
+
+
+void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height) {
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            size_t pixelIndex = (y * width + x) * 4; // Assuming 4 bytes per pixel (RGBA)
+            rawData[pixelIndex] += rand() % 5 - 2; // Alter Red value
+            rawData[pixelIndex + 1] += rand() % 5 - 2; // Alter Green value
+            rawData[pixelIndex + 2] += rand() % 5 - 2; // Alter Blue value
+            // Alpha (offset + 3) is not altered
+        }
+    }
+}
 
 int main(int argc, const char * argv[]) {
+    NSLog(@"Starting up...");
     @autoreleasepool {
         if (argc < 3) {
             NSLog(@"Usage: %s path/to/image permutation_number", argv[0]);
@@ -47,6 +58,7 @@ int main(int argc, const char * argv[]) {
         }
 
         processImage(image, permutation);
+        NSLog(@"End of Run...");
     }
 
     return 0;
@@ -102,9 +114,8 @@ void processImage(UIImage *image, int permutation) {
             createBitmapContext16BitDepth(cgImg);
             break;
         case 5:
-            NSLog(@"Case: Creating bitmap context with Grayscale settings");
-            createBitmapContextGrayscale(cgImg);
-            break;
+            NSLog(@"Grayscale image processing is currently pending implementation.");
+            return;
         case 6:
             NSLog(@"Case: Creating bitmap context with HDR Float Components settings");
             createBitmapContextHDRFloatComponents(cgImg);
@@ -142,84 +153,275 @@ void processImage(UIImage *image, int permutation) {
 }
 
 void createBitmapContextStandardRGB(CGImageRef cgImg) {
-    NSLog(@"Creating bitmap context with Standard RGB settings");
+    NSLog(@"Creating bitmap context with Standard RGB settings and applying fuzzing");
     size_t width = CGImageGetWidth(cgImg);
     size_t height = CGImageGetHeight(cgImg);
-    CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaNoneSkipFirst);
-    if (!ctx) {
-        NSLog(@"Failed to create bitmap context with Standard RGB settings");
+    size_t bytesPerRow = width * 4; // 4 bytes per pixel for RGBA
+    unsigned char *rawData = (unsigned char *)malloc(height * bytesPerRow);
+
+    if (!rawData) {
+        NSLog(@"Failed to allocate memory for image processing");
         return;
     }
-    NSLog(@"Bitmap context with Standard RGB settings created successfully");
+
+    CGContextRef ctx = CGBitmapContextCreate(rawData, width, height, 8, bytesPerRow, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst);
+    if (!ctx) {
+        NSLog(@"Failed to create bitmap context with Standard RGB settings");
+        free(rawData);
+        return;
+    }
+
+    // Draw the image into the context
+    NSLog(@"Drawing image into the bitmap context");
+    CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImg);
+
+    // Apply fuzzing logic
+    NSLog(@"Applying fuzzing logic to the bitmap context");
+    applyFuzzingToBitmapContext(rawData, width, height);
+
+    // Optionally, you can convert back to UIImage to see the result
+    NSLog(@"Creating CGImage from the modified bitmap context");
+    CGImageRef newCgImg = CGBitmapContextCreateImage(ctx);
+    if (!newCgImg) {
+        NSLog(@"Failed to create CGImage from context");
+    } else {
+        UIImage *newImage = [UIImage imageWithCGImage:newCgImg];
+        CGImageRelease(newCgImg);
+
+        // Here, newImage contains the modified image
+        // You can log or use newImage as needed
+        NSLog(@"Modified UIImage created successfully");
+
+        // Example: Logging newImage details
+        NSLog(@"New image size: %@, scale: %f, rendering mode: %ld",
+              NSStringFromCGSize(newImage.size),
+              newImage.scale,
+              (long)newImage.renderingMode);
+    }
+
     CGContextRelease(ctx);
+    free(rawData);
+
+    NSLog(@"Bitmap context processing complete");
+
+    // Log or do something with newImage if needed
+    NSLog(@"Bitmap context with Standard RGB settings created and fuzzing applied");
 }
 
 void createBitmapContextPremultipliedFirstAlpha(CGImageRef cgImg) {
-    NSLog(@"Creating bitmap context with Premultiplied First Alpha settings");
+    NSLog(@"Creating bitmap context with Premultiplied First Alpha settings and applying fuzzing");
     size_t width = CGImageGetWidth(cgImg);
     size_t height = CGImageGetHeight(cgImg);
-    CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst);
-    if (!ctx) {
-        NSLog(@"Failed to create bitmap context with Premultiplied First Alpha settings");
+    size_t bytesPerRow = width * 4; // 4 bytes per pixel for RGBA
+    unsigned char *rawData = (unsigned char *)malloc(height * bytesPerRow);
+
+    if (!rawData) {
+        NSLog(@"Failed to allocate memory for image processing");
         return;
     }
-    NSLog(@"Bitmap context with Premultiplied First Alpha settings created successfully");
+
+    CGContextRef ctx = CGBitmapContextCreate(rawData, width, height, 8, bytesPerRow, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst);
+    if (!ctx) {
+        NSLog(@"Failed to create bitmap context with Premultiplied First Alpha settings");
+        free(rawData);
+        return;
+    }
+
+    // Draw the image into the context
+    NSLog(@"Drawing image into the bitmap context");
+    CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImg);
+
+    // Apply fuzzing logic
+    NSLog(@"Applying fuzzing logic to the bitmap context");
+    applyFuzzingToBitmapContext(rawData, width, height);
+
+    // Optionally, you can convert back to UIImage to see the result
+    NSLog(@"Creating CGImage from the modified bitmap context");
+    CGImageRef newCgImg = CGBitmapContextCreateImage(ctx);
+    if (!newCgImg) {
+        NSLog(@"Failed to create CGImage from context");
+    } else {
+        UIImage *newImage = [UIImage imageWithCGImage:newCgImg];
+        CGImageRelease(newCgImg);
+
+        // Here, newImage contains the modified image
+        // You can log or use newImage as needed
+        NSLog(@"Modified UIImage created successfully");
+
+        // Example: Logging newImage details
+        NSLog(@"New image size: %@, scale: %f, rendering mode: %ld",
+              NSStringFromCGSize(newImage.size),
+              newImage.scale,
+              (long)newImage.renderingMode);
+    }
+
     CGContextRelease(ctx);
+    free(rawData);
+
+    NSLog(@"Bitmap context with Premultiplied First Alpha settings created and fuzzing applied");
 }
 
 void createBitmapContextNonPremultipliedAlpha(CGImageRef cgImg) {
-    NSLog(@"Creating bitmap context with Non-Premultiplied Alpha settings");
+    NSLog(@"Creating bitmap context with Non-Premultiplied Alpha settings and applying fuzzing");
     size_t width = CGImageGetWidth(cgImg);
     size_t height = CGImageGetHeight(cgImg);
-    CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width * 4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaLast);
-    if (!ctx) {
-        NSLog(@"Failed to create bitmap context with Non-Premultiplied Alpha settings");
+    size_t bytesPerRow = width * 4; // 4 bytes per pixel for RGBA
+    unsigned char *rawData = (unsigned char *)malloc(height * bytesPerRow);
+
+    if (!rawData) {
+        NSLog(@"Failed to allocate memory for image processing");
         return;
     }
-    NSLog(@"Bitmap context with Non-Premultiplied Alpha settings created successfully");
+
+    CGContextRef ctx = CGBitmapContextCreate(rawData, width, height, 8, bytesPerRow, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaLast);
+    if (!ctx) {
+        NSLog(@"Failed to create bitmap context with Non-Premultiplied Alpha settings");
+        free(rawData);
+        return;
+    }
+
+    // Draw the image into the context
+    NSLog(@"Drawing image into the bitmap context");
+    CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImg);
+
+    // Apply fuzzing logic
+    NSLog(@"Applying fuzzing logic to the bitmap context");
+    applyFuzzingToBitmapContext(rawData, width, height);
+
+    // Optionally, you can convert back to UIImage to see the result
+    NSLog(@"Creating CGImage from the modified bitmap context");
+    CGImageRef newCgImg = CGBitmapContextCreateImage(ctx);
+    if (!newCgImg) {
+        NSLog(@"Failed to create CGImage from context");
+    } else {
+        UIImage *newImage = [UIImage imageWithCGImage:newCgImg];
+        CGImageRelease(newCgImg);
+
+        // Here, newImage contains the modified image
+        // You can log or use newImage as needed
+        NSLog(@"Modified UIImage created successfully");
+
+        // Example: Logging newImage details
+        NSLog(@"New image size: %@, scale: %f, rendering mode: %ld",
+              NSStringFromCGSize(newImage.size),
+              newImage.scale,
+              (long)newImage.renderingMode);
+    }
+
     CGContextRelease(ctx);
+    free(rawData);
+
+    NSLog(@"Bitmap context with Non-Premultiplied Alpha settings created and fuzzing applied");
 }
 
 void createBitmapContext16BitDepth(CGImageRef cgImg) {
-    NSLog(@"Creating bitmap context with 16-bit Depth settings");
+    NSLog(@"Creating bitmap context with 16-bit Depth settings and applying fuzzing");
     size_t width = CGImageGetWidth(cgImg);
     size_t height = CGImageGetHeight(cgImg);
-    CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 16, width * 8, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst);
-    if (!ctx) {
-        NSLog(@"Failed to create bitmap context with 16-bit Depth settings");
+    size_t bytesPerRow = width * 8; // 8 bytes per pixel for 16-bit RGBA
+    unsigned char *rawData = (unsigned char *)malloc(height * bytesPerRow);
+
+    if (!rawData) {
+        NSLog(@"Failed to allocate memory for image processing");
         return;
     }
-    NSLog(@"Bitmap context with 16-bit Depth settings created successfully");
+
+    CGContextRef ctx = CGBitmapContextCreate(rawData, width, height, 16, bytesPerRow, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst);
+    if (!ctx) {
+        NSLog(@"Failed to create bitmap context with 16-bit Depth settings");
+        free(rawData);
+        return;
+    }
+
+    // Draw the image into the context
+    NSLog(@"Drawing image into the bitmap context");
+    CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImg);
+
+    // Apply fuzzing logic
+    NSLog(@"Applying fuzzing logic to the bitmap context");
+    applyFuzzingToBitmapContext(rawData, width, height);
+
+    // Optionally, you can convert back to UIImage to see the result
+    NSLog(@"Creating CGImage from the modified bitmap context");
+    CGImageRef newCgImg = CGBitmapContextCreateImage(ctx);
+    if (!newCgImg) {
+        NSLog(@"Failed to create CGImage from context");
+    } else {
+        UIImage *newImage = [UIImage imageWithCGImage:newCgImg];
+        CGImageRelease(newCgImg);
+
+        // Here, newImage contains the modified image
+        // You can log or use newImage as needed
+        NSLog(@"Modified UIImage created successfully");
+
+        // Example: Logging newImage details
+        NSLog(@"New image size: %@, scale: %f, rendering mode: %ld",
+              NSStringFromCGSize(newImage.size),
+              newImage.scale,
+              (long)newImage.renderingMode);
+    }
+
     CGContextRelease(ctx);
+    free(rawData);
+
+    NSLog(@"Bitmap context with 16-bit Depth settings created and fuzzing applied");
 }
 
 void createBitmapContextGrayscale(CGImageRef cgImg) {
-    NSLog(@"Creating bitmap context with Grayscale settings");
-    size_t width = CGImageGetWidth(cgImg);
-    size_t height = CGImageGetHeight(cgImg);
-    CGColorSpaceRef graySpace = CGColorSpaceCreateDeviceGray();
-    CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, width, graySpace, kCGImageAlphaNone);
-    if (!ctx) {
-        NSLog(@"Failed to create bitmap context with Grayscale settings");
-        CGColorSpaceRelease(graySpace);
-        return;
-    }
-    NSLog(@"Bitmap context with Grayscale settings created successfully");
-    CGContextRelease(ctx);
-    CGColorSpaceRelease(graySpace);
+    NSLog(@"Grayscale image processing is not yet implemented.");
+    // No further processing or memory allocations
 }
 
 void createBitmapContextHDRFloatComponents(CGImageRef cgImg) {
-    NSLog(@"Creating bitmap context with HDR Float Components settings");
+    NSLog(@"Creating bitmap context with HDR Float Components settings and applying fuzzing");
     size_t width = CGImageGetWidth(cgImg);
     size_t height = CGImageGetHeight(cgImg);
-    CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 32, width * 16, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapFloatComponents);
-    if (!ctx) {
-        NSLog(@"Failed to create bitmap context with HDR Float Components settings");
+    size_t bytesPerRow = width * 16; // 16 bytes per pixel for HDR RGBA (4 components x 4 bytes per component)
+
+    unsigned char *rawData = (unsigned char *)malloc(height * bytesPerRow);
+    if (!rawData) {
+        NSLog(@"Failed to allocate memory for HDR image processing");
         return;
     }
-    NSLog(@"Bitmap context with HDR Float Components settings created successfully");
+
+    CGContextRef ctx = CGBitmapContextCreate(rawData, width, height, 32, bytesPerRow, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast | kCGBitmapFloatComponents);
+    if (!ctx) {
+        NSLog(@"Failed to create bitmap context with HDR Float Components settings");
+        free(rawData);
+        return;
+    }
+
+    // Draw the image into the context
+    NSLog(@"Drawing image into the HDR bitmap context");
+    CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImg);
+
+    // Apply fuzzing logic
+    NSLog(@"Applying fuzzing logic to the HDR bitmap context");
+    applyFuzzingToBitmapContext(rawData, width, height);
+
+    // Optionally, you can convert back to UIImage to see the result
+    NSLog(@"Creating CGImage from the modified HDR bitmap context");
+    CGImageRef newCgImg = CGBitmapContextCreateImage(ctx);
+    if (!newCgImg) {
+        NSLog(@"Failed to create CGImage from HDR context");
+    } else {
+        UIImage *newImage = [UIImage imageWithCGImage:newCgImg];
+        CGImageRelease(newCgImg);
+
+        // Here, newImage contains the modified HDR image
+        // You can log or use newImage as needed
+        NSLog(@"Modified HDR UIImage created successfully");
+
+        // Example: Logging newImage details
+        NSLog(@"New HDR image size: %@, scale: %f",
+              NSStringFromCGSize(newImage.size),
+              newImage.scale);
+    }
+
     CGContextRelease(ctx);
+    free(rawData);
+
+    NSLog(@"Bitmap context with HDR Float Components settings created and fuzzing applied");
 }
 
 void createBitmapContextAlphaOnly(CGImageRef cgImg) {
