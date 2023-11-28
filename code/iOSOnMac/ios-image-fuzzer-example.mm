@@ -44,14 +44,18 @@ void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t he
 void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message);
 
 void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message) {
-    int randomX = rand() % width;
-    int randomY = rand() % height;
-    size_t pixelIndex = (randomY * width + randomX) * 4;
+    // Log multiple random pixels for broader coverage
+    const int numberOfPixelsToLog = 5; // Number of random pixels to log
+    for (int i = 0; i < numberOfPixelsToLog; i++) {
+        int randomX = rand() % width;
+        int randomY = rand() % height;
+        size_t pixelIndex = (randomY * width + randomX) * 4;
 
-    NSLog(@"%s - Pixel[%d, %d]: R=%d, G=%d, B=%d, A=%d",
-          message, randomX, randomY,
-          rawData[pixelIndex], rawData[pixelIndex + 1],
-          rawData[pixelIndex + 2], rawData[pixelIndex + 3]);
+        NSLog(@"%s - Pixel[%d, %d]: R=%d, G=%d, B=%d, A=%d",
+              message, randomX, randomY,
+              rawData[pixelIndex], rawData[pixelIndex + 1],
+              rawData[pixelIndex + 2], rawData[pixelIndex + 3]);
+    }
 }
 
 void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height) {
@@ -61,10 +65,10 @@ void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t he
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             size_t pixelIndex = (y * width + x) * 4; // 4 bytes per pixel (RGBA)
-
-            // Fuzzing each color component (R, G, B) within the range of 0-255
+            
+            // Fuzzing each color component (R, G, B) within an expanded range
             for (int i = 0; i < 3; i++) { // Looping over R, G, B components
-                int fuzzFactor = rand() % 51 - 25; // Random number between -25 and 25
+                int fuzzFactor = rand() % 101 - 50; // Random number between -50 and 50
                 int newValue = rawData[pixelIndex + i] + fuzzFactor;
                 rawData[pixelIndex + i] = (unsigned char) fmax(0, fmin(255, newValue));
             }
@@ -77,7 +81,6 @@ void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t he
 
     NSLog(@"Fuzzing applied to RGB components of the bitmap context");
 }
-
 
 int main(int argc, const char * argv[]) {
     NSLog(@"Starting up...");
