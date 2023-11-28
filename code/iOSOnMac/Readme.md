@@ -108,30 +108,46 @@ main.app
 ## iOS Image Fuzzer Example
 ```
  ./runner imagefuzzer.app/imagefuzzer /mnt/fuzz/cve.png
-[+] Child process created with pid: 68338
-[*] Instrumenting process with PID 68338...
-[*] Attempting to attach to task with PID 68338...
-[+] Successfully attached to task with PID 68338
+[+] Child process created with pid: 74952
+[*] Instrumenting process with PID 74952...
+[*] Attempting to attach to task with PID 74952...
+[+] Successfully attached to task with PID 74952
 [*] Finding patch point...
 [*] _amfi_check_dyld_policy_self at offset 0x6e728 in /usr/lib/dyld
 [*] Attaching to target process...
 [*] Scanning for /usr/lib/dyld in target's memory...
-[*] /usr/lib/dyld mapped at 0x100c30000
+[*] /usr/lib/dyld mapped at 0x104a0c000
 [*] Patching _amfi_check_dyld_policy_self...
 [+] Sucessfully patched _amfi_check_dyld_policy_self
 [*] Sending SIGCONT to continue child
-2023-11-26 15:09:56.573 ios6[68338:669986] Program started. Number of arguments: 2
-2023-11-26 15:09:56.573 ios6[68338:669986] Argument 0: imagefuzzer.app/imagefuzzer
-2023-11-26 15:09:56.573 ios6[68338:669986] Argument 1: /mnt/fuzz/cve.png
-2023-11-26 15:09:56.573 ios6[68338:669986] Loading file from path: /mnt/fuzz/cve.png
-2023-11-26 15:09:56.573 ios6[68338:669986] Data loaded from file: /mnt/fuzz/cve.png
-2023-11-26 15:09:56.575 ios6[68338:669986] UIImage created: <UIImage:0x600002a854d0 anonymous {157, 157} renderingMode=automatic(original)>
-2023-11-26 15:09:56.575 ios6[68338:669986] CGImage created from UIImage. Dimensions: 157 x 157
-2023-11-26 15:09:56.575 ios6[68338:669986] RGB color space created.
-2023-11-26 15:09:56.575 ios6[68338:669986] Creating bitmap context...
-2023-11-26 15:09:56.575 ios6[68338:669986] Bitmap context created.
-2023-11-26 15:09:56.575 ios6[68338:669986] Drawing image in bitmap context...
-2023-11-26 15:09:56.576 ios6[68338:669986] Image drawn in bitmap context.
+2023-11-27 21:01:37.952 ios11[74952:1516232] Starting up...
+2023-11-27 21:01:37.952 ios11[74952:1516232] Valid image path: 2226.png
+2023-11-27 21:01:37.952 ios11[74952:1516232] Loading file from path: 2226.png
+2023-11-27 21:01:37.952 ios11[74952:1516232] Data loaded from file: 2226.png
+2023-11-27 21:01:37.955 ios11[74952:1516232] UIImage created: <UIImage:0x6000020f9830 anonymous {157, 157} renderingMode=automatic(original)>
+2023-11-27 21:01:37.955 ios11[74952:1516232] CGImage created from UIImage. Dimensions: 157 x 157
+2023-11-27 21:01:37.955 ios11[74952:1516232] Case: Creating bitmap context with Standard RGB settings
+2023-11-27 21:01:37.955 ios11[74952:1516232] Creating bitmap context with Standard RGB settings and applying fuzzing
+2023-11-27 21:01:37.956 ios11[74952:1516232] Drawing image into the bitmap context
+2023-11-27 21:01:37.957 ios11[74952:1516232] Applying fuzzing logic to the bitmap context
+2023-11-27 21:01:37.957 ios11[74952:1516232] Before fuzzing - Pixel[64, 123]: R=255, G=0, B=0, A=0
+2023-11-27 21:01:37.957 ios11[74952:1516232] Before fuzzing - Pixel[76, 4]: R=255, G=0, B=0, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] Before fuzzing - Pixel[40, 85]: R=255, G=0, B=0, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] Before fuzzing - Pixel[60, 20]: R=255, G=0, B=0, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] Before fuzzing - Pixel[88, 59]: R=255, G=0, B=0, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] After fuzzing - Pixel[23, 143]: R=234, G=0, B=48, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] After fuzzing - Pixel[41, 50]: R=246, G=33, B=0, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] After fuzzing - Pixel[53, 90]: R=255, G=14, B=0, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] After fuzzing - Pixel[71, 116]: R=255, G=46, B=49, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] After fuzzing - Pixel[147, 31]: R=255, G=22, B=20, A=0
+2023-11-27 21:01:37.958 ios11[74952:1516232] Fuzzing applied to RGB components of the bitmap context
+2023-11-27 21:01:37.958 ios11[74952:1516232] Creating CGImage from the modified bitmap context
+2023-11-27 21:01:37.959 ios11[74952:1516232] Modified UIImage created successfully
+2023-11-27 21:01:37.959 ios11[74952:1516232] New image size: {157, 157}, scale: 1.000000, rendering mode: 0
+2023-11-27 21:01:37.959 ios11[74952:1516232] Bitmap context processing complete
+2023-11-27 21:01:37.959 ios11[74952:1516232] Bitmap context with Standard RGB settings created and fuzzing applied
+2023-11-27 21:01:37.959 ios11[74952:1516232] Completed image processing for permutation 1
+2023-11-27 21:01:37.959 ios11[74952:1516232] End of Run...
 [*] Child exited with status 0
 ```
 ### Bug Sample
