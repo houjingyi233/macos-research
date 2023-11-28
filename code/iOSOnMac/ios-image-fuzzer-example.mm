@@ -46,6 +46,7 @@ void createBitmapContext32BitFloat4Component(CGImageRef cgImg, NSString *session
 // TODO: Refactor Permutation functions
 void createBitmapContextGrayscale(CGImageRef cgImg);
 // Fuzzing function declarations
+void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message);
 void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height);
 void processPermutation(UIImage *image, int permutation, NSString *sessionDirectory);
 
