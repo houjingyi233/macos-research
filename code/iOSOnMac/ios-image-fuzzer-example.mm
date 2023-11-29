@@ -2,21 +2,22 @@
  * @file       ios-image-fuzzer-example.mm
  * @brief      Proof of concept iOS Image Fuzzer
  * @author     @h02332 | David Hoyt
- * @date       Modified 27 Nov 2023 | 2939 EST
+ * @date       Modified 29 Nov 2023 | 1733 EST
  *
  * Detailed description of the file, if necessary.
  *
  * @section    CHANGES
  * [Date] [Author] - [Description of Changes]
  * - [26/11/2023] [h02332] - Initial commit
- * - [27/11/2023] [Author's Initials] - Removed Grayscale Feature pending Implementation
- * - [28/11/2023] [Author's Initials] - Refactor Code & fuzzing
+ * - [27/11/2023] [h02332] - Removed Grayscale Feature pending Implementation
+ * - [28/11/2023] [h02332] - Refactor Code & fuzzing
+ * - [29/11/2023] [h02332] - Refactor Code & fuzzing & logging
  *
  * @section    TODO
  * - [ ] Grayscale Implementation
  * - [ ] ICC Color Profiles
  * - [ ] Refactor Example Fuzzer 
- *
+ * - [ ] Add Logging Toggle as global variable  - testing in createBitmapContextStandardRGB function
  */
 
 #include <Foundation/Foundation.h>
@@ -27,11 +28,19 @@
 #define ALL -1
 #define MAX_PERMUTATION 12
 
+// Global variable to control verbosity
+int verboseLogging = 1; // Set to 1 for detailed logging, 0 for minimal logging
+
 // Function declarations
 BOOL isValidImagePath(NSString *path);
 UIImage *loadImageFromFile(NSString *path);
 void processImage(UIImage *image, int permutation, NSString *sessionDirectory);
-// Refactored Functions
+void processPermutation(UIImage *image, int permutation, NSString *sessionDirectory);
+NSString *createUniqueDirectoryForSavingImages();
+void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message);
+void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height);
+
+// Bitmap context creation functions
 void createBitmapContextStandardRGB(CGImageRef cgImg, NSString *sessionDirectory, int permutation);
 void createBitmapContextPremultipliedFirstAlpha(CGImageRef cgImg, NSString *sessionDirectory, int permutation);
 void createBitmapContextNonPremultipliedAlpha(CGImageRef cgImg, NSString *sessionDirectory, int permutation);
@@ -43,25 +52,26 @@ void createBitmapContextBigEndian(CGImageRef cgImg, NSString *sessionDirectory, 
 void createBitmapContextLittleEndian(CGImageRef cgImg, NSString *sessionDirectory, int permutation);
 void createBitmapContext8BitInvertedColors(CGImageRef cgImg, NSString *sessionDirectory, int permutation);
 void createBitmapContext32BitFloat4Component(CGImageRef cgImg, NSString *sessionDirectory, int permutation);
-// TODO: Refactor Permutation functions
-void createBitmapContextGrayscale(CGImageRef cgImg);
-// Fuzzing function declarations
-void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message);
-void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height);
-void processPermutation(UIImage *image, int permutation, NSString *sessionDirectory);
 
-// Utility function to create a unique directory based on current date and time
+// TODO: Implement Grayscale context creation
+void createBitmapContextGrayscale(CGImageRef cgImg);
+
 NSString *createUniqueDirectoryForSavingImages() {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
+    [formatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss-SSS"];
     NSString *dateString = [formatter stringFromDate:[NSDate date]];
 
+    // Generating a random component to append to the directory name for uniqueness
+    uint32_t randomComponent = arc4random_uniform(10000);
+    NSString *uniqueDirectoryName = [NSString stringWithFormat:@"%@_%u", dateString, randomComponent];
+
     NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *uniqueDirPath = [documentsDirectory stringByAppendingPathComponent:dateString];
+    NSString *uniqueDirPath = [documentsDirectory stringByAppendingPathComponent:uniqueDirectoryName];
 
     NSError *error;
     if (![[NSFileManager defaultManager] createDirectoryAtPath:uniqueDirPath withIntermediateDirectories:YES attributes:nil error:&error]) {
         NSLog(@"Error creating directory for saving images: %@", error.localizedDescription);
+        // Consider additional error handling logic here, depending on application requirements
         return nil;
     }
 
@@ -69,73 +79,177 @@ NSString *createUniqueDirectoryForSavingImages() {
 }
 
 void logPixelData(unsigned char *rawData, size_t width, size_t height, const char *message) {
-    if (!rawData) {
-        NSLog(@"%s - No data available for logging.", message);
+    if (!rawData || width == 0 || height == 0) {
+        NSLog(@"%s - Invalid data or dimensions. Logging aborted.", message);
         return;
     }
 
     const int numberOfPixelsToLog = 5; // Number of random pixels to log
-    NSLog(@"%s - Logging %d random pixels:", message, numberOfPixelsToLog);
 
-    for (int i = 0; i < numberOfPixelsToLog; i++) {
-        int randomX = rand() % width;
-        int randomY = rand() % height;
-        size_t pixelIndex = (randomY * width + randomX) * 4;
+    if (verboseLogging) {
+        NSLog(@"%s - Logging %d random pixels:", message, numberOfPixelsToLog);
 
-        // Check if pixelIndex is within bounds
-        if (pixelIndex + 3 < width * height * 4) {
-            NSLog(@"%s - Pixel[%d, %d]: R=%d, G=%d, B=%d, A=%d",
-                  message, randomX, randomY,
-                  rawData[pixelIndex], rawData[pixelIndex + 1],
-                  rawData[pixelIndex + 2], rawData[pixelIndex + 3]);
-        } else {
-            NSLog(@"%s - Out of bounds pixel access prevented at [%d, %d].", message, randomX, randomY);
+        for (int i = 0; i < numberOfPixelsToLog; i++) {
+            unsigned int randomX = arc4random_uniform((unsigned int)width);
+            unsigned int randomY = arc4random_uniform((unsigned int)height);
+            size_t pixelIndex = (randomY * width + randomX) * 4;
+
+            if (pixelIndex + 3 < width * height * 4) {
+                NSLog(@"%s - Pixel[%u, %u]: R=%d, G=%d, B=%d, A=%d",
+                      message, randomX, randomY,
+                      rawData[pixelIndex], rawData[pixelIndex + 1],
+                      rawData[pixelIndex + 2], rawData[pixelIndex + 3]);
+            } else {
+                NSLog(@"%s - Out of bounds pixel access prevented at [%u, %u].", message, randomX, randomY);
+            }
         }
+    } else {
+        NSLog(@"%s - Basic pixel logging executed.", message);
+    }
+}
+
+void applyEnhancedFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height) {
+    if (!rawData || width == 0 || height == 0) {
+        NSLog(@"No valid raw data or dimensions available for enhanced fuzzing.");
+        return;
+    }
+
+    if (verboseLogging) {
+        NSLog(@"Starting enhanced fuzzing on bitmap context");
+    }
+
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            size_t pixelIndex = (y * width + x) * 4;
+            int fuzzMethod = arc4random_uniform(6); // Six methods
+
+            switch (fuzzMethod) {
+                case 0: // Inversion
+                    if (verboseLogging) {
+                        NSLog(@"Inversion applied at Pixel[%zu, %zu]", x, y);
+                    }
+                    for (int i = 0; i < 3; i++) {  // Apply inversion to RGB
+                        rawData[pixelIndex + i] = 255 - rawData[pixelIndex + i];
+                    }
+                    break;
+                case 1: // Random noise
+                    if (verboseLogging) {
+                        NSLog(@"Random noise applied at Pixel[%zu, %zu]", x, y);
+                    }
+                    for (int i = 0; i < 4; i++) {
+                        int noise = arc4random_uniform(101) - 50;
+                        int newValue = rawData[pixelIndex + i] + noise;
+                        rawData[pixelIndex + i] = (unsigned char)fmax(0, fmin(255, newValue));
+                    }
+                    break;
+                case 2: // Random color
+                    if (verboseLogging) {
+                        NSLog(@"Random color set at Pixel[%zu, %zu]", x, y);
+                    }
+                    rawData[pixelIndex] = arc4random_uniform(256);
+                    rawData[pixelIndex + 1] = arc4random_uniform(256);
+                    rawData[pixelIndex + 2] = arc4random_uniform(256);
+                    break;
+                case 3: // Shift pixel values
+                    if (verboseLogging) {
+                        NSLog(@"Shift pixel values applied at Pixel[%zu, %zu]", x, y);
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        rawData[pixelIndex + i] = (rawData[pixelIndex + i] + 128) % 256;
+                    }
+                    break;
+                case 4: // Extreme contrast adjustment
+                    if (verboseLogging) {
+                        NSLog(@"Extreme contrast adjustment at Pixel[%zu, %zu]", x, y);
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        rawData[pixelIndex + i] = rawData[pixelIndex + i] < 128 ? 0 : 255;
+                    }
+                    break;
+                case 5: // Conditional color swap
+                    if (verboseLogging) {
+                        NSLog(@"Conditional color swap at Pixel[%zu, %zu]", x, y);
+                    }
+                    if ((x + y) % 10 < 5) {
+                        unsigned char temp = rawData[pixelIndex];
+                        rawData[pixelIndex] = rawData[pixelIndex + 2];
+                        rawData[pixelIndex + 2] = temp;
+                    }
+                    break;
+            }
+        }
+    }
+
+    if (verboseLogging) {
+        NSLog(@"Enhanced fuzzing on bitmap context completed");
     }
 }
 
 void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t height) {
-    // Ensure rawData is not NULL
-    if (!rawData) {
-        NSLog(@"No raw data available for fuzzing.");
+    if (!rawData || width == 0 || height == 0) {
+        NSLog(@"No valid raw data or dimensions available for fuzzing.");
         return;
     }
 
-    // Log pixel data before fuzzing
     logPixelData(rawData, width, height, "Before fuzzing");
 
-    // Iterate over each pixel
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            size_t pixelIndex = (y * width + x) * 4; // 4 bytes per pixel (RGBA)
-            
-            // Apply different fuzzing strategies based on position and pattern
-            for (int i = 0; i < 4; i++) { // Looping over R, G, B, and A components
-                int fuzzFactor;
-                if ((x + y) % 2 == 0) {
-                    // For even sum of coordinates, use a wider range
-                    fuzzFactor = rand() % 201 - 100; // Random number between -100 and 100
-                } else {
-                    // For odd sum of coordinates, use a narrower range
-                    fuzzFactor = rand() % 51 - 25; // Random number between -25 and 25
-                }
+            size_t pixelIndex = (y * width + x) * 4;
 
-                // Introduce a random chance to invert the pixel value
-                if (rand() % 10 == 0) { // 10% chance to invert
-                    rawData[pixelIndex + i] = 255 - rawData[pixelIndex + i];
-                } else {
-                    // Standard fuzzing
-                    int newValue = rawData[pixelIndex + i] + fuzzFactor;
-                    rawData[pixelIndex + i] = (unsigned char) fmax(0, fmin(255, newValue));
+            for (int i = 0; i < 4; i++) {
+                int fuzzMethod = arc4random_uniform(5);
+
+                switch (fuzzMethod) {
+                    case 0: // Inversion
+                        rawData[pixelIndex + i] = 255 - rawData[pixelIndex + i];
+                        if (verboseLogging) {
+                            NSLog(@"Inversion applied at Pixel[%zu, %zu]: New Value=%d", x, y, rawData[pixelIndex + i]);
+                        }
+                        break;
+                    case 1: // Random addition/subtraction
+                        {
+                            int fuzzFactor = (int)arc4random_uniform(201) - 100;
+                            int newValue = rawData[pixelIndex + i] + fuzzFactor;
+                            rawData[pixelIndex + i] = (unsigned char)fmax(0, fmin(255, newValue));
+                            if (verboseLogging) {
+                                NSLog(@"Random addition/subtraction applied at Pixel[%zu, %zu]: FuzzFactor=%d, New Value=%d", x, y, fuzzFactor, rawData[pixelIndex + i]);
+                            }
+                        }
+                        break;
+                    case 2: // Conditional alteration
+                        if ((x + y + i) % 5 == 0) {
+                            rawData[pixelIndex + i] = arc4random_uniform(256);
+                            if (verboseLogging) {
+                                NSLog(@"Conditional alteration applied at Pixel[%zu, %zu]: New Value=%d", x, y, rawData[pixelIndex + i]);
+                            }
+                        }
+                        break;
+                    case 3: // Noise addition
+                        {
+                            int noise = (int)arc4random_uniform(50) - 25;
+                            int newValue = rawData[pixelIndex + i] + noise;
+                            rawData[pixelIndex + i] = (unsigned char)fmax(0, fmin(255, newValue));
+                            if (verboseLogging) {
+                                NSLog(@"Noise addition applied at Pixel[%zu, %zu]: Noise=%d, New Value=%d", x, y, noise, rawData[pixelIndex + i]);
+                            }
+                        }
+                        break;
+                    case 4: // Periodic pattern introduction
+                        if ((x / 10 + y / 10) % 2 == 0) {
+                            rawData[pixelIndex + i] = (rawData[pixelIndex + i] + 128) % 256;
+                            if (verboseLogging) {
+                                NSLog(@"Periodic pattern introduction applied at Pixel[%zu, %zu]: New Value=%d", x, y, rawData[pixelIndex + i]);
+                            }
+                        }
+                        break;
                 }
             }
         }
     }
 
-    // Log pixel data after fuzzing
     logPixelData(rawData, width, height, "After fuzzing");
 }
-
 
 int main(int argc, const char * argv[]) {
     NSLog(@"Starting up...");
@@ -179,6 +293,8 @@ int main(int argc, const char * argv[]) {
 
     return 0;
 }
+
+
 
 BOOL isValidImagePath(NSString *path) {
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:path];
@@ -285,7 +401,9 @@ void processImage(UIImage *image, int permutation, NSString *sessionDirectory) {
 }
 
 void createBitmapContextStandardRGB(CGImageRef cgImg, NSString *sessionDirectory, int permutation) {
-    NSLog(@"Creating bitmap context with Standard RGB settings and applying fuzzing");
+    if (verboseLogging) {
+        NSLog(@"Creating bitmap context with Standard RGB settings and applying fuzzing");
+    }
     size_t width = CGImageGetWidth(cgImg);
     size_t height = CGImageGetHeight(cgImg);
     size_t bytesPerRow = width * 4; // 4 bytes per pixel for RGBA
@@ -303,16 +421,19 @@ void createBitmapContextStandardRGB(CGImageRef cgImg, NSString *sessionDirectory
         return;
     }
 
-    // Draw the image into the context
-    NSLog(@"Drawing image into the bitmap context");
+    if (verboseLogging) {
+        NSLog(@"Drawing image into the bitmap context");
+    }
     CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImg);
 
-    // Apply fuzzing logic
-    NSLog(@"Applying fuzzing logic to the bitmap context");
-    applyFuzzingToBitmapContext(rawData, width, height);
+    if (verboseLogging) {
+        NSLog(@"Applying enhanced fuzzing logic to the bitmap context");
+    }
+    applyEnhancedFuzzingToBitmapContext(rawData, width, height);  // Assume this function applies more sophisticated fuzzing
 
-    // Optionally, you can convert back to UIImage to see the result
-    NSLog(@"Creating CGImage from the modified bitmap context");
+    if (verboseLogging) {
+        NSLog(@"Creating CGImage from the modified bitmap context");
+    }
     CGImageRef newCgImg = CGBitmapContextCreateImage(ctx);
     if (!newCgImg) {
         NSLog(@"Failed to create CGImage from context");
@@ -320,26 +441,27 @@ void createBitmapContextStandardRGB(CGImageRef cgImg, NSString *sessionDirectory
         UIImage *newImage = [UIImage imageWithCGImage:newCgImg];
         CGImageRelease(newCgImg);
 
-        // Save the fuzzed image in the session directory
         NSData *imageData = UIImagePNGRepresentation(newImage);
         NSString *fuzzedImagePath = [sessionDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"fuzzed_image_%d.png", permutation]];
         [imageData writeToFile:fuzzedImagePath atomically:YES];
 
-        NSLog(@"Fuzzed image saved at: %@", fuzzedImagePath);
-
-        // Log newImage details
-        NSLog(@"Modified UIImage created successfully");
-        NSLog(@"New image size: %@, scale: %f, rendering mode: %ld",
-              NSStringFromCGSize(newImage.size),
-              newImage.scale,
-              (long)newImage.renderingMode);
+        if (verboseLogging) {
+            NSLog(@"Fuzzed image saved at: %@", fuzzedImagePath);
+            NSLog(@"Modified UIImage created successfully");
+            NSLog(@"New image size: %@, scale: %f, rendering mode: %ld",
+                  NSStringFromCGSize(newImage.size),
+                  newImage.scale,
+                  (long)newImage.renderingMode);
+        }
     }
 
     CGContextRelease(ctx);
     free(rawData);
 
-    NSLog(@"Bitmap context processing complete");
-    NSLog(@"Bitmap context with Standard RGB settings created and fuzzing applied");
+    if (verboseLogging) {
+        NSLog(@"Bitmap context processing complete");
+        NSLog(@"Bitmap context with Standard RGB settings created and fuzzing applied");
+    }
 }
 
 void createBitmapContextPremultipliedFirstAlpha(CGImageRef cgImg, NSString *sessionDirectory, int permutation) {
