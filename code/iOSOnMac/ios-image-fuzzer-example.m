@@ -25,13 +25,15 @@
 #include <Foundation/Foundation.h>
 #include <UIKit/UIKit.h>
 #include <CoreGraphics/CoreGraphics.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 // Define constants for ALL and MAX_PERMUTATION
 #define ALL -1
 #define MAX_PERMUTATION 12
 
 // Global variable to control verbosity
-int verboseLogging = 1; // Set to 1 for detailed logging, 0 for minimal logging
+int verboseLogging = 0; // Set to 1 for detailed logging, 0 for minimal logging
 
 // Function declarations
 BOOL isValidImagePath(NSString *path);
@@ -253,8 +255,34 @@ void applyFuzzingToBitmapContext(unsigned char *rawData, size_t width, size_t he
     logPixelData(rawData, width, height, "After fuzzing");
 }
 
+void debugMemoryHandling() {
+    const size_t sz = 0x10000;
+    char* chunks[64] = { NULL };
+    for (int i = 0; i < 64; i++) {
+        char* chunk = (char *)mmap(0, sz, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+        if (chunk == MAP_FAILED) {
+            NSLog(@"Failed to map memory for chunk %d", i);
+            continue;
+        }
+        memset(chunk, 0x41, sz);
+        NSLog(@"Chunk @ %p", chunk);
+        chunks[i] = chunk;
+    }
+
+    for (int i = 0; i < 64; i++) {
+        if (chunks[i] != NULL) {
+            if (munmap(chunks[i], sz) == -1) {
+                NSLog(@"Failed to unmap chunk @ %p", chunks[i]);
+            } else {
+                NSLog(@"Successfully unmapped chunk @ %p", chunks[i]);
+            }
+        }
+    }
+}
+
 int main(int argc, const char * argv[]) {
     NSLog(@"Starting up...");
+    debugMemoryHandling(); // Call the debug function
     @autoreleasepool {
         if (argc < 3) {
             NSLog(@"Usage: %s path/to/image permutation_number", argv[0]);
