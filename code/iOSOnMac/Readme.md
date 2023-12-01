@@ -439,5 +439,17 @@ Binary Images:
        0x18d74a000 -        0x18d7c8ffb libsystem_c.dylib (*) <decb8685-f34a-3979-afcb-71fb55747e41> /usr/lib/system/libsystem_c.dylib
        0x18d52f000 -        0x18d5c3317 dyld (*) <ec7a3ba0-f9bf-3ab8-a0f4-8622e5606b20> /usr/lib/dyld
 ...
+```
 
-```  
+### env vars
+```
+export CG_PDF_VERBOSE=1
+export CG_CONTEXT_SHOW_BACKTRACE=1
+export CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1
+export CG_IMAGE_SHOW_MALLOC=1
+export CG_LAYER_SHOW_BACKTRACE=1
+export CGBITMAP_CONTEXT_LOG=1
+export CGCOLORDATAPROVIDER_VERBOSE=1
+export CGPDF_LOG_PAGES=1
+export CGBITMAP_CONTEXT_LOG_ERRORS=1
+```
