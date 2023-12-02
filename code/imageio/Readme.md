@@ -92,6 +92,11 @@ CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colo
 ```
 Each permutation represents a different way of handling pixel formats, alpha channels, color spaces, and bit depths. The choice of parameters depends on the specific requirements of the image processing task at hand. For example, a grayscale context might be suitable for processing black-and-white images, while a context with HDR and float components would be more appropriate for high-quality image rendering.
 
+#### Cache Reset
+```
+qlmanage -r
+qlmanage -r cache
+```
 ## Tracing Debug Info
 ```
 CG_PDF_VERBOSE=1 CG_CONTEXT_SHOW_BACKTRACE=1 CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1 CG_IMAGE_SHOW_MALLOC=1 CG_LAYER_SHOW_BACKTRACE=1 CGBITMAP_CONTEXT_LOG=1 CGCOLORDATAPROVIDER_VERBOSE=1 CGPDF_LOG_PAGES=1 ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f ~/Documents/fuzz/img
