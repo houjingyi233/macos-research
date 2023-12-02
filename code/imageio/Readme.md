@@ -16,17 +16,6 @@ cmake --build . --config Debug
 cd Debug
 stdbuf -oL ./fuzzer -in /fuzz/img/ -out /tmp/out -t 200 -t1 5000 -delivery shmem -instrument_module ImageIO -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 10000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width'
 ```
-### For your zsh
-```
-export CG_PDF_VERBOSE=1
-export CG_CONTEXT_SHOW_BACKTRACE=1
-export CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1
-export CG_IMAGE_SHOW_MALLOC=1
-export CG_LAYER_SHOW_BACKTRACE=1
-export CGBITMAP_CONTEXT_LOG=1
-export CGCOLORDATAPROVIDER_VERBOSE=1
-export CGPDF_LOG_PAGES=1
-```
 ### For your clean
 ```
 rm -rf CMakeScripts CMakeFiles Release Debug build
