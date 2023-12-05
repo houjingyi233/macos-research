@@ -14,7 +14,7 @@ cmake --build . --config Debug
 ### Suggested Run
 ```
 cd Debug
-stdbuf -oL ./fuzzer -in /fuzz/img/ -out /tmp/out -t 200 -t1 5000 -delivery shmem -instrument_module ImageIO -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 10000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width'
+stdbuf -oL ./fuzzer -target_env DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib -in /fuzz/img/ -out /tmp/out -t 200 -t1 5000 -delivery shmem -instrument_module ImageIO -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 10000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width'
 ```
 ### For your clean
 ```
@@ -42,6 +42,27 @@ Width: 400, height: 300
 Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
+```
+## Find Bugs
+```
+Running input sample /mnt/fuzz/asan_heap-oob_xxxxxx.exr
+Total execs: 27
+Unique samples: 0 (0 discarded)
+Crashes: 0 (0 unique)
+Hangs: 6
+Offsets: 0
+Execs/s: 1
+
+Running input sample /mnt/fuzz/asan_heap-oob_xxxxxx.exr
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==22220==ERROR: AddressSanitizer: BUS on unknown address (pc 0x7ff92818129c bp 0x7ff7bf7b6d00 sp 0x7ff7bf7b6c98 T0)
+==22220==The signal is caused by a READ memory access.
+==22220==Hint: this fault was caused by a dereference of a high value address (see register values below).  Disassemble the provided pc to learn which register was used.
+```
+### Tip
+```
+-target_env DYLD_INSERT_LIBRARIES=libclang_rt.asan_osx_dynamic.dylib, ubsan and tsan
 ```
 ## Bitmap Context Notes
 
@@ -115,7 +136,11 @@ export CGPDFCONTEXT_VERBOSE=1
 export QuartzCoreDebugEnabled=1
 export CI_PRINT_TREE=1
 ```
-#### Tracing Output
+#### Find the dylibs your Image(s) load
+```
+ ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /mnt/svg
+```
+Example libs loaded:
 ```
 Debugger: Mach exception (5) @ address 0x10cae4040
 Debugger: Process created or attached
