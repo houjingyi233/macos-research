@@ -115,6 +115,9 @@ AddressSanitizer:DEADLYSIGNAL
 -target_env DYLD_INSERT_LIBRARIES=libclang_rt.ubsan_osx_dynamic.dylib
 -target_env DYLD_INSERT_LIBRARIES=libclang_rt.tsan_osx_dynamic.dylib
 ```
+## Example Implementation for 10+ Funtions
+See URL https://raw.githubusercontent.com/xsscx/macos-research/main/code/iOSOnMac/ios-image-fuzzer-example.m so you can understand the Code shown below and jave it running locally.
+
 ## Bitmap Context Notes
 
 Creating a bitmap context with CGBitmapContextCreate involves several parameters that define the characteristics of the context, such as the width, height, bit depth, bytes per row, color space, and alpha info. Varying these parameters can significantly alter the behavior and output of the context. Below are 10 permutations of the CGBitmapContextCreate function call, each demonstrating a different configuration:
