@@ -14,6 +14,7 @@ cmake --build . --config Debug
 ## Suggested clean
 ```
 rm -rf CMakeScripts CMakeFiles Release Debug build
+cmake --build . --target clean
 ```
 ## Suggested Command Line
 ### Reproduction for a Null Pointer DeRef at CoreSVG:x86_64+0x52be
