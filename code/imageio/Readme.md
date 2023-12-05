@@ -189,6 +189,15 @@ export CORESVG_VERBOSE=1
 ```
 #### Find the dylibs your Image(s) load
 Tip - you need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multi[ple frameworks and dylibs. I Posted a shell script as example.
+You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module CoreSVG as shown below:
+```
+-instrument_module ImageIO
+-instrument_module CoreSVG
+-instrument_module AppleJPEG
+....
+-instrument_module [Framework | dylib]
+```
+####  Tinyinst Example
 ```
  ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /mnt/svg
 ```
