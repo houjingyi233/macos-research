@@ -1,11 +1,11 @@
-# Generic Fuzzer for ImageIO 
+# Jackalope Fuzzer for ImageIO + Other Dylibs
 The code originated from Google Project Zero
 - https://github.com/googleprojectzero/Jackalope/blob/main/examples/ImageIO/imageio.m
-
+- I modified the code and wrote some examples to cross-check some Bug I sent to Apple Product Security 
 ## Code Modifications
 - Removed are the references for Windows to focus on native X86_64 and arm64e Fuzzing
 - The code adds a few supported file types and cleans up the autorelease pool use
-
+- The Script and Examples show how to Target other Dylibs depending on the Image Type, or Fuzz them all with the sample Script [https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/imageio-fuzzer.zsh]
 ## Suggested Build
 ```
 cmake  -G Xcode
