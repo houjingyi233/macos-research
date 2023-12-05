@@ -2,25 +2,26 @@
 The code originated from Google Project Zero
 - https://github.com/googleprojectzero/Jackalope/blob/main/examples/ImageIO/imageio.m
 
-### Code Modifications
+## Code Modifications
 - Removed are the references for Windows to focus on native X86_64 and arm64e Fuzzing
 - The code adds a few supported file types and cleans up the autorelease pool use
 
-### Suggested Build
+## Suggested Build
 ```
 cmake  -G Xcode
 cmake --build . --config Debug
 ```
-### Suggested Run
-```
-cd Debug
-stdbuf -oL ./fuzzer -target_env DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib -in /fuzz/img/ -out /tmp/out -t 200 -t1 5000 -delivery shmem -instrument_module ImageIO -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 10000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width'
-```
-### For your clean
+## Suggested clean
 ```
 rm -rf CMakeScripts CMakeFiles Release Debug build
 ```
-## Program Output
+## Suggested Command Line
+### Reproduction for a Null Pointer DeRef at CoreSVG:x86_64+0x52be
+```
+cd Debug
+ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:print_stats=1:print_legend=1:dump_instruction_bytes=1:fast_unwind_on_fatal=1:debug=true:abort_on_error=1:symbolize=1:verbosity=3 stdbuf -oL ./fuzzer  -target_env DYLD_INSERT_LIBRARIES=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin/libclang_rt.tsan_osx_dynamic.dylib  -dump_coverage    -in /mnt/fuzz/svg -out /tmp/svg -t 200 -t1 500 -delivery shmem -instrument_module CoreSVG -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 100 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
+```
+### Program Output
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
@@ -43,7 +44,54 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-## Find Bugs
+### Find a Null Pointer DeRef at CoreSVG:x86_64+0x52be
+```
+Jackalope Fuzzer version 1.11 with @h02332 SVG Reproduction of a Null Pointer DeRef at CoreSVG:x86_64+0x52be
+4 input files read
+
+Running input sample /mnt/fuzz/svg/xss-xml-svg-font-example-poc-1.svg
+Running input sample /mnt/fuzz/svg/xss-xml-svg-font-example-poc-2.svg
+Running input sample /mnt/fuzz/svg/xss-xml-svg-font-example-poc-3.svg
+
+Total execs: 9
+Unique samples: 0 (0 discarded)
+Crashes: 0 (0 unique)
+Hangs: 0
+Offsets: 0
+Execs/s: 9
+Total execs: 9
+Unique samples: 0 (0 discarded)
+Crashes: 0 (0 unique)
+Hangs: 0
+Offsets: 0
+Execs/s: 0
+[!] WARNING: Target function not reached, retrying with a clean process
+[!] WARNING: Target function not reached, retrying with a clean process
+[!] WARNING: Target function not reached, retrying with a clean process
+[!] WARNING: Target function not reached, retrying with a clean process
+[!] WARNING: Target function not reached, retrying with a clean process
+[!] WARNING: Target function not reached, retrying with a clean process
+[!] WARNING: Input sample has no new stable coverage
+[!] WARNING: Input sample resulted in a hang
+Total execs: 10
+Unique samples: 0 (0 discarded)
+Crashes: 0 (0 unique)
+Hangs: 1
+Offsets: 0
+Execs/s: 1
+...
+ThreadSanitizer:DEADLYSIGNAL
+==46560==ERROR: ThreadSanitizer: SEGV on unknown address 0x000000000f22 (pc 0x000000000f22 bp 0x7ff7b8283fe0 sp 0x7ff7b8283b90 T405770)
+==46560==Hint: pc points to the zero page.
+==46560==The signal is caused by a READ memory access.
+==46560==Hint: address points to the zero page.
+ThreadSanitizer:DEADLYSIGNAL
+==46572==ERROR: ThreadSanitizer: SEGV on unknown address 0x000000000f22 (pc 0x000000000f22 bp 0x7ff7b72e9fe0 sp 0x7ff7b72e9b90 T405825)
+==46572==Hint: pc points to the zero page.
+==46572==The signal is caused by a READ memory access.
+==46572==Hint: address points to the zero page.
+```
+### Find More Bugs
 ```
 Running input sample /mnt/fuzz/asan_heap-oob_xxxxxx.exr
 Total execs: 27
@@ -62,7 +110,9 @@ AddressSanitizer:DEADLYSIGNAL
 ```
 ### Tip
 ```
--target_env DYLD_INSERT_LIBRARIES=libclang_rt.asan_osx_dynamic.dylib, ubsan and tsan
+-target_env DYLD_INSERT_LIBRARIES=libclang_rt.asan_osx_dynamic.dylib
+-target_env DYLD_INSERT_LIBRARIES=libclang_rt.ubsan_osx_dynamic.dylib
+-target_env DYLD_INSERT_LIBRARIES=libclang_rt.tsan_osx_dynamic.dylib
 ```
 ## Bitmap Context Notes
 
@@ -138,6 +188,7 @@ export CI_PRINT_TREE=1
 export CORESVG_VERBOSE=1
 ```
 #### Find the dylibs your Image(s) load
+Tip - you need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multi[ple frameworks and dylibs. I Posted a shell script as example.
 ```
  ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /mnt/svg
 ```
