@@ -115,7 +115,7 @@ AddressSanitizer:DEADLYSIGNAL
 -target_env DYLD_INSERT_LIBRARIES=libclang_rt.ubsan_osx_dynamic.dylib
 -target_env DYLD_INSERT_LIBRARIES=libclang_rt.tsan_osx_dynamic.dylib
 ```
-## Example Implementation for 10+ Funtions
+## Example Implementation for 10+ Functions
 See URL https://raw.githubusercontent.com/xsscx/macos-research/main/code/iOSOnMac/ios-image-fuzzer-example.m so you can understand the Code shown below and jave it running locally.
 
 ## Bitmap Context Notes
