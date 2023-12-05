@@ -135,6 +135,7 @@ export CG_INFO=1
 export CGPDFCONTEXT_VERBOSE=1
 export QuartzCoreDebugEnabled=1
 export CI_PRINT_TREE=1
+export CORESVG_VERBOSE=1
 ```
 #### Find the dylibs your Image(s) load
 ```
