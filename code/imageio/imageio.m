@@ -1,8 +1,38 @@
-// Original Code Released by Google Project Zero at URL https://github.com/googleprojectzero/Jackalope/blob/main/examples/ImageIO/imageio.m
-//
-// Changes made by @h02332 to streamline fuzzing on native macOS X86_64 and arm64e and cleaned up the use of autorelease pool
-//
-//
+/*
+Copyright 2020 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+/**
+ * @file       imageio.m
+ * @brief      Proof of concept Jackalope Image Fuzzer
+ * @author     @h02332 | David Hoyt
+ * @date       Modified 08 DEC 2023 | 1720 EST
+ *
+ *
+ * @section    CHANGES
+ * [Date] [Author] - [Description of Changes]
+ * - [15/11/2023] [h02332] - Initial commit
+ * - [28/11/2023] [h02332] - Refactor Code & fuzzing
+ * - [08/12/2023] [h02332] - Refactor Code in attempt to reduce libc++abi: terminating due to uncaught exception of type int
+ *
+ * @section    TODOn
+ * - [ ] ICC Color Profiles
+ * - [ ] Continue Refactor Example Fuzzer in attempt to reduce libc++abi: terminating due to uncaught exception of type int
+ * - [ ] Add Logging Toggle as global variable  - testing in createBitmapContextStandardRGB function
+ *
+ */
 
 #include <Foundation/Foundation.h>
 #include <Foundation/NSURL.h>
@@ -23,6 +53,12 @@
 #define SHM_SIZE (4 + MAX_SAMPLE_SIZE)
 unsigned char *shm_data;
 
+extern void ImageIOSetLoggingProc(void*);
+extern void fuzz(char *name);
+extern bool has_supported_extension(const char* filename);
+
+CGColorSpaceRef colorspace;
+CGContextRef ctx;
 bool use_shared_memory;
 
 int setup_shmem(const char *name) {
@@ -42,13 +78,37 @@ int setup_shmem(const char *name) {
     return 1;
 }
 
-#define FUZZ_TARGET_MODIFIERS __attribute__ ((noinline))
-
-void dummyLogProc() { }
+void customLogProc(const char* message) {
+    NSLog(@"[Fuzzer Log] %s", message);
+}
 
 extern void ImageIOSetLoggingProc(void*);
 
+CGContextRef createBitmapContext8BitInvertedColors(size_t width, size_t height) {
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    size_t bytesPerRow = 4 * width;
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipLast;
+
+    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, bytesPerRow, colorSpace, bitmapInfo);
+    CGColorSpaceRelease(colorSpace);
+
+    if (context) {
+        unsigned char *data = CGBitmapContextGetData(context);
+        if (data) {
+            size_t bufferLength = width * height * 4;
+            for (size_t i = 0; i < bufferLength; i += 4) {
+                data[i] = 255 - data[i];
+                data[i + 1] = 255 - data[i + 1];
+                data[i + 2] = 255 - data[i + 2];
+            }
+        }
+    }
+    return context;
+}
+
 CGContextRef ctx;
+
+#define FUZZ_TARGET_MODIFIERS __attribute__ ((noinline))
 
 void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
     @autoreleasepool {
@@ -61,7 +121,7 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
             if (sample_size > MAX_SAMPLE_SIZE) sample_size = MAX_SAMPLE_SIZE;
             sample_bytes = (char *)malloc(sample_size);
             if (!sample_bytes) {
-                printf("Failed to allocate memory for sample_bytes\n");
+                NSLog(@"Failed to allocate memory for sample_bytes");
                 return;
             }
             memcpy(sample_bytes, shm_data + sizeof(uint32_t), sample_size);
@@ -78,7 +138,7 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
         }
 
         if (!img) {
-            printf("Failed to load image from %s.\n", name);
+            NSLog(@"Failed to load image from %s", name);
             return;
         }
 
@@ -86,16 +146,24 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
         if (cgImg) {
             size_t width = CGImageGetWidth(cgImg);
             size_t height = CGImageGetHeight(cgImg);
-            NSLog(@"Processing image: %s, Width: %lu, height: %lu", name, width, height);
-            CGRect rect = CGRectMake(0, 0, width / (1 + (rand() % 3)), height / (1 + (rand() % 3)));
-            CGContextDrawImage(ctx, rect, cgImg);
+            NSLog(@"Processing image: %s, Width: %lu, Height: %lu", name, width, height);
+
+            CGContextRef invertedCtx = createBitmapContext8BitInvertedColors(width, height);
+            if (invertedCtx) {
+                CGRect rect = CGRectMake(0, 0, width, height);
+                CGContextDrawImage(invertedCtx, rect, cgImg);
+
+                CGContextRelease(invertedCtx);
+            } else {
+                NSLog(@"Failed to create inverted colors context for image: %s", name);
+            }
             CGImageRelease(cgImg);
         }
     }
 }
 
 const char* supported_extensions[] = {
-    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".heic", ".tiff", ".jp2",
+    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".heic", ".tiff", ".svg",
     ".webp", ".icns", ".pict", ".sgi", ".tga", ".exr", ".hdr", ".pdf", ".raw", ".pvr", NULL
 };
 
@@ -129,14 +197,22 @@ int main(int argc, char **argv) {
         }
     }
 
-    ImageIOSetLoggingProc(&dummyLogProc);
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    ImageIOSetLoggingProc(&customLogProc);
+
+    colorspace = CGColorSpaceCreateDeviceRGB();
     ctx = CGBitmapContextCreate(0, 32, 32, 8, 0, colorspace, kCGBitmapByteOrderDefault);
+
+    if (ctx == NULL) {
+        printf("Error creating bitmap context\n");
+        CGColorSpaceRelease(colorspace);
+        return 1;
+    }
 
     if (!use_shared_memory) {
         DIR *dir = opendir(argv[2]);
         if (!dir) {
             printf("Error opening directory: %s\n", argv[2]);
+            CGContextRelease(ctx);
             CGColorSpaceRelease(colorspace);
             return 1;
         }
