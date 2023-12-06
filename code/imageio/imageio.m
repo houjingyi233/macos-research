@@ -11,6 +11,9 @@
 #include <sys/shm.h>
 #include <dirent.h>
 #include <sys/resource.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
 
 #import <ImageIO/ImageIO.h>
 #import <AppKit/AppKit.h>
@@ -22,23 +25,17 @@ unsigned char *shm_data;
 
 bool use_shared_memory;
 
-int setup_shmem(const char *name)
-{
-    int fd;
-
-    // get shared memory file descriptor (NOT a file)
-    fd = shm_open(name, O_RDONLY, S_IRUSR | S_IWUSR);
-    if (fd == -1)
-    {
+int setup_shmem(const char *name) {
+    int fd = shm_open(name, O_RDONLY, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
         printf("Error in shm_open\n");
         return 0;
     }
 
-    // map shared memory to process address space
     shm_data = (unsigned char *)mmap(NULL, SHM_SIZE, PROT_READ, MAP_SHARED, fd, 0);
-    if (shm_data == MAP_FAILED)
-    {
+    if (shm_data == MAP_FAILED) {
         printf("Error in mmap\n");
+        close(fd);
         return 0;
     }
 
@@ -59,14 +56,17 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
         char *sample_bytes = NULL;
         uint32_t sample_size = 0;
 
-        if(use_shared_memory) {
+        if (use_shared_memory) {
             sample_size = *(uint32_t *)(shm_data);
-            if(sample_size > MAX_SAMPLE_SIZE) sample_size = MAX_SAMPLE_SIZE;
+            if (sample_size > MAX_SAMPLE_SIZE) sample_size = MAX_SAMPLE_SIZE;
             sample_bytes = (char *)malloc(sample_size);
+            if (!sample_bytes) {
+                printf("Failed to allocate memory for sample_bytes\n");
+                return;
+            }
             memcpy(sample_bytes, shm_data + sizeof(uint32_t), sample_size);
-            
-            // Introduce an intentional error in the image data for some runs
-            if (rand() % 10 == 0) {  // 10% probability
+
+            if (rand() % 10 == 0) {
                 int error_pos = rand() % sample_size;
                 sample_bytes[error_pos] = rand() % 256;
             }
@@ -77,8 +77,8 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
             img = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithUTF8String:name]];
         }
 
-        if(!img) {
-            printf("Failed to load image.\n");
+        if (!img) {
+            printf("Failed to load image from %s.\n", name);
             return;
         }
 
@@ -86,22 +86,19 @@ void FUZZ_TARGET_MODIFIERS fuzz(char *name) {
         if (cgImg) {
             size_t width = CGImageGetWidth(cgImg);
             size_t height = CGImageGetHeight(cgImg);
-            printf("Width: %lu, height: %lu\n", width, height);
-            // Test with various image sizes
-            CGRect rect = CGRectMake(0, 0, width / (1 + (rand() % 3)), height / (1 + (rand() % 3))); // Randomly reduce size by up to 1/3
+            NSLog(@"Processing image: %s, Width: %lu, height: %lu", name, width, height);
+            CGRect rect = CGRectMake(0, 0, width / (1 + (rand() % 3)), height / (1 + (rand() % 3)));
             CGContextDrawImage(ctx, rect, cgImg);
             CGImageRelease(cgImg);
         }
     }
 }
 
-// List of supported extensions for seed files
 const char* supported_extensions[] = {
     ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".heic", ".tiff", ".jp2",
     ".webp", ".icns", ".pict", ".sgi", ".tga", ".exr", ".hdr", ".pdf", ".raw", ".pvr", NULL
 };
 
-// Function to check if a file has a supported extension
 bool has_supported_extension(const char* filename) {
     const char* ext = strrchr(filename, '.');
     if (!ext) {
@@ -117,17 +114,16 @@ bool has_supported_extension(const char* filename) {
     return false;
 }
 
-int main(int argc, char **argv)
-{
-    if(argc != 3) {
+int main(int argc, char **argv) {
+    if (argc != 3) {
         printf("Usage: %s <-f|-m> <file or shared memory name>\n", argv[0]);
         return 0;
     }
 
     use_shared_memory = !strcmp(argv[1], "-m");
 
-    if(use_shared_memory) {
-        if(!setup_shmem(argv[2])) {
+    if (use_shared_memory) {
+        if (!setup_shmem(argv[2])) {
             printf("Error mapping shared memory\n");
             return 1;
         }
@@ -135,18 +131,19 @@ int main(int argc, char **argv)
 
     ImageIOSetLoggingProc(&dummyLogProc);
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-    ctx = CGBitmapContextCreate(0, 32, 32, 8, 0, colorspace, 1);
+    ctx = CGBitmapContextCreate(0, 32, 32, 8, 0, colorspace, kCGBitmapByteOrderDefault);
 
     if (!use_shared_memory) {
-        DIR* dir = opendir(argv[2]);
+        DIR *dir = opendir(argv[2]);
         if (!dir) {
             printf("Error opening directory: %s\n", argv[2]);
+            CGColorSpaceRelease(colorspace);
             return 1;
         }
 
-        struct dirent* entry;
+        struct dirent *entry;
         while ((entry = readdir(dir)) != NULL) {
-            if (entry->d_type == DT_REG) { // If the entry is a regular file
+            if (entry->d_type == DT_REG) {
                 if (has_supported_extension(entry->d_name)) {
                     char full_path[PATH_MAX];
                     snprintf(full_path, sizeof(full_path), "%s/%s", argv[2], entry->d_name);
@@ -160,7 +157,7 @@ int main(int argc, char **argv)
     }
 
     CGContextRelease(ctx);
-    CGColorSpaceRelease(colorspace); // Release the colorspace
+    CGColorSpaceRelease(colorspace);
 
     return 0;
 }
