@@ -2,7 +2,7 @@
 The code originated from Google Project Zero
 - https://github.com/googleprojectzero/Jackalope/blob/main/examples/ImageIO/imageio.m
 - I modified the code and wrote some examples to cross-check some Bug I sent to Apple Product Security 
-## Code Modifications
+## My Code Modifications
 - Removed are the references for Windows to focus on native X86_64 and arm64e Fuzzing
 - The code adds a few supported file types and cleans up the autorelease pool use
 - The Script and Examples show how to Target other Dylibs depending on the Image Type, or Fuzz them all with the sample Script [https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/imageio-fuzzer.zsh]
@@ -16,7 +16,7 @@ cmake --build . --config Debug
 rm -rf CMakeScripts CMakeFiles Release Debug build
 cmake --build . --target clean
 ```
-## Example Command Lines
+## Jackalope Example Command Lines
 #### Run Fuzzer with ASAN against CoreSVG with SVG UTT File Types
 ```
 ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:print_stats=1:print_legend=1:dump_instruction_bytes=1:fast_unwind_on_fatal=1:debug=true:abort_on_error=1:symbolize=1:verbosity=3 stdbuf -oL ./fuzzer  -target_env DYLD_INSERT_LIBRARIES=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin/libclang_rt.tsan_osx_dynamic.dylib  -dump_coverage    -in /mnt/fuzz/svg -out /tmp/svg -t 200 -t1 500 -delivery shmem -instrument_module CoreSVG -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 100 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
@@ -29,7 +29,7 @@ ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initia
 ```
 stdbuf -oL ./fuzzer  -target_env MallocStackLogging=1 MallocScribble=1 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib  -in /mnt/fuzz/png -out /mnt/jpg/out -t 200 -t1 500 -delivery shmem -instrument_module libJPEG.dylib -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 1000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width'
 ```
-### Program Output
+### My Example imageio.m Program Output
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
@@ -100,7 +100,7 @@ ThreadSanitizer:DEADLYSIGNAL
 ==46572==The signal is caused by a READ memory access.
 ==46572==Hint: address points to the zero page.
 ```
-### Find More Bugs
+### More Bugs
 ```
 Running input sample /mnt/fuzz/asan_heap-oob_xxxxxx.exr
 Total execs: 27
