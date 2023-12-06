@@ -16,10 +16,14 @@ cmake --build . --config Debug
 rm -rf CMakeScripts CMakeFiles Release Debug build
 cmake --build . --target clean
 ```
-## Suggested Command Line
+## Example Command Lines
+#### Run Fuzzer with ASAN against CoreSVG with SVG UTT File Types
 ```
-cd Debug
 ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:print_stats=1:print_legend=1:dump_instruction_bytes=1:fast_unwind_on_fatal=1:debug=true:abort_on_error=1:symbolize=1:verbosity=3 stdbuf -oL ./fuzzer  -target_env DYLD_INSERT_LIBRARIES=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin/libclang_rt.tsan_osx_dynamic.dylib  -dump_coverage    -in /mnt/fuzz/svg -out /tmp/svg -t 200 -t1 500 -delivery shmem -instrument_module CoreSVG -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 100 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
+```
+#### Run Fuzzer with TSAN against LibPng with PNG UTT File Types
+```
+ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:print_stats=1:print_legend=1:dump_instruction_bytes=1:fast_unwind_on_fatal=1:debug=true:abort_on_error=1:symbolize=1:verbosity=3 stdbuf -oL ./fuzzer  -target_env DYLD_INSERT_LIBRARIES=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin/libclang_rt.tsan_osx_dynamic.dylib  -dump_coverage    -in /mnt/fuzz/png -out /tmp/svg -t 200 -t1 500 -delivery shmem -instrument_module LibPng -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 100 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
 ```
 ### Program Output
 ```
@@ -155,14 +159,10 @@ CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colo
 ```
 Each permutation represents a different way of handling pixel formats, alpha channels, color spaces, and bit depths. The choice of parameters depends on the specific requirements of the image processing task at hand. For example, a grayscale context might be suitable for processing black-and-white images, while a context with HDR and float components would be more appropriate for high-quality image rendering.
 
-#### Cache Reset
+#### qlmanage Cache Reset
 ```
 qlmanage -r
 qlmanage -r cache
-```
-## Tracing Debug Info
-```
-CG_PDF_VERBOSE=1 CG_CONTEXT_SHOW_BACKTRACE=1 CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1 CG_IMAGE_SHOW_MALLOC=1 CG_LAYER_SHOW_BACKTRACE=1 CGBITMAP_CONTEXT_LOG=1 CGCOLORDATAPROVIDER_VERBOSE=1 CGPDF_LOG_PAGES=1 ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f ~/Documents/fuzz/img
 ```
 ### env vars
 ```
@@ -552,41 +552,41 @@ Debugger: Process exit
 Process finished normally
 ```
 
-### TinyInst Crash File Reproduction 
+## Coverage Sample
 ```
-../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /tmp/out/crashes/other_0xxxxxxxxxx7ce_0x0_1
-```
-
-#### TinyInst Reproduction Output
-```
-...
-Debugger: Process entrypoint reached
-Debugger: Loaded module RawCamera at 0x7ff915cc2000
-Debugger: Loaded module MobileAsset at 0x7ff818486000
-Debugger: Loaded module AppleJPEGXL at 0x7ffb0fd05000
-Debugger: Loaded module SoftwareUpdateCoreSupport at 0x7ff912d8b000
-Debugger: Loaded module SoftwareUpdateCoreConnect at 0x7ff91a4e7000
-Debugger: Loaded module StreamingZip at 0x7ff81fae3000
-Debugger: Loaded module RemoteServiceDiscovery at 0x7ff81f336000
-Debugger: Loaded module MSUDataAccessor at 0x7ff912a21000
-Debugger: Loaded module libbootpolicy.dylib at 0x7ff90ebd4000
-Debugger: Loaded module libpartition2_dynamic.dylib at 0x7ff920f4d000
-Debugger: Loaded module CMPhoto at 0x7ffb1126b000
-Debugger: Loaded module AppleVPA at 0x7ff81d98d000
-Debugger: Loaded module MediaToolbox at 0x7ff816bd1000
-Debugger: Loaded module CoreAVCHD at 0x7ff81cd33000
-Debugger: Loaded module Mangrove at 0x7ff81cd2f000
-Debugger: Loaded module CoreWiFi at 0x7ff81eefd000
-Debugger: Loaded module CoreTelephony at 0x7ff81d2c2000
-Debugger: Loaded module CoreAUC at 0x7ff81c974000
-Debugger: Loaded module WiFiPeerToPeer at 0x7ffa13fd1000
-Debugger: Loaded module UserNotifications at 0x7ff813f0c000
-Debugger: Loaded module libTelephonyUtilDynamic.dylib at 0x7ff8185af000
-Debugger: Loaded module libAppleEXR.dylib at 0x7ffa0d712000
-Debugger: Loaded module libCGInterfaces.dylib at 0x7ff9123e6000
-libc++abi: terminating due to uncaught exception of type int
-Debugger: Mach exception (5) @ address 0x7ff8072a37ce
-Exception at address 0x7ff8072a37ce
-Process crashed
-Debugger: Process exit
+more /tmp/svg/coverage.txt
+CoreSVG+14e1
+CoreSVG+14fb
+CoreSVG+1506
+CoreSVG+150e
+CoreSVG+151f
+CoreSVG+1537
+CoreSVG+153c
+CoreSVG+1544
+CoreSVG+1554
+CoreSVG+1580
+CoreSVG+1590
+CoreSVG+15b3
+CoreSVG+15be
+CoreSVG+15cd
+CoreSVG+15f0
+CoreSVG+15fb
+CoreSVG+1650
+CoreSVG+167b
+CoreSVG+1694
+CoreSVG+16c0
+CoreSVG+16e0
+CoreSVG+16ee
+CoreSVG+1700
+CoreSVG+1705
+CoreSVG+1710
+CoreSVG+1715
+CoreSVG+1724
+CoreSVG+1732
+CoreSVG+173b
+CoreSVG+1754
+CoreSVG+1766
+CoreSVG+177c
+CoreSVG+178b
+CoreSVG+1797
 ```
