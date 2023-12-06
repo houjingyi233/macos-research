@@ -48,7 +48,7 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-### Find a Null Pointer DeRef at CoreSVG:x86_64+0x52be
+### Sample Bug Output | Null Pointer DeRef at CoreSVG:x86_64+0x52be
 ```
 Jackalope Fuzzer version 1.11 with @h02332 SVG Reproduction of a Null Pointer DeRef at CoreSVG:x86_64+0x52be
 4 input files read
