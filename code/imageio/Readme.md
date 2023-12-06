@@ -49,6 +49,7 @@ Debugger: Process exit
 Process finished normally
 ```
 ### Sample Bug Output | Null Pointer DeRef at CoreSVG:x86_64+0x52be
+Source URL https://github.com/xsscx/Commodity-Injection-Signatures/tree/master/svg
 ```
 Jackalope Fuzzer version 1.11 with @h02332 SVG Reproduction of a Null Pointer DeRef at CoreSVG:x86_64+0x52be
 4 input files read
