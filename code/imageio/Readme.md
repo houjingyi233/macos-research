@@ -17,7 +17,6 @@ rm -rf CMakeScripts CMakeFiles Release Debug build
 cmake --build . --target clean
 ```
 ## Suggested Command Line
-### Reproduction for a Null Pointer DeRef at CoreSVG:x86_64+0x52be
 ```
 cd Debug
 ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:print_stats=1:print_legend=1:dump_instruction_bytes=1:fast_unwind_on_fatal=1:debug=true:abort_on_error=1:symbolize=1:verbosity=3 stdbuf -oL ./fuzzer  -target_env DYLD_INSERT_LIBRARIES=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin/libclang_rt.tsan_osx_dynamic.dylib  -dump_coverage    -in /mnt/fuzz/svg -out /tmp/svg -t 200 -t1 500 -delivery shmem -instrument_module CoreSVG -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 100 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
