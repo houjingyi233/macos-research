@@ -30,7 +30,7 @@ if (APPLE)
   )
 
   add_executable(imageio-test-002_imageio
-    imageio-test-003.m
+    imageio-test-002.m
   )
 
   target_link_libraries(imageio-test-002_imageio
