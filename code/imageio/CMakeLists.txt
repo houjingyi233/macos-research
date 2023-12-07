@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Modified by @h02332 David Hoyt to add more Example Runners 
+
 cmake_minimum_required(VERSION "3.1")
 set (CMAKE_CXX_STANDARD 17)
 
