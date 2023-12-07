@@ -29,7 +29,19 @@ ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initia
 ```
 stdbuf -oL ./fuzzer  -target_env MallocStackLogging=1 MallocScribble=1 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib  -in /mnt/fuzz/png -out /mnt/jpg/out -t 200 -t1 500 -delivery shmem -instrument_module libJPEG.dylib -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 1000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Fuzzing|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
 ```
-### My Example imageio.m Program Output
+### Fuzzer Output
+```
+Total execs: 153265
+Unique samples: 107 (100 discarded)
+Crashes: 0 (0 unique)
+Hangs: 1547
+Offsets: 4775
+Execs/s: 1093
+Fuzzing sample 00101
+Instrumented module AppleJPEG, code size: 311288
+...
+```
+### YinyInst Dylib Load Program Output
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
