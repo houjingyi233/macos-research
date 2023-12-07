@@ -222,7 +222,7 @@ export CI_PRINT_TREE=1
 export CORESVG_VERBOSE=1
 ```
 #### Find the dylibs your Image(s) load
-Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multi[ple frameworks and dylibs for Linking. 
+Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multiple frameworks and dylibs for Linking. 
 I Posted a shell script as example. You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module {} as shown below:
 ```
 -instrument_module ImageIO
