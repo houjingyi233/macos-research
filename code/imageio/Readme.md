@@ -222,8 +222,8 @@ export CI_PRINT_TREE=1
 export CORESVG_VERBOSE=1
 ```
 #### Find the dylibs your Image(s) load
-Tip - you need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multi[ple frameworks and dylibs. I Posted a shell script as example.
-You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module CoreSVG as shown below:
+Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multi[ple frameworks and dylibs for Linking. 
+I Posted a shell script as example. You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module {} as shown below:
 ```
 -instrument_module ImageIO
 -instrument_module CoreSVG
@@ -231,7 +231,21 @@ You're going to see that the script iterates the dylibs and frameworks with the 
 ....
 -instrument_module [Framework | dylib]
 ```
-####  Tinyinst Example
+### CMakeLists.txt - Add the dylibs to Target for Linking
+```
+  target_link_libraries(test_imageio
+    "-framework ImageIO"
+    "-framework AppKit"
+    "-framework CoreGraphics"
+    "-framework AppleJPEG"
+    "-framework ColorSync"
+    "-framework ColorSyncLegacy"
+....
+    "-frameworklibTIFF.dylib"
+  )
+```
+
+###  Tinyinst Example to find Graphics Dylibs for File Extensions for target_link_libraries and -instrument_module
 ```
  ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /mnt/svg
 ```
@@ -252,7 +266,7 @@ Debugger: Process exit
 Process finished normally
 ```
 
-## Img Handling Targets for -instrument_module
+### Img Handling Targets for -instrument_module
 ```
 libraries=(
     "Accelerate"
@@ -313,7 +327,7 @@ libraries=(
 )
 ```
 
-### Coverage Sample
+### CoreSVG Coverage Sample
 ```
 more /tmp/svg/coverage.txt
 CoreSVG+14e1
