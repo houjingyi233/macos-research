@@ -164,6 +164,32 @@ CGContextRef ctx = CGBitmapContextCreate(NULL, width, height, 8, 4 * width, colo
 ```
 Each permutation represents a different way of handling pixel formats, alpha channels, color spaces, and bit depths. The choice of parameters depends on the specific requirements of the image processing task at hand. For example, a grayscale context might be suitable for processing black-and-white images, while a context with HDR and float components would be more appropriate for high-quality image rendering.
 
+### Example Implementation for createBitmapContext8BitInvertedColors(size_t width, size_t height)
+```
++CGContextRef createBitmapContext8BitInvertedColors(size_t width, size_t height) {
++    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
++    size_t bytesPerRow = 4 * width;
++    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipLast;
++
++    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, bytesPerRow, colorSpace, bitmapInfo);
++    CGColorSpaceRelease(colorSpace);
++
++    if (context) {
++        unsigned char *data = CGBitmapContextGetData(context);
++        if (data) {
++            size_t bufferLength = width * height * 4;
++            for (size_t i = 0; i < bufferLength; i += 4) {
++                data[i] = 255 - data[i];
++                data[i + 1] = 255 - data[i + 1];
++                data[i + 2] = 255 - data[i + 2];
++            }
++        }
++    }
++    return context;
++}
++
+```
+
 #### qlmanage Cache Reset
 ```
 qlmanage -r
