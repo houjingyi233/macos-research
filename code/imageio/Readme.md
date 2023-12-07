@@ -190,38 +190,7 @@ Each permutation represents a different way of handling pixel formats, alpha cha
 +
 ```
 
-#### qlmanage Cache Reset
-```
-qlmanage -r
-qlmanage -r cache
-```
-### env vars
-```
-export CG_PDF_VERBOSE=1
-export CG_CONTEXT_SHOW_BACKTRACE=1
-export CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1
-export CG_IMAGE_SHOW_MALLOC=1
-export CG_LAYER_SHOW_BACKTRACE=1
-export CGBITMAP_CONTEXT_LOG=1
-export CGCOLORDATAPROVIDER_VERBOSE=1
-export CGPDF_LOG_PAGES=1
-export CGBITMAP_CONTEXT_LOG_ERRORS=1
-export CG_RASTERIZER_VERBOSE=1
-export CG_VERBOSE_COPY_IMAGE_BLOCK_DATA=1
-export CG_VERBOSE=1
-export CGPDF_VERBOSE=1
-export CG_FONT_RENDERER_VERBOSE=1
-export CGPDF_DRAW_VERBOSE=1
-export CG_POSTSCRIPT_VERBOSE=1
-export CG_COLOR_CONVERSION_VERBOSE=1
-export CG_IMAGE_LOG_FORCE=1
-export CG_INFO=1
-export CGPDFCONTEXT_VERBOSE=1
-export QuartzCoreDebugEnabled=1
-export CI_PRINT_TREE=1
-export CORESVG_VERBOSE=1
-```
-#### Find the dylibs your Image(s) load
+### Find the dylibs your Image(s) load
 Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multiple frameworks and dylibs for Linking. 
 I Posted a shell script as example. You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module {} as shown below:
 ```
@@ -231,13 +200,26 @@ I Posted a shell script as example. You're going to see that the script iterates
 ....
 -instrument_module [Framework | dylib]
 ```
-### examples/Imageio/CMakeLists.txt - Add the dylibs to Target for Linking
+### Build Other Runners via examples/Imageio/CMakeLists.txt - Add other Code to Run and Target Dylibs for more coverage
 ```
-  target_link_libraries(test_imageio
+  add_executable(imageio-test-002_imageio
+    imageio-test-003.m
+  )
+
+  target_link_libraries(imageio-test-002_imageio
     "-framework ImageIO"
     "-framework AppKit"
     "-framework CoreGraphics"
-    "-framework {target}
+  )
+
+  add_executable(imageio-test-003_imageio
+    imageio-test-003.m
+  )
+
+  target_link_libraries(imageio-test-003_imageio
+    "-framework ImageIO"
+    "-framework AppKit"
+    "-framework CoreGraphics"
   )
 ```
 
@@ -360,4 +342,35 @@ CoreSVG+1766
 CoreSVG+177c
 CoreSVG+178b
 CoreSVG+1797
+```
+#### qlmanage Cache Reset
+```
+qlmanage -r
+qlmanage -r cache
+```
+### env vars
+```
+export CG_PDF_VERBOSE=1
+export CG_CONTEXT_SHOW_BACKTRACE=1
+export CG_CONTEXT_SHOW_BACKTRACE_ON_ERROR=1
+export CG_IMAGE_SHOW_MALLOC=1
+export CG_LAYER_SHOW_BACKTRACE=1
+export CGBITMAP_CONTEXT_LOG=1
+export CGCOLORDATAPROVIDER_VERBOSE=1
+export CGPDF_LOG_PAGES=1
+export CGBITMAP_CONTEXT_LOG_ERRORS=1
+export CG_RASTERIZER_VERBOSE=1
+export CG_VERBOSE_COPY_IMAGE_BLOCK_DATA=1
+export CG_VERBOSE=1
+export CGPDF_VERBOSE=1
+export CG_FONT_RENDERER_VERBOSE=1
+export CGPDF_DRAW_VERBOSE=1
+export CG_POSTSCRIPT_VERBOSE=1
+export CG_COLOR_CONVERSION_VERBOSE=1
+export CG_IMAGE_LOG_FORCE=1
+export CG_INFO=1
+export CGPDFCONTEXT_VERBOSE=1
+export QuartzCoreDebugEnabled=1
+export CI_PRINT_TREE=1
+export CORESVG_VERBOSE=1
 ```
