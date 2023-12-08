@@ -41,29 +41,6 @@ Fuzzing sample 00101
 Instrumented module AppleJPEG, code size: 311288
 ...
 ```
-### TinyInst Dylib Load Program Output
-```
-Debugger: Mach exception (5) @ address 0x113a4e070
-Debugger: Process created or attached
-Debugger: Loaded module dyld at 0x113a49000
-Debugger: Loaded module test_imageio at 0x10e5d0000
-Debugger: Loaded module ImageIO at 0x7ff8227fb000
-Debugger: Loaded module CoreFoundation at 0x7ff8189e6000
-Debugger: Loaded module Foundation at 0x7ff81988e000
-Debugger: Loaded module CoreGraphics at 0x7ff81d9ef000
-Debugger: Loaded module IOSurface at 0x7ff82200d000
-...
-Debugger: Loaded module CoreBluetooth at 0x7ff82cae0000
-Width: 32, height: 32
-Failed to load image.
-Failed to load image.
-Width: 32, height: 32
-Width: 32, height: 32
-Width: 400, height: 300
-Width: 1280, height: 960
-Debugger: Process exit
-Process finished normally
-```
 ### Sample abort() in libAppleEXR
 ```
 Crash in libAppleEXR.dylib
@@ -244,28 +221,29 @@ I Posted a shell script as example. You're going to see that the script iterates
     "-framework CoreGraphics"
   )
 ```
-
-###  Tinyinst Example to find Graphics Dylibs for File Extensions for target_link_libraries and -instrument_module
+### Tinyinst Example to find Graphics Dylibs for File Extensions for target_link_libraries and -instrument_module
 ```
- ../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f /mnt/svg
-```
-Example libs loaded:
-```
-Debugger: Mach exception (5) @ address 0x10cae4040
+Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
-Debugger: Loaded module dyld at 0x10cadf000
+Debugger: Loaded module dyld at 0x113a49000
+Debugger: Loaded module test_imageio at 0x10e5d0000
+Debugger: Loaded module ImageIO at 0x7ff8227fb000
+Debugger: Loaded module CoreFoundation at 0x7ff8189e6000
+Debugger: Loaded module Foundation at 0x7ff81988e000
+Debugger: Loaded module CoreGraphics at 0x7ff81d9ef000
+Debugger: Loaded module IOSurface at 0x7ff82200d000
 ...
-Debugger: Loaded module Mangrove at 0x7ff81cd2f000
-Debugger: Loaded module CoreWiFi at 0x7ff81eefd000
-Debugger: Loaded module CoreTelephony at 0x7ff81d2c2000
-Debugger: Loaded module CoreAUC at 0x7ff81c974000
-Debugger: Loaded module WiFiPeerToPeer at 0x7ffa13fd1000
-Debugger: Loaded module UserNotifications at 0x7ff813f0c000
-Debugger: Loaded module libTelephonyUtilDynamic.dylib at 0x7ff8185af000
+Debugger: Loaded module CoreBluetooth at 0x7ff82cae0000
+Width: 32, height: 32
+Failed to load image.
+Failed to load image.
+Width: 32, height: 32
+Width: 32, height: 32
+Width: 400, height: 300
+Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-
 ### Img Handling Targets for -instrument_module
 ```
 libraries=(
@@ -326,45 +304,12 @@ libraries=(
     "vecLib" 
 )
 ```
+### Coverage Samples
+- Sample for libPng
+- Sample for CoreSVG
+- Sample for libAppleEXr
+- Other Sample Coverage
 
-### CoreSVG Coverage Sample
-```
-more /tmp/svg/coverage.txt
-CoreSVG+14e1
-CoreSVG+14fb
-CoreSVG+1506
-CoreSVG+150e
-CoreSVG+151f
-CoreSVG+1537
-CoreSVG+153c
-CoreSVG+1544
-CoreSVG+1554
-CoreSVG+1580
-CoreSVG+1590
-CoreSVG+15b3
-CoreSVG+15be
-CoreSVG+15cd
-CoreSVG+15f0
-CoreSVG+15fb
-CoreSVG+1650
-CoreSVG+167b
-CoreSVG+1694
-CoreSVG+16c0
-CoreSVG+16e0
-CoreSVG+16ee
-CoreSVG+1700
-CoreSVG+1705
-CoreSVG+1710
-CoreSVG+1715
-CoreSVG+1724
-CoreSVG+1732
-CoreSVG+173b
-CoreSVG+1754
-CoreSVG+1766
-CoreSVG+177c
-CoreSVG+178b
-CoreSVG+1797
-```
 #### qlmanage Cache Reset
 ```
 qlmanage -r
