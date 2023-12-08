@@ -118,14 +118,37 @@ AddressSanitizer:DEADLYSIGNAL
 ```
 ### Tip
 ```
--target_env DYLD_INSERT_LIBRARIES=libclang_rt.asan_osx_dynamic.dylib
--target_env DYLD_INSERT_LIBRARIES=libclang_rt.ubsan_osx_dynamic.dylib
--target_env DYLD_INSERT_LIBRARIES=libclang_rt.tsan_osx_dynamic.dylib
+-target_env DYLD_INSERT_LIBRARIES={path}libclang_rt.asan_osx_dynamic.dylib
+-target_env DYLD_INSERT_LIBRARIES={path}libclang_rt.ubsan_osx_dynamic.dylib
+-target_env DYLD_INSERT_LIBRARIES={path}libclang_rt.tsan_osx_dynamic.dylib
+-target_env DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
 ```
-## Example Implementation for 10+ Functions
+## Build Other Runners via examples/Imageio/CMakeLists.txt - Add other Code to Run and Target Dylibs for more coverage
+```
+  add_executable(imageio-test-002_imageio
+    imageio-test-003.m
+  )
+
+  target_link_libraries(imageio-test-002_imageio
+    "-framework ImageIO"
+    "-framework AppKit"
+    "-framework CoreGraphics"
+  )
+
+  add_executable(imageio-test-003_imageio
+    imageio-test-003.m
+  )
+
+  target_link_libraries(imageio-test-003_imageio
+    "-framework ImageIO"
+    "-framework AppKit"
+    "-framework CoreGraphics"
+  )
+```
+### Example Implementation for 10+ Functions
 See URL https://raw.githubusercontent.com/xsscx/macos-research/main/code/iOSOnMac/ios-image-fuzzer-example.m so you can understand the Code shown below and have it running locally.
 
-## Bitmap Context Notes
+### Bitmap Context Notes
 
 Creating a bitmap context with CGBitmapContextCreate involves several parameters that define the characteristics of the context, such as the width, height, bit depth, bytes per row, color space, and alpha info. Varying these parameters can significantly alter the behavior and output of the context. Below are 10 permutations of the CGBitmapContextCreate function call, each demonstrating a different configuration:
 ```
@@ -188,39 +211,6 @@ Each permutation represents a different way of handling pixel formats, alpha cha
 +}
 +
 ```
-
-### Find the dylibs your Image(s) load
-Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multiple frameworks and dylibs for Linking. 
-I Posted a shell script as example. You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module {} as shown below:
-```
--instrument_module ImageIO
--instrument_module CoreSVG
--instrument_module AppleJPEG
-....
--instrument_module [Framework | dylib]
-```
-### Build Other Runners via examples/Imageio/CMakeLists.txt - Add other Code to Run and Target Dylibs for more coverage
-```
-  add_executable(imageio-test-002_imageio
-    imageio-test-003.m
-  )
-
-  target_link_libraries(imageio-test-002_imageio
-    "-framework ImageIO"
-    "-framework AppKit"
-    "-framework CoreGraphics"
-  )
-
-  add_executable(imageio-test-003_imageio
-    imageio-test-003.m
-  )
-
-  target_link_libraries(imageio-test-003_imageio
-    "-framework ImageIO"
-    "-framework AppKit"
-    "-framework CoreGraphics"
-  )
-```
 ### Tinyinst Example to find Graphics Dylibs for File Extensions for target_link_libraries and -instrument_module
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
@@ -244,7 +234,18 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-### Img Handling Targets for -instrument_module
+### Find the dylibs your Image(s) load
+Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multiple frameworks and dylibs for Linking. 
+I Posted a shell script as example. You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module {} as shown below:
+```
+-instrument_module ImageIO
+-instrument_module CoreSVG
+-instrument_module AppleJPEG
+....
+-instrument_module [Framework | dylib]
+```
+See the Script for an Example https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/imageio-fuzzer.zsh
+### Script Targets for -instrument_module
 ```
 libraries=(
     "Accelerate"
