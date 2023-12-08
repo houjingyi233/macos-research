@@ -64,6 +64,16 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
+### Sample abort() in libAppleEXR
+```
+Crash in libAppleEXR.dylib
+libAppleEXR.dylib             	       0x1ca82f6e8 axr_error_t LaunchBlocks<ReadPixelsArgs>(void (*)(void*, unsigned long), ReadPixelsArgs const*, unsigned long, axr_flags_t) + 480
+libAppleEXR.dylib             	       0x1ca83245c TileDecoder::ReadYccRGBAPixels(double, YccMatrix const&, void*, unsigned long) const + 2384
+libAppleEXR.dylib             	       0x1ca825be8 Part::ReadRGBAPixels(axr_decoder*, void*, unsigned long, double, axr_flags_t) const + 2540
+ImageIO                       	       0x1919384f4 EXRReadPlugin::decodeBlockAppleEXR(void*, unsigned long) + 364 
+
+```
+
 ### Sample Bug Output | Null Pointer DeRef at CoreSVG:x86_64+0x52be
 Source URL https://github.com/xsscx/Commodity-Injection-Signatures/tree/master/svg
 ```
