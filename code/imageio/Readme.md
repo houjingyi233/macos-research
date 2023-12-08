@@ -41,7 +41,7 @@ Fuzzing sample 00101
 Instrumented module AppleJPEG, code size: 311288
 ...
 ```
-### YinyInst Dylib Load Program Output
+### TinyInst Dylib Load Program Output
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
