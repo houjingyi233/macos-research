@@ -30,6 +30,7 @@ ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initia
 stdbuf -oL ./fuzzer  -target_env MallocStackLogging=1 MallocScribble=1 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib  -in /mnt/fuzz/png -out /mnt/jpg/out -t 200 -t1 500 -delivery shmem -instrument_module libJPEG.dylib -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 1000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Fuzzing|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
 ```
 ### Fuzzer Output
+### Sample for Instrumented module AppleJPEG
 ```
 Total execs: 153265
 Unique samples: 107 (100 discarded)
@@ -41,14 +42,32 @@ Fuzzing sample 00101
 Instrumented module AppleJPEG, code size: 311288
 ...
 ```
-### Sample abort() in libAppleEXR
+#### Sample for Instrumented module libGIF.dylib
+````
+Total execs: 20504264
+Unique samples: 34 (28 discarded)
+Crashes: 0 (0 unique)
+Hangs: 31486
+Offsets: 1066
+Execs/s: 2538
+Instrumented module libGIF.dylib, code size: 24576
+Instrumented module libGIF.dylib, code size: 24576
+Fuzzing sample 00027
+Fuzzing sample 00002
+Fuzzing sample 00001
+Instrumented module libGIF.dylib, code size: 24576
+Instrumented module libGIF.dylib, code size: 24576
+Fuzzing sample 00000
+Instrumented module libGIF.dylib, code size: 24576
+Instrumented module libGIF.dylib, code size: 24576
+````
+
+### Sample for Crash in libAppleEXR.dylib and abort() due to Error in Sub-sampling
 ```
-Crash in libAppleEXR.dylib
 libAppleEXR.dylib             	       0x1ca82f6e8 axr_error_t LaunchBlocks<ReadPixelsArgs>(void (*)(void*, unsigned long), ReadPixelsArgs const*, unsigned long, axr_flags_t) + 480
 libAppleEXR.dylib             	       0x1ca83245c TileDecoder::ReadYccRGBAPixels(double, YccMatrix const&, void*, unsigned long) const + 2384
 libAppleEXR.dylib             	       0x1ca825be8 Part::ReadRGBAPixels(axr_decoder*, void*, unsigned long, double, axr_flags_t) const + 2540
 ImageIO                       	       0x1919384f4 EXRReadPlugin::decodeBlockAppleEXR(void*, unsigned long) + 364 
-
 ```
 
 ### Sample Bug Output | Null Pointer DeRef at CoreSVG:x86_64+0x52be
