@@ -135,17 +135,17 @@ AddressSanitizer:DEADLYSIGNAL
 ==22220==The signal is caused by a READ memory access.
 ==22220==Hint: this fault was caused by a dereference of a high value address (see register values below).  Disassemble the provided pc to learn which register was used.
 ```
-### Tip
+### Use of Sanitizers and libgmallic
 ```
 -target_env DYLD_INSERT_LIBRARIES={path}libclang_rt.asan_osx_dynamic.dylib
 -target_env DYLD_INSERT_LIBRARIES={path}libclang_rt.ubsan_osx_dynamic.dylib
 -target_env DYLD_INSERT_LIBRARIES={path}libclang_rt.tsan_osx_dynamic.dylib
 -target_env DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
 ```
-## Build Other Runners via examples/Imageio/CMakeLists.txt - Add other Code to Run and Target Dylibs for more coverage
+### Build Other Fuzzing Runners via examples/Imageio/CMakeLists.txt for Fuzzing other Bitmap Contexts shown below
 ```
   add_executable(imageio-test-002_imageio
-    imageio-test-003.m
+    imageio-test-002.m
   )
 
   target_link_libraries(imageio-test-002_imageio
@@ -164,7 +164,7 @@ AddressSanitizer:DEADLYSIGNAL
     "-framework CoreGraphics"
   )
 ```
-### Example Implementation for 10+ Functions
+#### Example Implementation for 10+ Functions
 See URL https://raw.githubusercontent.com/xsscx/macos-research/main/code/iOSOnMac/ios-image-fuzzer-example.m so you can understand the Code shown below and have it running locally.
 
 ### Bitmap Context Notes
@@ -253,7 +253,7 @@ Width: 1280, height: 960
 Debugger: Process exit
 Process finished normally
 ```
-### Find the dylibs your Image(s) load
+### You need to know the dylibs your Image(s) load
 Tip - you'll need to know what dylibs and frameworks to target, use tinyinst to show you what gets loaded for a given file type. Use multiple file types, target multiple frameworks and dylibs for Linking. 
 I Posted a shell script as example. You're going to see that the script iterates the dylibs and frameworks with the option -instrument_module {} as shown below:
 ```
