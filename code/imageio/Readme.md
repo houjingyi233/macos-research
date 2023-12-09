@@ -30,7 +30,7 @@ ASAN_OPTIONS=strict_string_checks=0:detect_stack_use_after_return=1:check_initia
 stdbuf -oL ./fuzzer  -target_env MallocStackLogging=1 MallocScribble=1 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib  -in /mnt/fuzz/png -out /mnt/jpg/out -t 200 -t1 500 -delivery shmem -instrument_module libJPEG.dylib -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 1000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Fuzzing|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
 ```
 ### Fuzzer Output
-### Sample for Instrumented module AppleJPEG
+#### Sample for Instrumented module AppleJPEG
 ```
 Total execs: 153265
 Unique samples: 107 (100 discarded)
@@ -70,7 +70,7 @@ libAppleEXR.dylib             	       0x1ca825be8 Part::ReadRGBAPixels(axr_decod
 ImageIO                       	       0x1919384f4 EXRReadPlugin::decodeBlockAppleEXR(void*, unsigned long) + 364 
 ```
 
-### Sample Bug Output | Null Pointer DeRef at CoreSVG:x86_64+0x52be
+#### Sample Bug Output | Null Pointer DeRef at CoreSVG:x86_64+0x52be
 Source URL https://github.com/xsscx/Commodity-Injection-Signatures/tree/master/svg
 ```
 Jackalope Fuzzer version 1.11 with @h02332 SVG Reproduction of a Null Pointer DeRef at CoreSVG:x86_64+0x52be
@@ -118,7 +118,7 @@ ThreadSanitizer:DEADLYSIGNAL
 ==46572==The signal is caused by a READ memory access.
 ==46572==Hint: address points to the zero page.
 ```
-### More Bugs
+#### More Bugs
 ```
 Running input sample /mnt/fuzz/asan_heap-oob_xxxxxx.exr
 Total execs: 27
