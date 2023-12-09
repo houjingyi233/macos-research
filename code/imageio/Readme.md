@@ -325,12 +325,13 @@ libraries=(
 )
 ```
 ### Coverage Samples
-- Sample for libPng
-- Sample for CoreSVG
-- Sample for libAppleEXr
-- Other Sample Coverage
+- Sample for libPng https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/coverage-sample-libPng.txt
+- Sample for LibGif https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/coverage-sample-libGIF.txt
+- Sample for CoreSVG https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/coverage-sample-CoreSVG.txt
+- Sample for CoreGraphics https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/coverage-sample-CoreGraphics.txt
 
-#### qlmanage Cache Reset
+### qlmanage Cache Reset
+- Bugs in the Thumbnailer in the Sub-sampling Code as shown above in libAppleEXR.dylib | TileDecoder::ReadYccRGBAPixels(double, YccMatrix const&, void*, unsigned long) const + 2384
 ```
 qlmanage -r
 qlmanage -r cache
