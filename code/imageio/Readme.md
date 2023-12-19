@@ -7,6 +7,7 @@ The code originated from Google Project Zero
 - Removed are the references for Windows to focus on native X86_64 and arm64e Fuzzing
 - The code adds a few supported file types and cleans up the autorelease pool use
 - The Script and Examples show how to Target other Dylibs depending on the Image Type, or Fuzz them all with the sample Script [https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/imageio-fuzzer.zsh]
+- There is a larger code base for iOS Fuzzing that has yet to be implemented in these examples, see URL https://github.com/xsscx/macos-research/blob/main/code/iOSOnMac/ios-image-fuzzer-example.m
 ## Suggested Build
 ```
 cmake  -G Xcode
