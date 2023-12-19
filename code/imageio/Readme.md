@@ -325,6 +325,39 @@ libraries=(
     "vecLib" 
 )
 ```
+
+### Coverage Functions - Example functions you may want to Target once Instrumented
+```
+11  libAppleEXR.dylib             	    0x7ffa0d7b7fce axr_error_t LaunchBlocks<ReadPixelsArgs>(void (*)(void*, unsigned long), ReadPixelsArgs const*, unsigned long, axr_flags_t) + 355
+12  libAppleEXR.dylib             	    0x7ffa0d7bb422 TileDecoder::ReadYccRGBAPixels(double, YccMatrix const&, void*, unsigned long) const + 2242
+13  libAppleEXR.dylib             	    0x7ffa0d7ad5f9 Part::ReadRGBAPixels(axr_decoder*, void*, unsigned long, double, axr_flags_t) const + 2511
+14  ImageIO                       	    0x7ff812001783 EXRReadPlugin::decodeBlockAppleEXR(void*, unsigned long) + 337
+15  ImageIO                       	    0x7ff8120014d4 EXRReadPlugin::decodeImageImp(IIODecodeParameter*, IIOImageType, __IOSurface**, __CVBuffer**, CGImageBlockSet**) + 688
+16  ImageIO                       	    0x7ff811fc0625 IIOReadPlugin::callDecodeImage(IIODecodeParameter*, IIOImageType, __IOSurface**, __CVBuffer**, CGImageBlockSet**) + 851
+17  ImageIO                       	    0x7ff811f31e00 IIO_Reader::CopyImageBlockSetProc(void*, CGImageProvider*, CGRect, CGSize, __CFDictionary const*) + 836
+18  ImageIO                       	    0x7ff811f4f682 IIOImageProviderInfo::copyImageBlockSetWithOptions(CGImageProvider*, CGRect, CGSize, __CFDictionary const*) + 684
+19  ImageIO                       	    0x7ff811f31999 IIOImageProviderInfo::CopyImageBlockSetWithOptions(void*, CGImageProvider*, CGRect, CGSize, __CFDictionary const*) + 871
+20  CoreGraphics                  	    0x7ff80cdb2dbf imageProvider_retain_data + 77
+21  CoreGraphics                  	    0x7ff80cdb2d32 CGDataProviderRetainData + 75
+22  CoreGraphics                  	    0x7ff80cdb2d57 provider_for_destination_retain_data + 17
+23  CoreGraphics                  	    0x7ff80cdb2d32 CGDataProviderRetainData + 75
+24  CoreGraphics                  	    0x7ff80cdb2bee CGAccessSessionCreate + 98
+25  CoreGraphics                  	    0x7ff80cdb1bf6 img_data_lock + 3006
+26  CoreGraphics                  	    0x7ff80cdad5b3 CGSImageDataLock + 1286
+27  CoreGraphics                  	    0x7ff80cdad075 RIPImageDataInitializeShared + 170
+28  CoreGraphics                  	    0x7ff80cdacd22 RIPImageCacheGetRetained + 679
+29  CoreGraphics                  	    0x7ff80cdac817 ripc_AcquireRIPImageData + 371
+30  CoreGraphics                  	    0x7ff80cdab5ff ripc_DrawImage + 919
+31  CoreGraphics                  	    0x7ff80cdaaa88 CGContextDrawImageWithOptions + 676
+32  ImageIO                       	    0x7ff811faadf0 CGImageCreateCopyWithParametersNew(CGImage*, CGColor*, CGAffineTransform, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, CGColorSpace*, unsigned int, bool, CGColorRenderingIntent, CGInterpolationQuality, bool) + 2095
+33  ImageIO                       	    0x7ff811f8c076 IIOImageSource::createThumbnailAtIndex(unsigned long, IIODictionary*) + 3902
+34  ImageIO                       	    0x7ff811f70fdd CGImageSourceCreateThumbnailAtIndex + 466
+35  ImageKit                      	    0x7ff90d4affa0 +[IKImageViewUtils _newScaledImageFromSource:index:imageScale:canUseExistingThumbnail:displayProperties:] + 503
+36  ImageKit                      	    0x7ff90d4afd8b +[IKImageViewUtils newCGImageFromImgSrc:index:displayProperties:imageScale:forceScale:canUseExistingThumbnail:createBitmapImmediately:] + 171
+37  ImageKit                      	    0x7ff90d4865be __82-[IKImageContentView _setImageFromImageSource:imageAtIndex:withDisplayProperties:]_block_invoke + 67
+38  ImageKit                      	    0x7ff90d48693d __82-[IKImageContentView _setImageFromImageSource:imageAtIndex:withDisplayProperties:]_block_invoke.284 + 21
+```
+
 ### Coverage Samples
 - Sample for libPng https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/coverage-sample-libPng.txt
 - Sample for LibGif https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/coverage-sample-libGIF.txt
