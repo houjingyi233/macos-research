@@ -29,6 +29,16 @@ if (APPLE)
     "-framework CoreGraphics"
   )
 
+  add_executable(dist_imageio
+    imageio-dist.m
+  )
+
+  target_link_libraries(dist_imageio
+    "-framework ImageIO"
+    "-framework AppKit"
+    "-framework CoreGraphics"
+  )
+  
   add_executable(imageio-test-002_imageio
     imageio-test-002.m
   )
