@@ -400,3 +400,41 @@ export QuartzCoreDebugEnabled=1
 export CI_PRINT_TREE=1
 export CORESVG_VERBOSE=1
 ```
+## Problems
+IF you are seeing these messages:
+```
+    if (status != DEBUGGER_TARGET_START) {
+      switch (status) {
+      case DEBUGGER_CRASHED:
+        FATAL("Process crashed before reaching the target method\n");
+        break;
+      case DEBUGGER_HANGED:
+        FATAL("Process hanged before reaching the target method\n");
+        break;
+      case DEBUGGER_PROCESS_EXIT:
+        FATAL("Process exited before reaching the target method\n");
+        break;
+      default:
+        FATAL("An unknown problem occured before reaching the target method\n");
+        break;
+      }
+    }
+
+```
+- Try incresing the -t1 to -t5
+- Try using fewer Threads
+
+## Suggestion
+- Use A/B/C Testing of Code via the Examples shown in https://github.com/xsscx/macos-research/blob/main/code/imageio/CMakeLists.txt
+```
+  add_executable(imageio-test-003_imageio
+    imageio-test-003.m
+  )
+
+  target_link_libraries(imageio-test-003_imageio
+    "-framework ImageIO"
+    "-framework AppKit"
+    "-framework CoreGraphics"
+  )
+```
+- Benchmark code modifications and results against the baseline code included in the Project
