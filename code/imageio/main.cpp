@@ -1,4 +1,7 @@
-// Modified by @h02332 David Hoyt to aid in Debugging
+// Modified by @h02332 David Hoyt to aid in Debugging in Jackalope
+// Modified main.cpp for Live Debugging Mode Implementation
+// Should be used with your Stub Programs in CMakeLists.txt until Stable
+// Ninja Mode with bleeded edge code
 
 #include "common.h"
 #include "fuzzer.h"
