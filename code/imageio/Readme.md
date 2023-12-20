@@ -439,3 +439,28 @@ IF you are seeing these messages:
   )
 ```
 - Benchmark code modifications and results against the baseline code included in the Project
+
+## Live Debugger Implementation
+The modified .cpp and.h files are for ninjas only - adds Live Debugging Mode - Work in Progress - Pull Requests Welcome
+```
+// Global debug flag
+bool debugMode = true;
+
+void DebugBreakpoint(const std::string& message) {
+    if (debugMode) {
+        std::cout << "[DEBUG BREAK] " << message << "\n";
+        std::cout << "Press enter to continue...\n";
+        std::cin.get();
+    }
+}
+
+void SignalHandler(int signal) {
+    std::cout << "Caught signal " << signal << ". Entering debug mode.\n";
+    debugMode = true;
+}
+
+void SetupDebugMode() {
+    signal(SIGINT, SignalHandler);
+}
+
+```
