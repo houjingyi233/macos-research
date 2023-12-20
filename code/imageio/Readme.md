@@ -2,6 +2,7 @@
 The code originated from Google Project Zero
 - https://github.com/googleprojectzero/Jackalope/blob/main/examples/ImageIO/imageio.m
 - I modified the code and wrote some examples to cross-check some Bugs
+- Examples are based on iOSOnMac Interposing Code at URL https://github.com/xsscx/macos-research/tree/main/code/iOSOnMac
 - There is a clang scan-build report at URL https://xss.cx/2023/12/09/src/jackalope-scan-build-report/index.html
 ## My Code Modifications
 - Removed are the references for Windows to focus on native X86_64 and arm64e Fuzzing
