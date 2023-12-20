@@ -1,15 +1,16 @@
 # Jackalope Fuzzer for ImageIO + Other Dylibs
 The code originated from Google Project Zero
 - https://github.com/googleprojectzero/Jackalope/blob/main/examples/ImageIO/imageio.m
-- I modified the code and wrote some examples to cross-check some Bugs
+- I modified the Google code and wrote some examples to cross-check some Bugs
 - Examples are based on iOSOnMac Interposing Code at URL https://github.com/xsscx/macos-research/tree/main/code/iOSOnMac
 - There is a clang scan-build report at URL https://xss.cx/2023/12/09/src/jackalope-scan-build-report/index.html
 ## My Code Modifications
 - ~~Removed are the references for Windows to focus on native X86_64 and arm64e Fuzzing~~
-- Windows Code Updates in process
-- The Example Code adds a few supported file types and cleans up the autorelease pool use
-- The Script and Examples show how to Target other Dylibs depending on the Image Type, or Fuzz them all with the sample Script [https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/imageio-fuzzer.zsh]
+- Windows Fuzzer Code Updates in process
+- The Example Code adds a few supported file types and cleans up the autorelease pool use on macOS
+- The Scripts and Example Code show how to Target other Dylibs depending on the Image Type, or Fuzz them all with the sample Script [https://raw.githubusercontent.com/xsscx/macos-research/main/code/imageio/imageio-fuzzer.zsh]
 - There is a larger code base for iOS Fuzzing that has yet to be implemented in these examples, see URL https://github.com/xsscx/macos-research/blob/main/code/iOSOnMac/ios-image-fuzzer-example.m
+- The arm64 code is my current focus to get consistent results from A/B testing with X86_644 and arm64 Platform ABI's
 ## Suggested Build
 ```
 cmake  -G Xcode
@@ -171,6 +172,30 @@ AddressSanitizer:DEADLYSIGNAL
     "-framework AppKit"
     "-framework CoreGraphics"
   )
+```
+## Live Debugger Implementation - Ninja Mode
+The modified .cpp and.h files are for ninjas only - adds Live Debugging Mode - Work in Progress - Pull Requests Welcome
+```
+// Global debug flag
+bool debugMode = true;
+
+void DebugBreakpoint(const std::string& message) {
+    if (debugMode) {
+        std::cout << "[DEBUG BREAK] " << message << "\n";
+        std::cout << "Press enter to continue...\n";
+        std::cin.get();
+    }
+}
+
+void SignalHandler(int signal) {
+    std::cout << "Caught signal " << signal << ". Entering debug mode.\n";
+    debugMode = true;
+}
+
+void SetupDebugMode() {
+    signal(SIGINT, SignalHandler);
+}
+
 ```
 #### Example Implementation for 10+ Functions
 See URL https://raw.githubusercontent.com/xsscx/macos-research/main/code/iOSOnMac/ios-image-fuzzer-example.m so you can understand the Code shown below and have it running locally.
@@ -441,28 +466,3 @@ IF you are seeing these messages:
   )
 ```
 - Benchmark code modifications and results against the baseline code included in the Project
-
-## Live Debugger Implementation
-The modified .cpp and.h files are for ninjas only - adds Live Debugging Mode - Work in Progress - Pull Requests Welcome
-```
-// Global debug flag
-bool debugMode = true;
-
-void DebugBreakpoint(const std::string& message) {
-    if (debugMode) {
-        std::cout << "[DEBUG BREAK] " << message << "\n";
-        std::cout << "Press enter to continue...\n";
-        std::cin.get();
-    }
-}
-
-void SignalHandler(int signal) {
-    std::cout << "Caught signal " << signal << ". Entering debug mode.\n";
-    debugMode = true;
-}
-
-void SetupDebugMode() {
-    signal(SIGINT, SignalHandler);
-}
-
-```
