@@ -84,7 +84,37 @@ Fuzzing sample 00000
 Instrumented module libGIF.dylib, code size: 24576
 Instrumented module libGIF.dylib, code size: 24576
 ````
+#### Expanded Logging Function on arm64
+```
+Instrumented module CoreSVG, code size: 241664
+Instrumented module MPSCore, code size: 516096
+Instrumented module XCTTargetBootstrap, code size: 24576
+Instrumented module libsystem_configuration.dylib, code size: 20480
+Instrumented module libsystem_sandbox.dylib, code size: 24564
+Additionally added modules to align to pages:
+  CoreImage
+  CoreSVG
+  MPSCore
+  XCTTargetBootstrap
+  libsystem_configuration.dylib
+  libsystem_sandbox.dylib
+Fuzzing sample 00037
+Instrumented module ImageIO, code size: 3252224
+Instrumented module CoreImage, code size: 3686400
+Instrumented module CoreSVG, code size: 241664
+[!] WARNING: Target function not reached, retrying with a clean process
 
+Instrumented module MPSCore, code size: 516096
+Instrumented module XCTTargetBootstrap, code size: 24576
+Instrumented module libsystem_configuration.dylib, code size: 20480
+Instrumented module libsystem_sandbox.dylib, code size: 24564
+[!] WARNING: Target function not reached, retrying with a clean process
+
+Instrumented module ImageIO, code size: 3252224
+Instrumented module CoreImage, code size: 3686400
+Instrumented module CoreSVG, code size: 241664
+
+```
 ### Sample for Crash in libAppleEXR.dylib and abort() due to Error in Sub-sampling
 ```
 libAppleEXR.dylib             	       0x1ca82f6e8 axr_error_t LaunchBlocks<ReadPixelsArgs>(void (*)(void*, unsigned long), ReadPixelsArgs const*, unsigned long, axr_flags_t) + 480
