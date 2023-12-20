@@ -1,4 +1,4 @@
-# Samples Crashes | Trophy Case
+# Sample Crashes | Trophy Case
 - CVE-2023-46602 https://nvd.nist.gov/vuln/detail/CVE-2023-46602
 - CVE-2023-46603 https://nvd.nist.gov/vuln/detail/CVE-2023-46603
 - CVE-2023-46866 https://nvd.nist.gov/vuln/detail/CVE-2023-46866
