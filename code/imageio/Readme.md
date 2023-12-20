@@ -446,6 +446,7 @@ IF you are seeing these messages:
 ```
 - Benchmark code modifications and results against the baseline code included in the Project
 ## Live Debugger Implementation - Ninja Mode
+- See Issue https://github.com/xsscx/macos-research/issues/2 for more info
 - The modified .cpp and.h files are for ninjas only - adds Live Debugging Mode - Work in Progress - Pull Requests Welcome
 - The modified .cpp & .h are meant to be compiled into the Jackalope Stub Programs for A/B/C Testing
 ```
