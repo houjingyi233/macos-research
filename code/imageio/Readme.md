@@ -38,7 +38,7 @@ cmake --build . --target clean
 ```
 ./fuzzer  -target_env MallocStackLogging=1 MallocScribble=1 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib  -in /mnt/fuzz/jpg -out /mnt/jpg -t 200 -t3 500 -delivery shmem -instrument_module libJPEG.dylib -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 1000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Fuzzing|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
 ```
-## Samples Crashes | Trophy Case
+## Trophy Case
 - CVE-2023-46602 https://nvd.nist.gov/vuln/detail/CVE-2023-46602
 - CVE-2023-46603 https://nvd.nist.gov/vuln/detail/CVE-2023-46603
 - CVE-2023-46866 https://nvd.nist.gov/vuln/detail/CVE-2023-46866
