@@ -38,6 +38,11 @@ cmake --build . --target clean
 ```
 ./fuzzer  -target_env MallocStackLogging=1 MallocScribble=1 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib  -in /mnt/fuzz/jpg -out /mnt/jpg -t 200 -t3 500 -delivery shmem -instrument_module libJPEG.dylib -target_module test_imageio -target_method _fuzz -nargs 1 -iterations 1000 -persist -loop -cmp_coverage -generate_unwind -nthreads 20 -- ../examples/ImageIO/Debug/test_imageio -m @@ | grep -E 'Fuzzer version|input files read|Running input sample|Total execs|Fuzzing|Unique samples|Crashes|Hangs|Offsets|Execs/s|WARNING|Width|Sanitizer|Hint|DEADLY'
 ```
+#### Find the Dylibs
+To find out which modules are loaded for a particular input file, you can run, more below.
+```
+../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f <filename>
+```
 ## Trophy Case
 - CVE-2023-46602 https://nvd.nist.gov/vuln/detail/CVE-2023-46602
 - CVE-2023-46603 https://nvd.nist.gov/vuln/detail/CVE-2023-46603
@@ -285,6 +290,10 @@ Each permutation represents a different way of handling pixel formats, alpha cha
 +
 ```
 ### Tinyinst Example to find Graphics Dylibs for File Extensions for target_link_libraries and -instrument_module
+To find out which modules are loaded for a particular input file, you can run, more below.
+```
+../TinyInst/Debug/litecov -trace_debug_events -- ../examples/ImageIO/Debug/test_imageio -f <filename>
+```
 ```
 Debugger: Mach exception (5) @ address 0x113a4e070
 Debugger: Process created or attached
