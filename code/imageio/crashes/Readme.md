@@ -5,3 +5,7 @@
 - CVE-2023-46867
 - CVE-2023-47249
 - CVE-2023-48736
+## References
+- https://github.com/InternationalColorConsortium/DemoIccMAX/pull/53
+- https://github.com/InternationalColorConsortium/DemoIccMAX/issues/54
+- https://github.com/InternationalColorConsortium/DemoIccMAX/issues/58
