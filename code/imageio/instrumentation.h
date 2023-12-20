@@ -1,5 +1,7 @@
-// Modified by @h02332 David Hoyt 
-// Debugger Aids - Implementation
+// Modified by @h02332 David Hoyt to aid in Debugging in Jackalope
+// Modified instrumentation.h for Live Debugging Mode Implementation
+// Should be used with your Stub Programs in CMakeLists.txt until Stable
+// Ninja Mode with bleeded edge code
 
 #pragma once
 
