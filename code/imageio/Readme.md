@@ -21,6 +21,11 @@ cmake --build . --config Debug
 rm -rf CMakeScripts CMakeFiles Release Debug build
 cmake --build . --target clean
 ```
+## Bigger Picture
+- Whether a specific target function is defined or not changes the behavior of the fuzzing process in Jackalope. 
+- These changes includes how the fuzzing iterations are handled, when to clear coverage data, and how timeouts are managed. 
+- The presence of a specific target function is a targeted fuzzing approach, as opposed to a broader, more general fuzzing strategy as shown in the Example Code.
+- The presence or absence of a defined target function influences the behavior of the fuzzing process. This is seen in the conditional checks like if (instrumentation->IsTargetFunctionDefined()). 
 ## Jackalope Example Command Lines
 #### Default
 ```
