@@ -405,7 +405,9 @@ export QuartzCoreDebugEnabled=1
 export CI_PRINT_TREE=1
 export CORESVG_VERBOSE=1
 ```
-## Problems
+## Problems & troubleshooting
+- See Issue [https://github.com/xsscx/macos-research/issues/1]
+
 IF you are seeing these messages:
 ```
     if (status != DEBUGGER_TARGET_START) {
@@ -444,7 +446,8 @@ IF you are seeing these messages:
 ```
 - Benchmark code modifications and results against the baseline code included in the Project
 ## Live Debugger Implementation - Ninja Mode
-The modified .cpp and.h files are for ninjas only - adds Live Debugging Mode - Work in Progress - Pull Requests Welcome
+- The modified .cpp and.h files are for ninjas only - adds Live Debugging Mode - Work in Progress - Pull Requests Welcome
+- The modified .cpp & .h are meant to be compiled into the Jackalope Stub Programs for A/B/C Testing
 ```
 // Global debug flag
 bool debugMode = true;
