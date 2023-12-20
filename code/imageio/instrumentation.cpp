@@ -1,5 +1,7 @@
-// Modified by @h02332 Davi dHoyt
-// note that the .h is modified too
+// Modified by @h02332 David Hoyt to aid in Debugging in Jackalope
+// Modified instrumentation.cpp for Live Debugging Mode Implementation
+// Should be used with your Stub Programs in CMakeLists.txt until Stable
+// Ninja Mode with bleeded edge code
 
 #include "instrumentation.h"
 #include <iostream>
