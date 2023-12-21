@@ -1,4 +1,4 @@
-Updated: Monday, 27 NOV 2023 @ 1030 EST
+Updated: Monday, 21 DEC 2023 @ 1030 EST
 # iOSOnMac | Interposing iOS Applications
 - Original Source URL https://github.com/googleprojectzero/p0tools/tree/master/iOSOnMac
 - Updated the Makefile to Build on macOS 14
@@ -8,12 +8,11 @@ Updated: Monday, 27 NOV 2023 @ 1030 EST
 ```
 sw_vers
 ProductName:		macOS
-ProductVersion:		14.1.1
-BuildVersion:		23B81
+ProductVersion:		14.1.2
 ```
 ## Updates
 This Pull Request does the following:
-- Updates the Makefile to Build the Example Project on macOS 14.1.1 | 23B81
+- Updates the Makefile to Build the Example Project on macOS 14.1.2
 - Adds some print statements to runner
 - Removes legacy compile comments at top of interpose.c
 - Added arm64e compile and run instructions & examples
@@ -150,7 +149,7 @@ main.app
 2023-11-27 21:01:37.959 ios11[74952:1516232] End of Run...
 [*] Child exited with status 0
 ```
-### Bug Sample
+### Bug in libAppleEXR Sample
 ```
 2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Program started. Number of arguments: 2
 2023-11-26 16:30:47.386 imagefuzzer[93171:768680] Argument 0: imagefuzzer.app/imagefuzzer
