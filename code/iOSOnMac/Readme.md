@@ -1,9 +1,10 @@
-Updated: Monday, 21 DEC 2023 @ 1030 EST
+
 # iOSOnMac | Interposing iOS Applications
 - Original Source URL https://github.com/googleprojectzero/p0tools/tree/master/iOSOnMac
 - Updated the Makefile to Build on macOS 14
 - Made some changes
 - Added some Examples
+- Updated: Monday, 02 FEB 2024 @ 600 EST
 ## Replay
 ```
 sw_vers
@@ -11,7 +12,7 @@ ProductName:		macOS
 ProductVersion:		14.1.2
 ```
 ## Updates
-This Pull Request does the following:
+This Repo does the following:
 - Updates the Makefile to Build the Example Project on macOS 14.1.2
 - Adds some print statements to runner
 - Removes legacy compile comments at top of interpose.c
